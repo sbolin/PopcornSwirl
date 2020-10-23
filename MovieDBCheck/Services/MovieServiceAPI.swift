@@ -5,7 +5,7 @@
 //  Created by Scott Bolin on 10/21/20.
 //
 
-import Foundation
+import UIKit
 
 class MovieServiceAPI {
     
@@ -83,6 +83,31 @@ class MovieServiceAPI {
         fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
     }
     
+    // fetchImage returns an UIImage object given an image size and imageURL
+    public func fetchImage(imageSize: String, imageEndpoint: String, result: @escaping (Bool, Error?, UIImage?) -> Void) {
+        let baseImageURL = URL(string: "https://image.tmdb.org/t/p")!
+        let movieURL = baseImageURL.appendingPathComponent(imageSize).appendingPathComponent(imageEndpoint)
+        print("image url: \(movieURL)")
+        urlSession.dataTask(with: movieURL) { data, response, taskerror in
+            DispatchQueue.main.async {
+                if let data = data, taskerror == nil {
+                    if let response = response as? HTTPURLResponse,
+                       response.statusCode == 200 {
+                        let artwork = UIImage(data: data)
+                        result(true, nil, artwork)
+                    } else {
+                        print("url response error: \(response.debugDescription)")
+                        result(false, nil, nil)
+                    }
+                } else {
+                    print("taskerror thrown: \(taskerror.debugDescription)")
+                    result(false, taskerror, nil)
+                }
+            } // DispatchQueue
+        }.resume()
+    }
+    
+    
     private func fetchResources<T: Decodable>(url: URL, genre: Int, page: Int, completion: @escaping (Result<T, APIServiceError>) -> Void) {
         guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             completion(.failure(.invalidEndpoint))
@@ -129,22 +154,23 @@ class MovieServiceAPI {
             }
         }.resume()
     }
-
 }
 
 extension URLSession {
     func dataTask(with url: URL, result: @escaping (Result<(URLResponse, Data), Error>) -> Void) -> URLSessionDataTask {
         return dataTask(with: url) { (data, response, error) in
-            if let error = error {
-                result(.failure(error))
-                return
-            }
-            guard let response = response, let data = data else {
-                let error = NSError(domain: "error", code: 0, userInfo: nil)
-                result(.failure(error))
-                return
-            }
-            result(.success((response, data)))
+            DispatchQueue.main.async { //
+                if let error = error {
+                    result(.failure(error))
+                    return
+                }
+                guard let response = response, let data = data else {
+                    let error = NSError(domain: "error", code: 0, userInfo: nil)
+                    result(.failure(error))
+                    return
+                }
+                result(.success((response, data)))
+            } //
         }
     }
 }
