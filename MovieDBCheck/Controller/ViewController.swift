@@ -14,12 +14,15 @@ class ViewController: UIViewController {
     @IBOutlet weak var backdropImageView: UIImageView!
     
     // MARK: - Properties
-    let moviesController = MovieController()
     var collectionView: UICollectionView! = nil
     var dataSource: UICollectionViewDiffableDataSource<MovieCollection, MovieListData>! = nil
     var currentSnapshot: NSDiffableDataSourceSnapshot<MovieCollection, MovieListData>! = nil
     var movieCollections = [MovieCollection]()
     var movies = [MovieListData]()
+    var castData = [CastData]()
+    var actor = [String]()
+    var director = ""
+    
     
     static let sectionHeaderElementKind = "section-header-element-kind"
     static let sectionFooterElementKind = "section-footer-element-kind"
@@ -40,9 +43,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         getInitialMovieData()
-        getMovieFromID(movieID: 550)
-        getCastData(movieID: 550)
-        getCompanyData(movieID: 550)
+        let cast = getCastData(movieID: 550)
+        let movie = getMovieFromID(movieID: 550)
+        let company = getCompanyData(movieID: 550)
         getImages(imageSize: "w780", imageEndpoint: "/plzV6fap5bGqMaIpOrihmhtd7lW.jpg")
         
         // call movieserviceapi to get movies from given genre response
@@ -57,27 +60,27 @@ class ViewController: UIViewController {
         for section in MovieCollection.Sections.allCases  {
 //            let genreName = section.rawValue
             let genreID = genres[section]!
-            print("genreID Prior to fetchMovies: \(genreID)")
             MovieDBCheck.MovieServiceAPI.shared.fetchMovies(from: genreID, page: page) { (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
                 switch result {
-                    case .success(let movieResponse):
-                        print("fetchMovies success")
-                        for movie in movieResponse.results {
-                            let movieResponse = MovieListData(
-                                id: movie.id,
-                                title: movie.title,
-                                overview: movie.overview,
-                                genreID: movie.genreIds,
-                                releaseDate: movie.releaseDate,
-                                voteAverage: movie.voteAverage,
-                                voteCount: movie.voteCount,
-                                adult: movie.adult,
-                                video: movie.video,
-                                popularity: movie.popularity,
-                                posterPath: movie.posterPath,
-                                backdropPath: movie.backdropPath)
-                            self.movies.append(movieResponse)
-                        }
+                    case .success(let response):
+//                        print("fetchMovies success")
+//                        for movie in response.results {
+//                            let movieResponse = MovieListData(
+//                                id: movie.id,
+//                                title: movie.title,
+//                                overview: movie.overview,
+//                                genreID: movie.genreIds,
+//                                releaseDate: movie.releaseDate,
+//                                voteAverage: movie.voteAverage,
+//                                voteCount: movie.voteCount,
+//                                adult: movie.adult,
+//                                video: movie.video,
+//                                popularity: movie.popularity,
+//                                posterPath: movie.posterPath,
+//                                backdropPath: movie.backdropPath)
+//                            self.movies.append(movieResponse)
+//                        }
+                        self.movies = MovieDTOMapper.map(response)
                     case .failure(let error):
                         print(error.localizedDescription)
                 }
@@ -85,57 +88,63 @@ class ViewController: UIViewController {
             movieCollections.append(MovieCollection(genreID: genreID, movieData: movies))
         }
     }
+    
+    func getCastData(movieID: Int) -> CastData? {
+        var castData: CastData?
+        MovieDBCheck.MovieServiceAPI.shared.fetchCast(movieID: movieID) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
+            switch result {
+                case .success(let response):
+//                    print("Cast and Crew for movie: \(response.id)")
+//                    print("Cast:")
+//                    for cast in response.cast {
+//                        print("Character: \(cast.character)")
+//                        print("id: \(cast.id)")
+//                        print("Actor: \(cast.name)")
+//                        print("\n")
+//                    }
+//                    print("Crew:")
+//                    for crew in response.crew {
+//                        print("Crew for movie 550")
+//                        print("Position: \(crew.job)")
+//                        print("id: \(crew.id)")
+//                        print("Name: \(crew.name)")
+//                        print("\n")
+//                    }
+                    castData = CastDTOMapper.map(dto: response)
+                case .failure(let error):
+                    print(error.localizedDescription)
+            }
+        }
+        return castData
+    }
         
-    func getMovieFromID(movieID: Int) {
+    func getMovieFromID(movieID: Int) -> [MovieListData] {
         // call movieserviceapi to get single movie response
         MovieDBCheck.MovieServiceAPI.shared.fetchMovie(movieId: movieID) { (result: Result<MovieData, MovieServiceAPI.APIServiceError>) in
             switch result {
                 case .success(let movie):
-                    print("MovieData: \(movieID)")
-                    print("Title: \(movie.title)")
-                    print("id: \(movie.id)")
-                    print("Overview: \(movie.overview)")
-                    print("Release date: \(movie.releaseDate)")
-                    print("Vote Average: \(movie.voteAverage)")
-                    print("Vote Count: \(movie.voteCount)")
-                    print("Video: \(movie.video)")
-                    print("Popularity: \(movie.popularity)")
-                    print("Poster Path: \(movie.posterPath)")
-                    print("Backdrop Path: \(movie.backdropPath)")
-                    print("\n")
+//                    print("Title: \(movie.title)")
+//                    print("id: \(movie.id)")
+//                    print("Overview: \(movie.overview)")
+//                    print("Release date: \(movie.releaseDate)")
+//                    print("Vote Average: \(movie.voteAverage)")
+//                    print("Vote Count: \(movie.voteCount)")
+//                    print("Video: \(movie.video)")
+//                    print("Popularity: \(movie.popularity)")
+//                    print("Poster Path: \(movie.posterPath)")
+//                    print("Backdrop Path: \(movie.backdropPath)")
+//                    print("\n")
+                    self.movies = MovieDTOMapper.map(movie)
                 case .failure(let error):
                     print(error.localizedDescription)
             }
         }
+        return movies
     }
     
-    func getCastData(movieID: Int) {
-        MovieDBCheck.MovieServiceAPI.shared.fetchCast(movieID: movieID) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
-            switch result {
-                case .success(let response):
-                    print("Cast and Crew for movie: \(response.id)")
-                    print("Cast:")
-                    for cast in response.cast {
-                        print("Character: \(cast.character)")
-                        print("id: \(cast.id)")
-                        print("Actor: \(cast.name)")
-                        print("\n")
-                    }
-                    print("Crew:")
-                    for crew in response.crew {
-                        print("Crew for movie 550")
-                        print("Position: \(crew.job)")
-                        print("id: \(crew.id)")
-                        print("Name: \(crew.name)")
-                        print("\n")
-                    }
-                case .failure(let error):
-                    print(error.localizedDescription)
-            }
-        }
-    }
         
-    func getCompanyData(movieID: Int) {
+    func getCompanyData(movieID: Int) -> CompanyData? {
+        var companyData: CompanyData?
         MovieDBCheck.MovieServiceAPI.shared.fetchCompany(movieID: 550) { (result: Result<CompanyResponse, MovieServiceAPI.APIServiceError>) in
             switch result {
                 case .success(let response):
@@ -146,10 +155,12 @@ class ViewController: UIViewController {
                         print("Country: \(company.originCountry)")
                         print("\n")
                     }
+                    companyData = CompanyDTOMapper.map(response)
                 case .failure(let error):
                     print(error.localizedDescription)
             }
         }
+        return companyData
     }
         // https://image.tmdb.org/t/p/w780/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg
         

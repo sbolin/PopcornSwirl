@@ -54,7 +54,8 @@ class CoreDataController {
     }
     
     // store movie data dataSource to Core Data when called
-    func storeMovie(movie: MovieModel) {
+    func storeMovie(collection: MovieCollection) {
+        
         
     }
     

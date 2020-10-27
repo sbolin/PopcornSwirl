@@ -57,10 +57,10 @@ class MovieServiceAPI {
         case noData
         case decodeError
     }
-    public func fetchMovies(from endpoint: Endpoint, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
-        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(endpoint.rawValue)
-        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
-    }
+//    public func fetchMovies(from endpoint: Endpoint, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
+//        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(endpoint.rawValue)
+//        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
+//    }
     
     public func fetchMovies(from genre: Int, page: Int, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
         let movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
