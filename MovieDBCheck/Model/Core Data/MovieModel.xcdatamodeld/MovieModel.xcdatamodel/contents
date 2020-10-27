@@ -1,39 +1,50 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Actor" representedClassName="Actor" syncable="YES" codeGenerationType="class">
+        <attribute name="id" attributeType="Integer 32" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="movie" maxCount="1" deletionRule="Nullify" destinationEntity="Movie" inverseName="actors" inverseEntity="Movie"/>
+    </entity>
     <entity name="Collection" representedClassName="Collection" syncable="YES">
-        <attribute name="genreID" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="genreName" optional="YES" attributeType="String"/>
-        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="genreID" attributeType="Integer 32" usesScalarValueType="YES"/>
+        <attribute name="genreName" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <relationship name="movies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Movie" inverseName="collection" inverseEntity="Movie"/>
     </entity>
     <entity name="Company" representedClassName="Company" syncable="YES">
-        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="Integer 32" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String"/>
         <relationship name="movie" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Movie" inverseName="companies" inverseEntity="Movie"/>
     </entity>
     <entity name="Movie" representedClassName="Movie" syncable="YES">
-        <attribute name="actor" optional="YES" attributeType="String"/>
-        <attribute name="adult" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="actor" attributeType="String"/>
+        <attribute name="adult" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="backdropImage" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="backdropPath" optional="YES" attributeType="String"/>
-        <attribute name="bookmarked" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="director" optional="YES" attributeType="String"/>
-        <attribute name="favorite" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="id" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="overview" optional="YES" attributeType="String"/>
-        <attribute name="popularity" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="bookmarked" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="director" attributeType="String"/>
+        <attribute name="favorite" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="genre" attributeType="Integer 32" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="Integer 32" usesScalarValueType="YES"/>
+        <attribute name="note" optional="YES" attributeType="String"/>
+        <attribute name="overview" attributeType="String"/>
+        <attribute name="popularity" attributeType="Double" usesScalarValueType="YES"/>
+        <attribute name="posterImage" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="posterPath" optional="YES" attributeType="String"/>
-        <attribute name="releaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="title" optional="YES" attributeType="String"/>
-        <attribute name="video" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="voteAverage" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="voteCount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="watched" optional="YES" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <relationship name="collection" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Collection" inverseName="movies" inverseEntity="Collection"/>
-        <relationship name="companies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Company" inverseName="movie" inverseEntity="Company"/>
+        <attribute name="releaseDate" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="title" attributeType="String"/>
+        <attribute name="video" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="voteAverage" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="voteCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="watched" attributeType="Boolean" usesScalarValueType="YES"/>
+        <relationship name="actors" toMany="YES" deletionRule="Nullify" destinationEntity="Actor" inverseName="movie" inverseEntity="Actor"/>
+        <relationship name="collection" maxCount="1" deletionRule="Nullify" destinationEntity="Collection" inverseName="movies" inverseEntity="Collection"/>
+        <relationship name="companies" toMany="YES" deletionRule="Nullify" destinationEntity="Company" inverseName="movie" inverseEntity="Company"/>
     </entity>
     <elements>
-        <element name="Movie" positionX="106.35546875" positionY="-150.4375" width="128" height="313"/>
-        <element name="Collection" positionX="-70.828125" positionY="-0.66796875" width="128" height="103"/>
-        <element name="Company" positionX="288.69921875" positionY="19.0703125" width="128" height="88"/>
+        <element name="Actor" positionX="311.15625" positionY="47.3125" width="128" height="88"/>
+        <element name="Collection" positionX="-112.5625" positionY="120.6015625" width="128" height="103"/>
+        <element name="Company" positionX="313.21875" positionY="149.51953125" width="128" height="88"/>
+        <element name="Movie" positionX="106.35546875" positionY="-150.4375" width="128" height="388"/>
     </elements>
 </model>

@@ -8,7 +8,6 @@
 import Foundation
 import CoreData
 
-
 class CoreDataController {
     //MARK: - Create CoreData Stack
     static let shared = CoreDataController() // singleton
@@ -27,6 +26,8 @@ class CoreDataController {
                 print("Unresolved error \(error), \(error.userInfo)")
             }
         }
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        
         return container
     }()
     
@@ -38,6 +39,7 @@ class CoreDataController {
     
     lazy var backgroundContext: NSManagedObjectContext = {
         let context = self.persistentContainer.newBackgroundContext()
+        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         return context
     }()
     
@@ -49,6 +51,11 @@ class CoreDataController {
         } catch let error as NSError {
             print("Unresolved error \(error), \(error.localizedDescription)")
         }
+    }
+    
+    // store movie data dataSource to Core Data when called
+    func storeMovie(movie: MovieModel) {
+        
     }
     
 }

@@ -10,11 +10,13 @@ import Foundation
 struct CastDTOMapper { // data transfer object
     static func map(dto: CastResponse) -> CastData {
         var director = ""
+        var cast: [String] = []
         let movieID = dto.id
         let movieCast = dto.cast
         let movieCrew = dto.crew
-        let cast = movieCast[0].name
-        
+        for i in 0..<3 {
+            cast.append(movieCast[i].name)
+        }
         movieCrew.forEach { (crew) in
             if crew.job == "Director" { director = crew.name }
         }

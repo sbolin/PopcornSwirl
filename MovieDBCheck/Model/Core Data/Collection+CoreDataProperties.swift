@@ -2,7 +2,7 @@
 //  Collection+CoreDataProperties.swift
 //  MovieDBCheck
 //
-//  Created by Scott Bolin on 10/24/20.
+//  Created by Scott Bolin on 10/27/20.
 //
 //
 
@@ -16,9 +16,9 @@ extension Collection {
         return NSFetchRequest<Collection>(entityName: "Collection")
     }
 
-    @NSManaged public var id: UUID
-    @NSManaged public var genreID: Int16
+    @NSManaged public var genreID: Int32
     @NSManaged public var genreName: String
+    @NSManaged public var id: UUID
     @NSManaged public var movies: Set<Movie>
 
 }

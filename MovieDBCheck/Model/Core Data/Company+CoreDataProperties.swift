@@ -2,7 +2,7 @@
 //  Company+CoreDataProperties.swift
 //  MovieDBCheck
 //
-//  Created by Scott Bolin on 10/24/20.
+//  Created by Scott Bolin on 10/27/20.
 //
 //
 
@@ -16,7 +16,7 @@ extension Company {
         return NSFetchRequest<Company>(entityName: "Company")
     }
 
-    @NSManaged public var id: UUID
+    @NSManaged public var id: Int32
     @NSManaged public var name: String
     @NSManaged public var movie: Movie
 

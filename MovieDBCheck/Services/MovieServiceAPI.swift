@@ -127,7 +127,7 @@ class MovieServiceAPI {
         let primaryReleaseDataLTE = URLQueryItem(name: "primary_release_date.lte", value: releaseDateLTE)
         let release = URLQueryItem(name: "with_release_type", value: "\(releaseType)")
         let genreID = URLQueryItem(name: "genre", value: "\(genre)")
-        
+        print("in fetchResources, genre = \(genre)")
         
         let queryItems = [apiQuery, languageQuery, origLanguageQuery, voteAverage, voteCount, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, genreID]
         urlComponents.queryItems = queryItems
@@ -159,7 +159,7 @@ class MovieServiceAPI {
 extension URLSession {
     func dataTask(with url: URL, result: @escaping (Result<(URLResponse, Data), Error>) -> Void) -> URLSessionDataTask {
         return dataTask(with: url) { (data, response, error) in
-            DispatchQueue.main.async { //
+ //           DispatchQueue.main.async { //
                 if let error = error {
                     result(.failure(error))
                     return
@@ -170,7 +170,7 @@ extension URLSession {
                     return
                 }
                 result(.success((response, data)))
-            } //
+//            } //
         }
     }
 }

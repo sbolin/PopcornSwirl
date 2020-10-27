@@ -25,4 +25,5 @@ struct MovieData: Codable {
     let popularity: Double
     let posterPath: String
     let backdropPath: String
+    let genreIds: [Int]
 }

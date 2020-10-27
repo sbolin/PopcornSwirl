@@ -8,10 +8,10 @@
 import Foundation
 
 struct MovieDTOMapper { // data transfer object
-  static func map(_ dto: [MovieData]) -> [MovieListData] {  // json data -> model data
-    var movieData = [MovieListData]()
+  static func map(_ dto: [MovieData]) -> [MovieData] {  // json data -> model data
+    var movieData = [MovieData]()
     dto.forEach { (result) in
-      let movie =  MovieListData(
+      let movie =  MovieData(
         id: result.id,
         title: result.title,
         overview: result.overview,
@@ -22,7 +22,8 @@ struct MovieDTOMapper { // data transfer object
         video: result.video,
         popularity: result.popularity,
         posterPath: result.posterPath,
-        backdropPath: result.backdropPath
+        backdropPath: result.backdropPath,
+        genreIds: result.genreIds
       )
       movieData.append(movie)
     }
