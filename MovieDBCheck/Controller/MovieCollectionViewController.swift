@@ -11,12 +11,13 @@ import UIKit
 class MovieCollectionViewController: UIViewController {
     
     // MARK: - Properties
-    var movieCollections = [MovieCollection]()
+    var movieCollections = MovieController()
     var collectionView: UICollectionView! = nil
-    var dataSource: UICollectionViewDiffableDataSource<MovieCollection, MovieListData>! = nil
-    var currentSnapshot: NSDiffableDataSourceSnapshot<MovieCollection, MovieListData>! = nil
+    var dataSource: UICollectionViewDiffableDataSource<MovieController.MovieCollection, MovieController.Movie>! = nil
+    var currentSnapshot: NSDiffableDataSourceSnapshot<MovieController.MovieCollection, MovieController.Movie>! = nil
     
-    var movies = [MovieListData]()
+    var movies = [MovieController.Movie]()
+    var moviesOld = [MovieListData]() // keep old movies def until change to MovieController is complete
     var castData = [CastData]()
     var actor = [String]()
     var director = ""
@@ -38,22 +39,17 @@ class MovieCollectionViewController: UIViewController {
         .Family          : 10751
     ]
     
-    override func loadView() {
-        super.loadView()
-        getInitialMovieData()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Popcorn Swirl"
         configureHierarchy()
         configureDataSource()
-
         
-//        let cast = getCastData(movieID: 550)
-//        let movie = getMovieFromID(movieID: 550)
-//        let company = getCompanyData(movieID: 550)
-//        let image = getImage(imageSize: "w780", imageEndpoint: "/plzV6fap5bGqMaIpOrihmhtd7lW.jpg")
+        
+        //        let cast = getCastData(movieID: 550)
+        //        let movie = getMovieFromID(movieID: 550)
+        //        let company = getCompanyData(movieID: 550)
+        //        let image = getImage(imageSize: "w780", imageEndpoint: "/plzV6fap5bGqMaIpOrihmhtd7lW.jpg")
         
     }
 }
@@ -116,7 +112,7 @@ extension MovieCollectionViewController {
     func configureDataSource() {
         
         let cellRegistration = UICollectionView.CellRegistration
-        <MovieCell, MovieListData> { (cell, indexPath, movie) in
+        <MovieCell, MovieController.Movie> { (cell, indexPath, movie) in // change to MovieController.Movie for data
             // Populate the cell with our item description.
             print("configureDataSource, cellRegistration")
             self.formatter.dateFormat = "yyyy"
@@ -125,13 +121,14 @@ extension MovieCollectionViewController {
             cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
         }
         
-        dataSource = UICollectionViewDiffableDataSource<MovieCollection, MovieListData>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieListData) -> UICollectionViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<MovieController.MovieCollection, MovieController.Movie>(collectionView: collectionView) { // data source changed
+            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieController.Movie) -> UICollectionViewCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
         
-        let supplementaryRegistration = UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") { (supplementaryView, string, indexPath) in
+        let supplementaryRegistration = UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") {
+            (supplementaryView, string, indexPath) in
             if let snapshot = self.currentSnapshot {
                 let movieCollection = snapshot.sectionIdentifiers[indexPath.section]
                 supplementaryView.label.text = movieCollection.genreName
@@ -143,13 +140,12 @@ extension MovieCollectionViewController {
                 using: supplementaryRegistration, for: index)
         }
         
-        currentSnapshot = NSDiffableDataSourceSnapshot<MovieCollection, MovieListData>()
-        movieCollections.forEach {
+        currentSnapshot = NSDiffableDataSourceSnapshot<MovieController.MovieCollection, MovieController.Movie>()
+        movieCollections.collections.forEach {
             let collection = $0
             currentSnapshot.appendSections([collection])
-            currentSnapshot.appendItems(collection.movieData)
+            currentSnapshot.appendItems(collection.movies)
         }
         dataSource.apply(currentSnapshot, animatingDifferences: false)
     }
 }
-

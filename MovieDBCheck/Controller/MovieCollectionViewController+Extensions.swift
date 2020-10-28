@@ -10,42 +10,42 @@ import UIKit
 
 // MARK: - Fetch JSON Data
 extension MovieCollectionViewController {
-    func getInitialMovieData() {
-        let page = 1
-        
-        for section in MovieCollection.Sections.allCases  {
-            let genreID = genres[section]!
-            MovieDBCheck.MovieServiceAPI.shared.fetchMovies(from: genreID, page: page) {
-                (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
-                switch result {
-                    case .success(let response):
-//                        for movie in response.results {
-//                            let movieResponse = MovieListData(
-//                                id: movie.id,
-//                                title: movie.title,
-//                                overview: movie.overview,
-//                                genreID: movie.genreIds,
-//                                releaseDate: movie.releaseDate,
-//                                voteAverage: movie.voteAverage,
-//                                voteCount: movie.voteCount,
-//                                adult: movie.adult,
-//                                video: movie.video,
-//                                popularity: movie.popularity,
-//                                posterPath: movie.posterPath,
-//                                backdropPath: movie.backdropPath)
-//                            self.movies.append(movieResponse)
-//                        }
-                        self.movies = MovieDTOMapper.map(response)
-                        print("getInitialMovieData:, fetchMovie sucess")
-                        print("movies:")
-                        print(self.movies)
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                }
-            }
-            movieCollections.append(MovieCollection(genreID: genreID, movieData: movies))
-        }
-    }
+//    func getInitialMovieData() {
+//        let page = 1
+//
+//        for section in MovieCollection.Sections.allCases  {
+//            let genreID = genres[section]!
+//            MovieDBCheck.MovieServiceAPI.shared.fetchMovies(from: genreID, page: page) {
+//                (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
+//                switch result {
+//                    case .success(let response):
+////                        for movie in response.results {
+////                            let movieResponse = MovieListData(
+////                                id: movie.id,
+////                                title: movie.title,
+////                                overview: movie.overview,
+////                                genreID: movie.genreIds,
+////                                releaseDate: movie.releaseDate,
+////                                voteAverage: movie.voteAverage,
+////                                voteCount: movie.voteCount,
+////                                adult: movie.adult,
+////                                video: movie.video,
+////                                popularity: movie.popularity,
+////                                posterPath: movie.posterPath,
+////                                backdropPath: movie.backdropPath)
+////                            self.movies.append(movieResponse)
+////                        }
+//                        self.movies = MovieDTOMapper.map(response)
+//                        print("getInitialMovieData:, fetchMovie sucess")
+//                        print("movies:")
+//                        print(self.movies)
+//                    case .failure(let error):
+//                        print(error.localizedDescription)
+//                }
+//            }
+//            movieCollections.append(MovieCollection(genreID: genreID, movieData: movies))
+//        }
+//    }
     
     func getCastData(movieID: Int) -> CastData? {
         var castData: CastData?
@@ -78,12 +78,12 @@ extension MovieCollectionViewController {
         MovieDBCheck.MovieServiceAPI.shared.fetchMovie(movieId: movieID) { (result: Result<MovieData, MovieServiceAPI.APIServiceError>) in
             switch result {
                 case .success(let movie):
-                    self.movies = MovieDTOMapper.map(movie)
+                    self.moviesOld = MovieDTOMapper.map(movie)
                 case .failure(let error):
                     print(error.localizedDescription)
             }
         }
-        return movies
+        return moviesOld
     }
     
     
