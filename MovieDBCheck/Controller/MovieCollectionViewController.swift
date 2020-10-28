@@ -11,11 +11,11 @@ import UIKit
 class MovieCollectionViewController: UIViewController {
     
     // MARK: - Properties
+    var movieCollections = [MovieCollection]()
     var collectionView: UICollectionView! = nil
     var dataSource: UICollectionViewDiffableDataSource<MovieCollection, MovieListData>! = nil
     var currentSnapshot: NSDiffableDataSourceSnapshot<MovieCollection, MovieListData>! = nil
     
-    var movieCollections = [MovieCollection]()
     var movies = [MovieListData]()
     var castData = [CastData]()
     var actor = [String]()
@@ -38,17 +38,22 @@ class MovieCollectionViewController: UIViewController {
         .Family          : 10751
     ]
     
+    override func loadView() {
+        super.loadView()
+        getInitialMovieData()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Popcorn Swirl"
         configureHierarchy()
         configureDataSource()
+
         
-        getInitialMovieData()
-        let cast = getCastData(movieID: 550)
-        let movie = getMovieFromID(movieID: 550)
-        let company = getCompanyData(movieID: 550)
-        let image = getImage(imageSize: "w780", imageEndpoint: "/plzV6fap5bGqMaIpOrihmhtd7lW.jpg")
+//        let cast = getCastData(movieID: 550)
+//        let movie = getMovieFromID(movieID: 550)
+//        let company = getCompanyData(movieID: 550)
+//        let image = getImage(imageSize: "w780", imageEndpoint: "/plzV6fap5bGqMaIpOrihmhtd7lW.jpg")
         
     }
 }
@@ -60,7 +65,7 @@ extension MovieCollectionViewController {
         let cellHeight:CGFloat = 250
         
         let config = UICollectionViewCompositionalLayoutConfiguration()
-        config.interSectionSpacing = 12
+        config.interSectionSpacing = 8
         
         let sectionProvider = {
             (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
@@ -77,7 +82,7 @@ extension MovieCollectionViewController {
             
             let section = NSCollectionLayoutSection(group: group)
             section.orthogonalScrollingBehavior = .groupPagingCentered // originally .continuous
-            section.interGroupSpacing = 10
+            section.interGroupSpacing = 8
             //           section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
             
             let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
@@ -113,7 +118,8 @@ extension MovieCollectionViewController {
         let cellRegistration = UICollectionView.CellRegistration
         <MovieCell, MovieListData> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
-            self.formatter.dateFormat = "yyyy-mm-dd"
+            print("configureDataSource, cellRegistration")
+            self.formatter.dateFormat = "yyyy"
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
             cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
@@ -125,7 +131,7 @@ extension MovieCollectionViewController {
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
         
-        let supplementaryRegistration = UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Footer") { (supplementaryView, string, indexPath) in
+        let supplementaryRegistration = UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") { (supplementaryView, string, indexPath) in
             if let snapshot = self.currentSnapshot {
                 let movieCollection = snapshot.sectionIdentifiers[indexPath.section]
                 supplementaryView.label.text = movieCollection.genreName

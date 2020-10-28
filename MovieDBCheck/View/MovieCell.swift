@@ -40,7 +40,8 @@ extension MovieCell {
         titleLabel.adjustsFontForContentSizeCategory = true
         
         descriptionLabel.font = UIFont.preferredFont(forTextStyle: .caption2)
-        descriptionLabel.adjustsFontForContentSizeCategory = true
+        descriptionLabel.adjustsFontForContentSizeCategory = false // true
+        descriptionLabel.allowsDefaultTighteningForTruncation = false // new
         descriptionLabel.textColor = .placeholderText
         
         yearLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
@@ -51,7 +52,6 @@ extension MovieCell {
         imageView.layer.borderWidth = 1
         imageView.layer.cornerRadius = 4
         imageView.backgroundColor = UIColor.systemIndigo.withAlphaComponent(0.5)
-        
         
         let spacing = CGFloat(10)
         

@@ -34,4 +34,8 @@ struct MovieListData: Hashable, Identifiable { // Domain model used in App
     let watched: Bool = false
     let favorite: Bool = false
     let note: String = ""
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 }

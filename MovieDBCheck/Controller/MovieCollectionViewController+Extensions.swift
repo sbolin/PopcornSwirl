@@ -14,12 +14,11 @@ extension MovieCollectionViewController {
         let page = 1
         
         for section in MovieCollection.Sections.allCases  {
-            //            let genreName = section.rawValue
             let genreID = genres[section]!
-            MovieDBCheck.MovieServiceAPI.shared.fetchMovies(from: genreID, page: page) { (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
+            MovieDBCheck.MovieServiceAPI.shared.fetchMovies(from: genreID, page: page) {
+                (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
                 switch result {
                     case .success(let response):
-//                        print("fetchMovies success")
 //                        for movie in response.results {
 //                            let movieResponse = MovieListData(
 //                                id: movie.id,
@@ -37,6 +36,9 @@ extension MovieCollectionViewController {
 //                            self.movies.append(movieResponse)
 //                        }
                         self.movies = MovieDTOMapper.map(response)
+                        print("getInitialMovieData:, fetchMovie sucess")
+                        print("movies:")
+                        print(self.movies)
                     case .failure(let error):
                         print(error.localizedDescription)
                 }
@@ -50,15 +52,12 @@ extension MovieCollectionViewController {
         MovieDBCheck.MovieServiceAPI.shared.fetchCast(movieID: movieID) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
             switch result {
                 case .success(let response):
-//                    print("Cast and Crew for movie: \(response.id)")
-//                    print("Cast:")
 //                    for cast in response.cast {
 //                        print("Character: \(cast.character)")
 //                        print("id: \(cast.id)")
 //                        print("Actor: \(cast.name)")
 //                        print("\n")
 //                    }
-//                    print("Crew:")
 //                    for crew in response.crew {
 //                        print("Crew for movie 550")
 //                        print("Position: \(crew.job)")
@@ -79,17 +78,6 @@ extension MovieCollectionViewController {
         MovieDBCheck.MovieServiceAPI.shared.fetchMovie(movieId: movieID) { (result: Result<MovieData, MovieServiceAPI.APIServiceError>) in
             switch result {
                 case .success(let movie):
-//                    print("Title: \(movie.title)")
-//                    print("id: \(movie.id)")
-//                    print("Overview: \(movie.overview)")
-//                    print("Release date: \(movie.releaseDate)")
-//                    print("Vote Average: \(movie.voteAverage)")
-//                    print("Vote Count: \(movie.voteCount)")
-//                    print("Video: \(movie.video)")
-//                    print("Popularity: \(movie.popularity)")
-//                    print("Poster Path: \(movie.posterPath)")
-//                    print("Backdrop Path: \(movie.backdropPath)")
-//                    print("\n")
                     self.movies = MovieDTOMapper.map(movie)
                 case .failure(let error):
                     print(error.localizedDescription)
@@ -104,13 +92,12 @@ extension MovieCollectionViewController {
         MovieDBCheck.MovieServiceAPI.shared.fetchCompany(movieID: 550) { (result: Result<CompanyResponse, MovieServiceAPI.APIServiceError>) in
             switch result {
                 case .success(let response):
-                    print("Companies for movie: \(response.id)")
-                    for company in response.productionCompanies {
-                        print("Company: \(company.name)")
-                        print("Company ID: \(company.id)")
-                        print("Country: \(company.originCountry)")
-                        print("\n")
-                    }
+//                    for company in response.productionCompanies {
+//                        print("Company: \(company.name)")
+//                        print("Company ID: \(company.id)")
+//                        print("Country: \(company.originCountry)")
+//                        print("\n")
+//                    }
                     companyData = CompanyDTOMapper.map(response)
                 case .failure(let error):
                     print(error.localizedDescription)
@@ -125,7 +112,6 @@ extension MovieCollectionViewController {
             if success {
                 print("success getting image")
                 imageObject = image
-                self.posterImageView.image = image
             } else {
                 print("could not get image, error thrown \(error?.localizedDescription ?? "" )")
             }

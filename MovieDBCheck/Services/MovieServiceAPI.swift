@@ -135,6 +135,7 @@ class MovieServiceAPI {
             completion(.failure(.invalidEndpoint))
             return
         }
+        print("in fetchResources, url for dataTask: \(url)")
         urlSession.dataTask(with: url) { (result) in
             switch result {
                 case .success(let (response, data)):

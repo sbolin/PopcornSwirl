@@ -28,7 +28,7 @@ struct MovieCollection: Hashable {
         53:    .Thriller,
         99:    .Documentary,
         9648:  .Mystery,
-        1075:  .Family
+        10751:  .Family
     ]
     
     func hash(into hasher: inout Hasher) {
