@@ -1,64 +1,20 @@
 //
-//  ViewController.swift
+//  MovieCollectionViewController+Extensions.swift
 //  MovieDBCheck
 //
-//  Created by Scott Bolin on 10/21/20.
+//  Created by Scott Bolin on 10/28/20.
 //
 
 import CoreData
 import UIKit
 
-class ViewController: UIViewController {
-    
-    @IBOutlet weak var posterImageView: UIImageView!
-    @IBOutlet weak var backdropImageView: UIImageView!
-    
-    // MARK: - Properties
-    var collectionView: UICollectionView! = nil
-    var dataSource: UICollectionViewDiffableDataSource<MovieCollection, MovieListData>! = nil
-    var currentSnapshot: NSDiffableDataSourceSnapshot<MovieCollection, MovieListData>! = nil
-    var movieCollections = [MovieCollection]()
-    var movies = [MovieListData]()
-    var castData = [CastData]()
-    var actor = [String]()
-    var director = ""
-    
-    
-    static let sectionHeaderElementKind = "section-header-element-kind"
-    static let sectionFooterElementKind = "section-footer-element-kind"
-    
-    // get genre id (int) from Section
-    let genres: [MovieCollection.Sections : Int] = [
-        .Adventure       : 12,
-        .Animation       : 16,
-        .Drama           : 18,
-        .Action          : 28,
-        .Comedy          : 35,
-        .Thriller        : 53,
-        .Documentary     : 99,
-        .Mystery         : 9648,
-        .Family          : 10751
-    ]
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        getInitialMovieData()
-        let cast = getCastData(movieID: 550)
-        let movie = getMovieFromID(movieID: 550)
-        let company = getCompanyData(movieID: 550)
-        getImages(imageSize: "w780", imageEndpoint: "/plzV6fap5bGqMaIpOrihmhtd7lW.jpg")
-        
-        // call movieserviceapi to get movies from given genre response
-        posterImageView.layer.cornerRadius = 8
-        backdropImageView.layer.cornerRadius = 8
-        
-    }
-    
+// MARK: - Fetch JSON Data
+extension MovieCollectionViewController {
     func getInitialMovieData() {
         let page = 1
-
+        
         for section in MovieCollection.Sections.allCases  {
-//            let genreName = section.rawValue
+            //            let genreName = section.rawValue
             let genreID = genres[section]!
             MovieDBCheck.MovieServiceAPI.shared.fetchMovies(from: genreID, page: page) { (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
                 switch result {
@@ -117,7 +73,7 @@ class ViewController: UIViewController {
         }
         return castData
     }
-        
+    
     func getMovieFromID(movieID: Int) -> [MovieListData] {
         // call movieserviceapi to get single movie response
         MovieDBCheck.MovieServiceAPI.shared.fetchMovie(movieId: movieID) { (result: Result<MovieData, MovieServiceAPI.APIServiceError>) in
@@ -142,7 +98,7 @@ class ViewController: UIViewController {
         return movies
     }
     
-        
+    
     func getCompanyData(movieID: Int) -> CompanyData? {
         var companyData: CompanyData?
         MovieDBCheck.MovieServiceAPI.shared.fetchCompany(movieID: 550) { (result: Result<CompanyResponse, MovieServiceAPI.APIServiceError>) in
@@ -162,46 +118,50 @@ class ViewController: UIViewController {
         }
         return companyData
     }
-        // https://image.tmdb.org/t/p/w780/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg
-        
-    func getImages(imageSize: String, imageEndpoint: String) {
+    // https://image.tmdb.org/t/p/w780/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg
+    func getImage(imageSize: String, imageEndpoint: String) -> UIImage? {
+        var imageObject: UIImage?
         MovieServiceAPI.shared.fetchImage(imageSize: imageSize, imageEndpoint: imageEndpoint) { (success, error, image)  in
             if success {
                 print("success getting image")
+                imageObject = image
                 self.posterImageView.image = image
             } else {
                 print("could not get image, error thrown \(error?.localizedDescription ?? "" )")
             }
         }
+        return imageObject
     }
+
 /*
-        // call movieserviceapi to get movies from endpoint
-        let endpoints = MovieServiceAPI.Endpoint.allCases
-        endpoints.forEach { (endPoint) in
-            MovieServiceAPI.shared.fetchMovies(from: endPoint) { (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
-                switch result {
-                    case .success(let movieResponse):
-                        print("\(endPoint):")
-                        for (num, movie) in movieResponse.results.enumerated() {
-                            print("MovieData \(num):")
-                            print("Title: \(movie.title)")
-                            print("id: \(movie.id)")
-                            print("Overview: \(movie.overview)")
-                            print("Release date: \(movie.releaseDate)")
-                            print("Vote Average: \(movie.voteAverage)")
-                            print("Vote Count: \(movie.voteCount)")
-                            print("\n")
-                        }
-                    case .failure(let error):
-                        print(error.localizedDescription)
+    
+ //    call movieserviceapi to get movies from endpoint
+    let endpoints = MovieServiceAPI.Endpoint.allCases
+    endpoints.forEach { (endPoint) in
+        MovieServiceAPI.shared.fetchMovies(from: endPoint) { (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
+        switch result {
+            case .success(let movieResponse):
+                print("\(endPoint):")
+                for (num, movie) in movieResponse.results.enumerated() {
+                    print("MovieData \(num):")
+                    print("Title: \(movie.title)")
+                    print("id: \(movie.id)")
+                    print("Overview: \(movie.overview)")
+                    print("Release date: \(movie.releaseDate)")
+                    print("Vote Average: \(movie.voteAverage)")
+                    print("Vote Count: \(movie.voteCount)")
+                    print("\n")
                 }
+            case .failure(let error):
+                print(error.localizedDescription)
             }
         }
+    }
 */
 }
 
-
-extension ViewController: NSFetchedResultsControllerDelegate {
+// MARK: - NSFetchedResultsControllerDelegate Delegate methods
+extension MovieCollectionViewController: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
         guard let dataSource = collectionView?.dataSource as? UICollectionViewDiffableDataSource<Int, NSManagedObjectID> else {
             assertionFailure("The data source has not implemented snapshot support while it should")
