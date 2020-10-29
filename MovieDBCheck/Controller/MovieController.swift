@@ -12,6 +12,7 @@ class MovieController {
     fileprivate var _collections = [MovieCollection]()
     
     var collections: [MovieCollection] {
+        print("MovieController: setting collections")
         return _collections
     }
     
@@ -106,12 +107,15 @@ extension MovieController {
                 switch result {
                     case .success(let response):
                         movies = MovieDTOMapper.map(response)
-                        print("getInitialMovieData:, fetchMovie sucess")
+                        print("populateMovieData(from: \(genreID), page: \(page)), success")
+                        print("there were \(movies.count) movies returned")
                     case .failure(let error):
                         print(error.localizedDescription)
                 }
             }
             _collections.append(MovieCollection(genreID: genreID, movies: movies))
         }
+        print("returning from populateMovieData()")
+        print("collection count: \(_collections.count)")
     }
 }

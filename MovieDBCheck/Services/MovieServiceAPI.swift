@@ -145,6 +145,7 @@ class MovieServiceAPI {
                     }
                     do {
                         let values = try self.jsonDecoder.decode(T.self, from: data)
+                        print("returning from dataTask closure for url: \(url)")
                         completion(.success(values))
                     } catch {
                         completion(.failure(.decodeError))
@@ -160,7 +161,7 @@ class MovieServiceAPI {
 extension URLSession {
     func dataTask(with url: URL, result: @escaping (Result<(URLResponse, Data), Error>) -> Void) -> URLSessionDataTask {
         return dataTask(with: url) { (data, response, error) in
- //           DispatchQueue.main.async { //
+            DispatchQueue.main.async { //
                 if let error = error {
                     result(.failure(error))
                     return
@@ -171,7 +172,7 @@ extension URLSession {
                     return
                 }
                 result(.success((response, data)))
-//            } //
+            } //
         }
     }
 }
