@@ -12,7 +12,7 @@ class MovieController {
     fileprivate var _collections = [MovieCollection]()
     
     var collections: [MovieCollection] {
-        print("MovieController: setting collections")
+        print("MovieController: setting var collections with _collections")
         return _collections
     }
     
@@ -85,6 +85,7 @@ class MovieController {
 
 extension MovieController {
     func populateMovieData() {
+        print("in populateMovieData")
         let page = 1
         
         let genres: [MovieCollection.Sections : Int] = [

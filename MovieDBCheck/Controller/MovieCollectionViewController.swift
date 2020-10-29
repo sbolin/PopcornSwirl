@@ -16,7 +16,7 @@ class MovieCollectionViewController: UIViewController {
     var dataSource: UICollectionViewDiffableDataSource<MovieController.MovieCollection, MovieController.Movie>! = nil
     var currentSnapshot: NSDiffableDataSourceSnapshot<MovieController.MovieCollection, MovieController.Movie>! = nil
     
-    var movies = [MovieController.Movie]()
+ //   var movies = [MovieController.Movie]()
     var moviesOld = [MovieListData]() // keep old movies def until change to MovieController is complete
     var castData = [CastData]()
     var actor = [String]()
@@ -79,7 +79,6 @@ extension MovieCollectionViewController {
             let section = NSCollectionLayoutSection(group: group)
             section.orthogonalScrollingBehavior = .groupPagingCentered // originally .continuous
             section.interGroupSpacing = 8
-            //           section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
             
             let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
             let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
@@ -110,7 +109,7 @@ extension MovieCollectionViewController {
         ])
     }
     func configureDataSource() {
-        
+                
         let cellRegistration = UICollectionView.CellRegistration
         <MovieCell, MovieController.Movie> { (cell, indexPath, movie) in // change to MovieController.Movie for data
             // Populate the cell with our item description.

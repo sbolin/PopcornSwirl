@@ -13,8 +13,15 @@ struct MovieDTOMapper { // data transfer object
 //        var movieListData = [MovieListData]() // Original call
         var movieListData = [MovieController.Movie]() // when change to MovieController
         let results = dto.results
+        print("In MovieDTOMapper.map(_ dto: MoviesResponse) -> [MovieController.Movie)")
+        print("number of results \(results.count)")
         for result in results {
   //          let movieData = MovieListData( // Original call
+            print("result:")
+            print("title: \(result.title)")
+            print("id: \(result.id)")
+            print("genreID: \(result.genreIds)")
+            print("\n")
             let movieData = MovieController.Movie( // when change to MovieController
                 id: result.id,
                 title: result.title,
