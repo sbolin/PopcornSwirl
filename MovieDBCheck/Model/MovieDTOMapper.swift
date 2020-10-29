@@ -12,16 +12,16 @@ struct MovieDTOMapper { // data transfer object
     static func map(_ dto: MoviesResponse) -> [MovieController.Movie] {  // call when change to MovieController
 //        var movieListData = [MovieListData]() // Original call
         var movieListData = [MovieController.Movie]() // when change to MovieController
-        let results = dto.results
-        print("In MovieDTOMapper.map(_ dto: MoviesResponse) -> [MovieController.Movie)")
-        print("number of results \(results.count)")
-        for result in results {
+//        print("In MovieDTOMapper.map(_ dto: MoviesResponse) -> [MovieController.Movie)")
+//        print("number of results \(dto.results.count)")
+//        print("dto.results = \(dto.results)")
+//        var counter = 0
+        for result in dto.results {
   //          let movieData = MovieListData( // Original call
-            print("result:")
-            print("title: \(result.title)")
-            print("id: \(result.id)")
-            print("genreID: \(result.genreIds)")
-            print("\n")
+//            print("result:")
+//            print("title: \(result.title)")
+//            print("id: \(result.id)")
+//            print("genreID: \(result.genreIds)")
             let movieData = MovieController.Movie( // when change to MovieController
                 id: result.id,
                 title: result.title,
@@ -36,7 +36,12 @@ struct MovieDTOMapper { // data transfer object
                 posterPath: result.posterPath,
                 backdropPath: result.backdropPath)
             movieListData.append(movieData)
+//            print("movieListData.count = \(movieListData.count)")
+//            print("movieListData \(movieListData[counter].title)\n")
+//            counter += 1
+
         }
+        print("in map, movieListData.count = \(movieListData.count)")
         return movieListData
     }
     

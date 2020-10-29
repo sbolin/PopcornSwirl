@@ -9,46 +9,6 @@ import Foundation
 
 class MovieController {
     
-    fileprivate var _collections = [MovieCollection]()
-    
-    var collections: [MovieCollection] {
-        print("MovieController: setting var collections with _collections")
-        return _collections
-    }
-    
-    init() {
-        populateMovieData()
-    }
-    
-    struct MovieCollection: Hashable {
-        let identifier = UUID()
-        let genreID: Int
-        let movies: [Movie]
-        var genreName: String {
-            return genres[genreID]!.rawValue
-        }
-        
-        enum Sections: String, CaseIterable {
-            case Action, Adventure, Comedy, Drama, Thriller, Documentary, Mystery, Family, Animation
-        }
-        
-        let genres: [Int : Sections] = [
-            12:    .Adventure,
-            16:    .Animation,
-            18:    .Drama,
-            28:    .Action,
-            35:    .Comedy,
-            53:    .Thriller,
-            99:    .Documentary,
-            9648:  .Mystery,
-            10751:  .Family
-        ]
-        
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(identifier)
-        }
-    }
-    
     struct Movie: Hashable, Identifiable { // Domain model used in App
         
         let id: Int
@@ -81,6 +41,44 @@ class MovieController {
             hasher.combine(id)
         }
     }
+    
+    struct MovieCollection: Hashable {
+        let identifier = UUID()
+        let genreID: Int
+        let movies: [Movie]
+        var genreName: String {
+            return genres[genreID]!.rawValue
+        }
+        
+        enum Sections: String, CaseIterable {
+            case Adventure, Action, Animation, Comedy, Documentary, Drama, Family, Mystery, Thriller
+        }
+        
+        let genres: [Int : Sections] = [
+            12:    .Adventure,
+            16:    .Animation,
+            18:    .Drama,
+            28:    .Action,
+            35:    .Comedy,
+            53:    .Thriller,
+            99:    .Documentary,
+            9648:  .Mystery,
+            10751: .Family
+        ]
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(identifier)
+        }
+    }
+        
+    var collections: [MovieCollection] {
+        return _collections
+    }
+    
+    init() {
+        populateMovieData()
+    }
+    fileprivate var _collections = [MovieCollection]()
 }
 
 extension MovieController {
@@ -89,15 +87,15 @@ extension MovieController {
         let page = 1
         
         let genres: [MovieCollection.Sections : Int] = [
-            .Adventure       : 12,
-            .Animation       : 16,
-            .Drama           : 18,
-            .Action          : 28,
-            .Comedy          : 35,
-            .Thriller        : 53,
-            .Documentary     : 99,
-            .Mystery         : 9648,
-            .Family          : 10751
+            .Adventure   : 12,
+            .Animation   : 16,
+            .Drama       : 18,
+            .Action      : 28,
+            .Comedy      : 35,
+            .Thriller    : 53,
+            .Documentary : 99,
+            .Mystery     : 9648,
+            .Family      : 10751
         ]
         
         for section in MovieCollection.Sections.allCases  {
@@ -108,15 +106,16 @@ extension MovieController {
                 switch result {
                     case .success(let response):
                         movies = MovieDTOMapper.map(response)
-                        print("populateMovieData(from: \(genreID), page: \(page)), success")
-                        print("there were \(movies.count) movies returned")
+                        print("1. movie count: \(movies.count)")
                     case .failure(let error):
                         print(error.localizedDescription)
                 }
+                print("2. movie count: \(movies.count)")
             }
             _collections.append(MovieCollection(genreID: genreID, movies: movies))
+            print("3. movie count: \(movies.count)")
+            print("3. Section \(section)/\(genreID), movie count = \(movies.count)")
+            print("3. _collections count: \(_collections.count)")
         }
-        print("returning from populateMovieData()")
-        print("collection count: \(_collections.count)")
     }
 }

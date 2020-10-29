@@ -21,10 +21,10 @@ class MovieServiceAPI {
     private let origLanguage = "en"
     private let sortBy = "vote_average.desc" // "release_date.desc"
     private let releaseDateGTE = "2019-01-01"
-    private let releaseDateLTE = "2021-01-01"
+    private let releaseDateLTE = "2020-12-31"
     private let releaseType = 3
     private let voteCountGTE = 1000
-    private let voteAverageGTE = 7
+    private let voteAverageGTE = 7.0
     
     //Cast parameters
     //apiKey
@@ -126,16 +126,14 @@ class MovieServiceAPI {
         let primaryReleaseDataGTE = URLQueryItem(name: "primary_release_date.gte", value: releaseDateGTE)
         let primaryReleaseDataLTE = URLQueryItem(name: "primary_release_date.lte", value: releaseDateLTE)
         let release = URLQueryItem(name: "with_release_type", value: "\(releaseType)")
-        let genreID = URLQueryItem(name: "genre", value: "\(genre)")
-        print("in fetchResources, genre = \(genre)")
+        let genreID = URLQueryItem(name: "with_genres", value: "\(genre)")
         
-        let queryItems = [apiQuery, languageQuery, origLanguageQuery, voteAverage, voteCount, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, genreID]
+        let queryItems = [apiQuery, languageQuery, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, voteCount, voteAverage, genreID, origLanguageQuery]
         urlComponents.queryItems = queryItems
         guard let url = urlComponents.url else {
             completion(.failure(.invalidEndpoint))
             return
         }
-        print("in fetchResources, url for dataTask: \(url)")
         urlSession.dataTask(with: url) { (result) in
             switch result {
                 case .success(let (response, data)):
@@ -145,7 +143,6 @@ class MovieServiceAPI {
                     }
                     do {
                         let values = try self.jsonDecoder.decode(T.self, from: data)
-                        print("returning from dataTask closure for url: \(url)")
                         completion(.success(values))
                     } catch {
                         completion(.failure(.decodeError))
@@ -176,6 +173,3 @@ extension URLSession {
         }
     }
 }
-
-
-

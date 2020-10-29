@@ -119,31 +119,31 @@ extension MovieCollectionViewController {
         return imageObject
     }
 
-/*
-    
- //    call movieserviceapi to get movies from endpoint
-    let endpoints = MovieServiceAPI.Endpoint.allCases
-    endpoints.forEach { (endPoint) in
-        MovieServiceAPI.shared.fetchMovies(from: endPoint) { (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
-        switch result {
-            case .success(let movieResponse):
-                print("\(endPoint):")
-                for (num, movie) in movieResponse.results.enumerated() {
-                    print("MovieData \(num):")
-                    print("Title: \(movie.title)")
-                    print("id: \(movie.id)")
-                    print("Overview: \(movie.overview)")
-                    print("Release date: \(movie.releaseDate)")
-                    print("Vote Average: \(movie.voteAverage)")
-                    print("Vote Count: \(movie.voteCount)")
-                    print("\n")
-                }
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-    }
-*/
+
+//    
+// //    call movieserviceapi to get movies from endpoint
+//    let endpoints = MovieServiceAPI.Endpoint.allCases
+//    endpoints.forEach { (endPoint) in
+//        MovieServiceAPI.shared.fetchMovies(from: endPoint) { (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
+//        switch result {
+//            case .success(let movieResponse):
+//                print("\(endPoint):")
+//                for (num, movie) in movieResponse.results.enumerated() {
+//                    print("MovieData \(num):")
+//                    print("Title: \(movie.title)")
+//                    print("id: \(movie.id)")
+//                    print("Overview: \(movie.overview)")
+//                    print("Release date: \(movie.releaseDate)")
+//                    print("Vote Average: \(movie.voteAverage)")
+//                    print("Vote Count: \(movie.voteCount)")
+//                    print("\n")
+//                }
+//            case .failure(let error):
+//                print(error.localizedDescription)
+//            }
+//        }
+//    }
+
 }
 
 // MARK: - NSFetchedResultsControllerDelegate Delegate methods

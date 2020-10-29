@@ -109,6 +109,8 @@ extension MovieCollectionViewController {
         ])
     }
     func configureDataSource() {
+        
+        print("in configureDataSource()")
                 
         let cellRegistration = UICollectionView.CellRegistration
         <MovieCell, MovieController.Movie> { (cell, indexPath, movie) in // change to MovieController.Movie for data
@@ -140,8 +142,10 @@ extension MovieCollectionViewController {
         }
         
         currentSnapshot = NSDiffableDataSourceSnapshot<MovieController.MovieCollection, MovieController.Movie>()
+        print("in currentSnapshot: \(movieCollections.collections.count)")
         movieCollections.collections.forEach {
             let collection = $0
+            print("in forEach: \(collection.movies.count)")
             currentSnapshot.appendSections([collection])
             currentSnapshot.appendItems(collection.movies)
         }
