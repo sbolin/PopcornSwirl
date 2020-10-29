@@ -110,9 +110,13 @@ extension MovieController {
                     case .failure(let error):
                         print(error.localizedDescription)
                 }
+                // if _collections.append is here, it is created properly but zeroed upon leaving closure
+                self._collections.append(MovieCollection(genreID: genreID, movies: movies))
                 print("2. movie count: \(movies.count)")
+                print("2. _collections.count: \(self._collections.count)")
             }
-            _collections.append(MovieCollection(genreID: genreID, movies: movies))
+            // if _collections.append is here, only genre info is ok (and collectionview shows sections), but no movies data
+//            _collections.append(MovieCollection(genreID: genreID, movies: movies))
             print("3. movie count: \(movies.count)")
             print("3. Section \(section)/\(genreID), movie count = \(movies.count)")
             print("3. _collections count: \(_collections.count)")
