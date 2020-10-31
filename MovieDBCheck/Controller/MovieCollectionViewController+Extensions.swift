@@ -47,77 +47,77 @@ extension MovieCollectionViewController {
 //        }
 //    }
     
-    func getCastData(movieID: Int) -> CastData? {
-        var castData: CastData?
-        MovieDBCheck.MovieServiceAPI.shared.fetchCast(movieID: movieID) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
-            switch result {
-                case .success(let response):
-//                    for cast in response.cast {
-//                        print("Character: \(cast.character)")
-//                        print("id: \(cast.id)")
-//                        print("Actor: \(cast.name)")
-//                        print("\n")
-//                    }
-//                    for crew in response.crew {
-//                        print("Crew for movie 550")
-//                        print("Position: \(crew.job)")
-//                        print("id: \(crew.id)")
-//                        print("Name: \(crew.name)")
-//                        print("\n")
-//                    }
-                    castData = CastDTOMapper.map(dto: response)
-                case .failure(let error):
-                    print(error.localizedDescription)
-            }
-        }
-        return castData
-    }
-    
-    func getMovieFromID(movieID: Int) -> [MovieListData] {
-        // call movieserviceapi to get single movie response
-        MovieDBCheck.MovieServiceAPI.shared.fetchMovie(movieId: movieID) { (result: Result<MovieData, MovieServiceAPI.APIServiceError>) in
-            switch result {
-                case .success(let movie):
-                    self.moviesOld = MovieDTOMapper.map(movie)
-                case .failure(let error):
-                    print(error.localizedDescription)
-            }
-        }
-        return moviesOld
-    }
-    
-    
-    func getCompanyData(movieID: Int) -> CompanyData? {
-        var companyData: CompanyData?
-        MovieDBCheck.MovieServiceAPI.shared.fetchCompany(movieID: 550) { (result: Result<CompanyResponse, MovieServiceAPI.APIServiceError>) in
-            switch result {
-                case .success(let response):
-//                    for company in response.productionCompanies {
-//                        print("Company: \(company.name)")
-//                        print("Company ID: \(company.id)")
-//                        print("Country: \(company.originCountry)")
-//                        print("\n")
-//                    }
-                    companyData = CompanyDTOMapper.map(response)
-                case .failure(let error):
-                    print(error.localizedDescription)
-            }
-        }
-        return companyData
-    }
-    // https://image.tmdb.org/t/p/w780/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg
-    func getImage(imageSize: String, imageEndpoint: String) -> UIImage? {
-        var imageObject: UIImage?
-        MovieServiceAPI.shared.fetchImage(imageSize: imageSize, imageEndpoint: imageEndpoint) { (success, error, image)  in
-            if success {
-                print("success getting image")
-                imageObject = image
-            } else {
-                print("could not get image, error thrown \(error?.localizedDescription ?? "" )")
-            }
-        }
-        return imageObject
-    }
+//    func getCastData(movieID: Int) -> CastData? {
+//        var castData: CastData?
+//        MovieDBCheck.MovieServiceAPI.shared.fetchCast(movieID: movieID) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
+//            switch result {
+//                case .success(let response):
+////                    for cast in response.cast {
+////                        print("Character: \(cast.character)")
+////                        print("id: \(cast.id)")
+////                        print("Actor: \(cast.name)")
+////                        print("\n")
+////                    }
+////                    for crew in response.crew {
+////                        print("Crew for movie 550")
+////                        print("Position: \(crew.job)")
+////                        print("id: \(crew.id)")
+////                        print("Name: \(crew.name)")
+////                        print("\n")
+////                    }
+//                    castData = CastDTOMapper.map(dto: response)
+//                case .failure(let error):
+//                    print(error.localizedDescription)
+//            }
+//        }
+//        return castData
+//    }
+//
+//    func getMovieFromID(movieID: Int) -> [MovieListData] {
+//        // call movieserviceapi to get single movie response
+//        MovieDBCheck.MovieServiceAPI.shared.fetchMovie(movieId: movieID) { (result: Result<MovieData, MovieServiceAPI.APIServiceError>) in
+//            switch result {
+//                case .success(let movie):
+//                    self.moviesOld = MovieDTOMapper.map(movie)
+//                case .failure(let error):
+//                    print(error.localizedDescription)
+//            }
+//        }
+//        return moviesOld
+//    }
+//
+//
+//    func getCompanyData(movieID: Int) -> CompanyData? {
+//        var companyData: CompanyData?
+//        MovieDBCheck.MovieServiceAPI.shared.fetchCompany(movieID: 550) { (result: Result<CompanyResponse, MovieServiceAPI.APIServiceError>) in
+//            switch result {
+//                case .success(let response):
+////                    for company in response.productionCompanies {
+////                        print("Company: \(company.name)")
+////                        print("Company ID: \(company.id)")
+////                        print("Country: \(company.originCountry)")
+////                        print("\n")
+////                    }
+//                    companyData = CompanyDTOMapper.map(response)
+//                case .failure(let error):
+//                    print(error.localizedDescription)
+//            }
+//        }
+//        return companyData
+//    }
+//    // https://image.tmdb.org/t/p/w780/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg
+//    func getImage(imageSize: String, imageEndpoint: String) -> UIImage? {
+//        var imageObject: UIImage?
+//        MovieServiceAPI.shared.fetchImage(imageSize: imageSize, imageEndpoint: imageEndpoint) { (success, error, image)  in
+//            if success {
+//                print("success getting image")
+//                imageObject = image
+//            } else {
+//                print("could not get image, error thrown \(error?.localizedDescription ?? "" )")
+//            }
+//        }
+//        return imageObject
+//    }
 
 
 //    

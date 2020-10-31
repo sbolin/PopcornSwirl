@@ -112,11 +112,12 @@ extension MovieCollectionViewController {
         
         print("in configureDataSource()")
                 
-        let cellRegistration = UICollectionView.CellRegistration
-        <MovieCell, MovieController.Movie> { (cell, indexPath, movie) in // change to MovieController.Movie for data
+        let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieController.Movie> {
+            (cell, indexPath, movie) in
             // Populate the cell with our item description.
             print("configureDataSource, cellRegistration")
             self.formatter.dateFormat = "yyyy"
+            cell.imageView.image = movie.posterImage
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
             cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)

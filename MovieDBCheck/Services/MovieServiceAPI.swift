@@ -57,10 +57,11 @@ class MovieServiceAPI {
         case noData
         case decodeError
     }
-//    public func fetchMovies(from endpoint: Endpoint, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
-//        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(endpoint.rawValue)
-//        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
-//    }
+    
+    public func fetchMovies(from endpoint: Endpoint, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
+        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(endpoint.rawValue)
+        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
+    }
     
     public func fetchMovies(from genre: Int, page: Int, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
         let movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
@@ -74,12 +75,16 @@ class MovieServiceAPI {
     }
     
     public func fetchCast(movieID: Int, result: @escaping (Result<CastResponse, APIServiceError>) -> Void) {
+        print("fetchCast")
         let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
+        print("fetchCast url: \(movieURL)")
         fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
     }
     
     public func fetchCompany(movieID: Int, result: @escaping (Result<CompanyResponse, APIServiceError>) -> Void) {
+        print("fetchCompany")
         let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
+        print("fetchCompany url: \(movieURL)")
         fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
     }
     
@@ -134,23 +139,26 @@ class MovieServiceAPI {
             completion(.failure(.invalidEndpoint))
             return
         }
+        print("urlSession url: \(url)")
         urlSession.dataTask(with: url) { (result) in
-            switch result {
-                case .success(let (response, data)):
-                    guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-                        completion(.failure(.invalidResponse))
-                        return
-                    }
-                    do {
-                        let values = try self.jsonDecoder.decode(T.self, from: data)
-                        completion(.success(values))
-                    } catch {
-                        completion(.failure(.decodeError))
-                    }
-                case .failure(let error):
-                    print("error: \(error.localizedDescription)")
-                    completion(.failure(.apiError))
-            }
+//            DispatchQueue.main.async { //
+                switch result {
+                    case .success(let (response, data)):
+                        guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
+                            completion(.failure(.invalidResponse))
+                            return
+                        }
+                        do {
+                            let values = try self.jsonDecoder.decode(T.self, from: data)
+                            completion(.success(values))
+                        } catch {
+                            completion(.failure(.decodeError))
+                        }
+                    case .failure(let error):
+                        print("error: \(error.localizedDescription)")
+                        completion(.failure(.apiError))
+                }
+   //         }//
         }.resume()
     }
 }
@@ -158,7 +166,7 @@ class MovieServiceAPI {
 extension URLSession {
     func dataTask(with url: URL, result: @escaping (Result<(URLResponse, Data), Error>) -> Void) -> URLSessionDataTask {
         return dataTask(with: url) { (data, response, error) in
-            DispatchQueue.main.async { //
+//            DispatchQueue.main.async { //
                 if let error = error {
                     result(.failure(error))
                     return
@@ -169,7 +177,7 @@ extension URLSession {
                     return
                 }
                 result(.success((response, data)))
-            } //
+//            } //
         }
     }
 }
