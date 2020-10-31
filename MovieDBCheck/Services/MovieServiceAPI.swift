@@ -58,34 +58,114 @@ class MovieServiceAPI {
         case decodeError
     }
     
-    public func fetchMovies(from endpoint: Endpoint, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
-        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(endpoint.rawValue)
-        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
-    }
+//    public func fetchMovies(from endpoint: Endpoint, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
+//        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(endpoint.rawValue)
+//        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
+//    }
     
     public func fetchMovies(from genre: Int, page: Int, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
         let movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
         fetchResources(url: movieURL, genre: genre, page: page, completion: result)
     }
     
-    
     public func fetchMovie(movieId: Int, result: @escaping (Result<MovieData, APIServiceError>) -> Void) {
         let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieId))
         fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
     }
     
-    public func fetchCast(movieID: Int, result: @escaping (Result<CastResponse, APIServiceError>) -> Void) {
-        print("fetchCast")
-        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
-        print("fetchCast url: \(movieURL)")
-        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
+//    public func fetchCast(movieID: Int, result: @escaping (Result<CastResponse, APIServiceError>) -> Void) {
+//        print("fetchCast")
+//        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
+//        print("fetchCast url: \(movieURL)")
+//        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
+//    }
+    
+//    public func fetchCompany(movieID: Int, result: @escaping (Result<CompanyResponse, APIServiceError>) -> Void) {
+//        print("fetchCompany")
+//        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
+//        print("fetchCompany url: \(movieURL)")
+//        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
+//    }
+    
+    // fetchCast returns CastResponse object
+    public func fetchCast(movieID: Int, result: @escaping (Bool, Error?, CastResponse?) -> Void) {
+        //       https://api.themoviedb.org/3/movie/###/credits?api_key=a042fdafc76ac6243a7d5c85b930f1f6
+        
+        let url = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
+        
+        guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            result(false, nil, nil)
+            return
+        }
+        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+        urlComponents.queryItems = [apiQuery]
+        guard let castURL = urlComponents.url else {
+            result(false, nil, nil)
+            return
+        }
+        print("cast url: \(castURL)")
+        urlSession.dataTask(with: castURL) { data, response, taskerror in
+            DispatchQueue.main.async {
+                if let data = data, taskerror == nil {
+                    if let response = response as? HTTPURLResponse,
+                       response.statusCode == 200 {
+                        do {
+                            let cast = try self.jsonDecoder.decode(CastResponse.self, from: data)
+                            result(true, nil, cast)
+                        } catch {
+                            print("decode error")
+                            result(false, nil, nil)
+                        }
+                    } else {
+                        print("url response error: \(response.debugDescription)")
+                        result(false, nil, nil)
+                    }
+                } else {
+                    print("task error thrown: \(taskerror.debugDescription)")
+                    result(false, taskerror, nil)
+                }
+            } // DispatchQueue
+        }.resume()
     }
     
-    public func fetchCompany(movieID: Int, result: @escaping (Result<CompanyResponse, APIServiceError>) -> Void) {
-        print("fetchCompany")
-        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
-        print("fetchCompany url: \(movieURL)")
-        fetchResources(url: movieURL, genre: 0, page: 1, completion: result)
+    // fetchCompany returns a CompanyResponse object
+    public func fetchCompany(movieID: Int, result: @escaping (Bool, Error?, CompanyResponse?) -> Void) {
+//        https://api.themoviedb.org/3/movie/###?api_key=a042fdafc76ac6243a7d5c85b930f1f6
+        let url = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
+
+        guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
+            result(false, nil, nil)
+            return
+        }
+        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+        urlComponents.queryItems = [apiQuery]
+        guard let compURL = urlComponents.url else {
+            result(false, nil, nil)
+            return
+        }
+        print("company url: \(compURL)")
+        urlSession.dataTask(with: compURL) { data, response, taskerror in
+            DispatchQueue.main.async {
+                if let data = data, taskerror == nil {
+                    if let response = response as? HTTPURLResponse,
+                       response.statusCode == 200 {
+                        do {
+                            let companies = try self.jsonDecoder.decode(CompanyResponse.self, from: data)
+                            result(true, nil, companies)
+                        } catch {
+                            print("decode error")
+                            result(false, nil, nil)
+                        }
+                    } else {
+                        print("url response error: \(response.debugDescription)")
+                        result(false, nil, nil)
+                    }
+                } else {
+                    print("task error thrown: \(taskerror.debugDescription)")
+                    result(false, taskerror, nil)
+                }
+            } // DispatchQueue
+        }.resume()
     }
     
     // fetchImage returns an UIImage object given an image size and imageURL
@@ -105,7 +185,7 @@ class MovieServiceAPI {
                         result(false, nil, nil)
                     }
                 } else {
-                    print("taskerror thrown: \(taskerror.debugDescription)")
+                    print("task error thrown: \(taskerror.debugDescription)")
                     result(false, taskerror, nil)
                 }
             } // DispatchQueue
@@ -141,14 +221,16 @@ class MovieServiceAPI {
         }
         print("urlSession url: \(url)")
         urlSession.dataTask(with: url) { (result) in
-//            DispatchQueue.main.async { //
-                switch result {
+            DispatchQueue.main.async { //
+            switch result {
                     case .success(let (response, data)):
+                        
                         guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
                             completion(.failure(.invalidResponse))
                             return
                         }
                         do {
+                            print("urlSession success, decode data")
                             let values = try self.jsonDecoder.decode(T.self, from: data)
                             completion(.success(values))
                         } catch {
@@ -158,7 +240,7 @@ class MovieServiceAPI {
                         print("error: \(error.localizedDescription)")
                         completion(.failure(.apiError))
                 }
-   //         }//
+            }// DispathQueue
         }.resume()
     }
 }

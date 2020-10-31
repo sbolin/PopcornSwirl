@@ -15,7 +15,7 @@ struct CastDTOMapper { // data transfer object
         let movieCast = dto.cast
         let movieCrew = dto.crew
         let movieID = dto.id
-        for i in 0..<3 {
+        for i in 0..<5 {
             cast.append(movieCast[i].name)
         }
         movieCrew.forEach { (crew) in

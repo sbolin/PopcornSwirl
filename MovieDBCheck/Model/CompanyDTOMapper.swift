@@ -8,7 +8,7 @@
 import Foundation
 
 struct CompanyDTOMapper { // data transfer object
-  static func map(_ dto: CompanyResponse) -> CompanyData {
+  static func map(dto: CompanyResponse) -> CompanyData {
     var companyData = [String]()
     
     let companies = dto.productionCompanies
