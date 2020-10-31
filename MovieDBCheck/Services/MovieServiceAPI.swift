@@ -221,7 +221,7 @@ class MovieServiceAPI {
         }
         print("urlSession url: \(url)")
         urlSession.dataTask(with: url) { (result) in
-            DispatchQueue.main.async { //
+//            DispatchQueue.main.async { //
             switch result {
                     case .success(let (response, data)):
                         
@@ -240,7 +240,7 @@ class MovieServiceAPI {
                         print("error: \(error.localizedDescription)")
                         completion(.failure(.apiError))
                 }
-            }// DispathQueue
+//            }// DispathQueue
         }.resume()
     }
 }
@@ -248,7 +248,7 @@ class MovieServiceAPI {
 extension URLSession {
     func dataTask(with url: URL, result: @escaping (Result<(URLResponse, Data), Error>) -> Void) -> URLSessionDataTask {
         return dataTask(with: url) { (data, response, error) in
-//            DispatchQueue.main.async { //
+            DispatchQueue.main.async { //
                 if let error = error {
                     result(.failure(error))
                     return
@@ -259,7 +259,7 @@ extension URLSession {
                     return
                 }
                 result(.success((response, data)))
-//            } //
+            } //
         }
     }
 }

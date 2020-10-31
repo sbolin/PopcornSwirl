@@ -195,15 +195,15 @@ extension MovieController {
                                     print("error \(error.debugDescription)")
                                 }
                             }
-                            print("summary for genre: \(section) ")
-                            print("movieItem name: \(self.movieItem.title)")
-                            print("movieItem actor: \(self.movieItem.actor)")
-                            print("movieItem director: \(self.movieItem.director)")
-                            print("movieItem company: \(self.movieItem.title)")
-                            print("movieList count: \(self.movieList.count)")
+                            print("0. summary for genre: \(section) ")
+                            print("0. movieItem name: \(self.movieItem.title)")
+                            print("0. movieItem actor: \(self.movieItem.actor)")
+                            print("0. movieItem director: \(self.movieItem.director)")
+                            print("0. movieItem company: \(self.movieItem.title)")
+                            print("0. movieList count: \(self.movieList.count)")
 
                         }
-                        self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
+  //                      self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
                         print("1. genreID: \(genreID)")
                         print("1. section: \(section)")
                         print("1. movie count: \(self.movieList.count)")
@@ -211,19 +211,20 @@ extension MovieController {
                         print(error.localizedDescription)
                 }
                 // if _collections.append is here, it is created properly but zeroed upon leaving closure
-//                self._collections.append(MovieCollection(genreID: genreID, movies: movieList))
+ //               self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
                 
                 //               print("2. movie count: \(list.count)")
                 print("2. _collections.count: \(self._collections.count)")
                 print("2. _collection: \(self._collections)") // _collection at this point is correct
             }
             // if _collections.append is here, only genre info is ok (and collectionview shows sections), but no movies data
-//            self._collections.append(MovieCollection(genreID: genreID, movies: movieList))
+            self._collections.append(MovieCollection(genreID: genreID, movies: movieList))
             //            print("3. movie count: \(self.movies.count)")
             //            print("3. Section \(section)/\(genreID), movie count = \(self.movies.count)")
             print("3. _collections count: \(self._collections.count)")
             print("3. _collection: \(self._collections)") // _collection at this point is not correct
-            
+            print("3. collection: \(self.collections.count)")
+            print("3. collection: \(self.collections)") // _collection at this point is not correct
         }
     }
     
