@@ -16,6 +16,14 @@ class MovieController {
     
     var movieItem = Movie(id: 0, title: "", overview: "", genreID: [0], releaseDate: Date(), voteAverage: 0, voteCount: 0, adult: false, video: false, popularity: 0, posterPath: "", backdropPath: "")
     var movieList = [Movie]()
+    fileprivate var _collections = [MovieCollection]()
+    var collections: [MovieCollection] {
+            return _collections
+    }
+    
+    init() {
+        populateMovieData()
+    }
     
     struct Movie: Hashable, Identifiable { // Domain model used in App
         
@@ -86,19 +94,6 @@ class MovieController {
             hasher.combine(identifier)
         }
     }
-    
-    struct GenreCollections {
-        
-    }
-    
-    var collections: [MovieCollection] {
-        return _collections
-    }
-    
-    init() {
-        populateMovieData()
-    }
-    fileprivate var _collections = [MovieCollection]()
 }
 
 extension MovieController {
@@ -127,6 +122,7 @@ extension MovieController {
                     case .success(let response):
                         self.movieList = MovieDTOMapper.map(response)
                         for item in self.movieList {
+                            self.movieItem = item
                           
 //                            MovieAPI.shared.fetchCast(movieID: movieItem.id) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
 //                                switch result {
@@ -159,14 +155,16 @@ extension MovieController {
                                     let cast = CastDTOMapper.map(dto: cast)
                                     self.movieItem.actor = cast.actor
                                     self.movieItem.director = cast.director
+                                    
+                                    print("Genre: \(section)")
+                                    print("movie: \(item.title)")
+                                    print("movie ID: \(item.id)")
+                                    print("cast: \(self.movieItem.actor)")
+                                    print("director: \(self.movieItem.director)")
+                                    
                                 } else {
                                     print("error \(error.debugDescription)")
                                 }
-                                print("Genre: \(section)")
-                                print("movie: \(item.title)")
-                                print("movie ID: \(item.id)")
-                                print("cast: \(self.movieItem.actor)")
-                                print("director: \(self.movieItem.director)")
                             }
                             
                             MovieAPI.shared.fetchCompany(movieID: item.id) { (success, error, response) in
@@ -174,10 +172,12 @@ extension MovieController {
                                     let company = CompanyDTOMapper.map(dto: company)
                                     let companyList = company.company
                                     self.movieItem.company = companyList
+                                    
+                                    print("company: \(self.movieItem.company)")
+                                    
                                 } else {
                                     print("error \(error.debugDescription)")
                                 }
-                                print("company: \(self.movieItem.company)")
                             }
                             
                             MovieAPI.shared.fetchImage(imageSize: "w780", imageEndpoint: item.posterPath) { (success, error, image) in
@@ -195,64 +195,40 @@ extension MovieController {
                                     print("error \(error.debugDescription)")
                                 }
                             }
-                            print("0. summary for genre: \(section) ")
+                            print("0. genre: \(section) ")
                             print("0. movieItem name: \(self.movieItem.title)")
                             print("0. movieItem actor: \(self.movieItem.actor)")
                             print("0. movieItem director: \(self.movieItem.director)")
-                            print("0. movieItem company: \(self.movieItem.title)")
+                            print("0. movieItem company: \(self.movieItem.company)")
+                            print("0. movieItem posterImage: \(self.movieItem.posterImage)")
+                            print("0. movieItem backdropImage: \(self.movieItem.backdropImage)")
                             print("0. movieList count: \(self.movieList.count)")
 
                         }
-  //                      self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
+//                      self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
                         print("1. genreID: \(genreID)")
-                        print("1. section: \(section)")
-                        print("1. movie count: \(self.movieList.count)")
+                        print("1. genre: \(section)")
+                        print("1. movieList count: \(self.movieList.count)")
                     case .failure(let error):
                         print(error.localizedDescription)
                 }
-                // if _collections.append is here, it is created properly but zeroed upon leaving closure
- //               self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
-                
-                //               print("2. movie count: \(list.count)")
+// if _collections.append is here, it is created properly but zeroed upon leaving closure
+                self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
                 print("2. _collections.count: \(self._collections.count)")
                 print("2. _collection: \(self._collections)") // _collection at this point is correct
+                print("2. collection: \(self.collections.count)")
+                print("2. collection: \(self.collections)") // _collection at this point is not correct
             }
-            // if _collections.append is here, only genre info is ok (and collectionview shows sections), but no movies data
-            self._collections.append(MovieCollection(genreID: genreID, movies: movieList))
-            //            print("3. movie count: \(self.movies.count)")
-            //            print("3. Section \(section)/\(genreID), movie count = \(self.movies.count)")
+// if _collections.append is here, only genre info is ok (and collectionview shows sections), but no movies data
+//            self._collections.append(MovieCollection(genreID: genreID, movies: movieList))
+            print("3. section: \(section)/\(genreID)")
+            print("3. movieList count: \(movieList.count)")
             print("3. _collections count: \(self._collections.count)")
             print("3. _collection: \(self._collections)") // _collection at this point is not correct
             print("3. collection: \(self.collections.count)")
             print("3. collection: \(self.collections)") // _collection at this point is not correct
         }
     }
-    
-//    func getCastData(movieID: Int) -> CastData? {
-//        var castData: CastData?
-//        MovieAPI.shared.fetchCast(movieID: movieID) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
-//            switch result {
-//                case .success(let response):
-//                    //                    for cast in response.cast {
-//                    //                        print("Character: \(cast.character)")
-//                    //                        print("id: \(cast.id)")
-//                    //                        print("Actor: \(cast.name)")
-//                    //                        print("\n")
-//                    //                    }
-//                    //                    for crew in response.crew {
-//                    //                        print("Crew for movie 550")
-//                    //                        print("Position: \(crew.job)")
-//                    //                        print("id: \(crew.id)")
-//                    //                        print("Name: \(crew.name)")
-//                    //                        print("\n")
-//                    //                    }
-//                    castData = CastDTOMapper.map(dto: response)
-//                case .failure(let error):
-//                    print(error.localizedDescription)
-//            }
-//        }
-//        return castData
-//    }
     
     func getMovieFromID(movieID: Int) -> [MovieListData] {
         // call movieserviceapi to get single movie response
@@ -266,6 +242,32 @@ extension MovieController {
         }
         return moviesOld
     }
+    
+    //    func getCastData(movieID: Int) -> CastData? {
+    //        var castData: CastData?
+    //        MovieAPI.shared.fetchCast(movieID: movieID) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
+    //            switch result {
+    //                case .success(let response):
+    //                    //                    for cast in response.cast {
+    //                    //                        print("Character: \(cast.character)")
+    //                    //                        print("id: \(cast.id)")
+    //                    //                        print("Actor: \(cast.name)")
+    //                    //                        print("\n")
+    //                    //                    }
+    //                    //                    for crew in response.crew {
+    //                    //                        print("Crew for movie 550")
+    //                    //                        print("Position: \(crew.job)")
+    //                    //                        print("id: \(crew.id)")
+    //                    //                        print("Name: \(crew.name)")
+    //                    //                        print("\n")
+    //                    //                    }
+    //                    castData = CastDTOMapper.map(dto: response)
+    //                case .failure(let error):
+    //                    print(error.localizedDescription)
+    //            }
+    //        }
+    //        return castData
+    //    }
     
     
 //    func getCompanyData(movieID: Int) -> CompanyData? {
