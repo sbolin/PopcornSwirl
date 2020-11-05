@@ -14,11 +14,20 @@ class MovieController {
     let group = DispatchGroup()
     let queue = DispatchQueue.global()
     
+    private let baseURL = URL(string: "https://api.themoviedb.org/3")! // 4 does not work
+    private let apiKey = "a042fdafc76ac6243a7d5c85b930f1f6"
+    private let baseImageURL = URL(string: "https://image.tmdb.org/t/p")!
+    
+    
     var moviesOld = [MovieListData]() // keep old movies def until change to MovieController is complete
     //    var movies = [MovieController.Movie]()
     
     var movieItem = Movie(id: 0, title: "", overview: "", genreID: [0], releaseDate: Date(), voteAverage: 0, voteCount: 0, adult: false, video: false, popularity: 0, posterPath: "", backdropPath: "")
     var movieList = [Movie]()
+    var castItem = CastData(movieID: 0, actor: [""], director: "")
+    var castList = [CastData]()
+    var companyItem = CompanyData(movieID: 0, company: [""])
+    var companyList = [CompanyData]()
     fileprivate var _collections = [MovieCollection]()
     var collections: [MovieCollection] {
         print("...collections updated...")
@@ -73,8 +82,7 @@ class MovieController {
         }
         
         enum Sections: String, CaseIterable {
-            case Adventure, Action, Animation, Comedy, Drama, Family, Mystery, Thriller
-//            case Adventure, Action, Animation, Comedy, Documentary, Drama, Family, Mystery, Thriller
+            case Action, Adventure, Drama, Comedy, Animation, Family, Mystery, Thriller, Upcoming
         }
         
         func getGenreName(genreID: Int) -> String {
@@ -86,9 +94,9 @@ class MovieController {
                 28:    .Action,
                 35:    .Comedy,
                 53:    .Thriller,
-  //              99:    .Documentary,
                 9648:  .Mystery,
-                10751: .Family
+                10751: .Family,
+                99999: .Upcoming
             ]
             
             return genres[genreID]!.rawValue
@@ -113,104 +121,147 @@ extension MovieController {
             .Action      : 28,
             .Comedy      : 35,
             .Thriller    : 53,
-//            .Documentary : 99,
             .Mystery     : 9648,
-            .Family      : 10751
+            .Family      : 10751,
+            .Upcoming    : 99999
         ]
         
         for section in MovieCollection.Sections.allCases {
             let genreID = genres[section]! // force unwrap dictionary, ok as genres is clearly defined above
+            print("Genre: \(section)/\(genreID)")
             MovieAPI.shared.fetchMovies(from: genreID, page: page, group: group) {
                 (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
                 switch result {
                     case .success(let response):
                         self.movieList = MovieDTOMapper.map(response)
-                        for item in self.movieList {
-                            self.movieItem = item
-                            
-                            MovieAPI.shared.fetchCast(movieID: item.id, group: self.group) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
-                                switch result {
-                                    case .success(let response):
-                                        let cast = CastDTOMapper.map(dto: response)
-                                        self.movieItem.actor = cast.actor
-                                        self.movieItem.director = cast.director
-                                        
-                                        print("Genre: \(section)/\(genreID)")
-                                        print("movie: \(item.title)")
-                                        print("movie ID: \(item.id)")
-                                        print("cast: \(self.movieItem.actor)")
-                                        print("director: \(self.movieItem.director)")
-                                    case .failure(let error):
-                                        print("localized error: \(error.localizedDescription)")
-                                }
-                            }
-                            
-                            MovieAPI.shared.fetchCompany(movieID: item.id, group: self.group) { (result: Result<CompanyResponse, MovieServiceAPI.APIServiceError>) in
-                                switch result {
-                                    case .success(let response):
-                                        let company = CompanyDTOMapper.map(dto: response)
-                                        let companyList = company.company
-                                        self.movieItem.company = companyList
-                                        
-                                        print("company: \(self.movieItem.company)")
-                                    case .failure(let error):
-                                        print("localized error: \(error.localizedDescription)")
-                                }
+                        for movie in self.movieList {
+                            self.movieItem = movie
+                            let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
+                            let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
+                            let castURL = getCastURL(movieID: movie.id)
+                            let companyURL = getCompanyURL(movieID: movie.id)
+                            getSupplimentalMovieData(
+                                posterURL: posterURL,
+                                backdropURL: backdropURL,
+                                castURL: castURL,
+                                companyURL: companyURL,
+                                group: self.group)
 
-                            }
-                            
-                            MovieAPI.shared.fetchImage(imageSize: "w780", imageEndpoint: item.posterPath, group: self.group) { (success, error, image) in
-                                if let image = image, error == nil, success {
-                                    self.movieItem.posterImage = image
-                                } else {
-                                    print("error \(error.debugDescription)")
-                                }
-                            }
-                            
-                            MovieAPI.shared.fetchImage(imageSize: "w780", imageEndpoint: item.backdropPath, group: self.group) { (success, error, image) in
-                                if let image = image, error == nil, success {
-                                    self.movieItem.backdropImage = image
-                                } else {
-                                    print("error \(error.debugDescription)")
-                                }
-                            }
-                            print("0. genre: \(section) ")
-                            print("0. movieItem name: \(self.movieItem.title)")
-                            print("0. movieItem actor: \(self.movieItem.actor)")
-                            print("0. movieItem director: \(self.movieItem.director)")
-                            print("0. movieItem company: \(self.movieItem.company)")
-                            print("0. movieItem posterImage: \(self.movieItem.posterImage)")
-                            print("0. movieItem backdropImage: \(self.movieItem.backdropImage)")
-                            print("0. movieList count: \(self.movieList.count)")
-
-                        }
-//                      self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
-                        print("1. genreID: \(genreID)")
-                        print("1. genre: \(section)")
+                        //  self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
                         print("1. movieList count: \(self.movieList.count)")
+                        print("1. movie: \(movie)")
+                        } // movie in movieList
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                } // switch result
+                
+// if _collections.append is here, it is created properly but zeroed upon leaving closure
+////            self.group.notify(queue: self.queue) {
+                self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
+                print("_collections.count: \(self._collections.count)")
+////            }
+            } // fetchMovies
+            
+// if _collections.append is here, only genre info is ok (and collectionview shows sections), but no movie data
+////            self.group.notify(queue: self.queue) {
+//              self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
+//              print("_collections.count: \(self._collections.count)")
+////            }
+        } // section
+
+        func getSupplimentalMovieData(posterURL: URL, backdropURL: URL, castURL: URL, companyURL: URL, group: DispatchGroup) {
+            MovieAPI.shared.getImage(with: posterURL, group: group) { (data, _, error) in
+                if error == nil, let data = data, let image = UIImage(data: data) {
+                    self.movieItem.posterImage = image
+                }
+            }
+            
+            MovieAPI.shared.getImage(with: backdropURL, group: group) { (data, _, error) in
+                if error == nil, let data = data, let image = UIImage(data: data) {
+                    self.movieItem.backdropImage = image
+                }
+            }
+            
+            MovieAPI.shared.getCast(with: castURL, group: group) { (result: Result<CastResponse, Error>) in
+                switch result {
+                    case .success(let response):
+                        let cast = CastDTOMapper.map(dto: response)
+                        self.movieItem.actor = cast.actor
+                        self.movieItem.director = cast.director
                     case .failure(let error):
                         print(error.localizedDescription)
                 }
-                self.group.notify(queue: self.queue) {
-                    print("in group notify")
-// if _collections.append is here, it is created properly but zeroed upon leaving closure
-                self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
-                print("2. _collections.count: \(self._collections.count)")
-                print("2. _collection: \(self._collections)") // _collection at this point is correct
-                print("2. collection: \(self.collections.count)")
-                print("2. collection: \(self.collections)") // _collection at this point is not correct
             }
-// if _collections.append is here, only genre info is ok (and collectionview shows sections), but no movie data
-//            self._collections.append(MovieCollection(genreID: genreID, movies: movieList))
-            print("3. section: \(section)/\(genreID)")
-                print("3. movieList count: \(self.movieList.count)")
-            print("3. _collections count: \(self._collections.count)")
-            print("3. _collection: \(self._collections)") // _collection at this point is not correct
-            print("3. collection: \(self.collections.count)")
-            print("3. collection: \(self.collections)") // _collection at this point is not correct
+            
+            MovieAPI.shared.getCompany(with: companyURL, group: group) { (result: Result<CompanyResponse, Error>) in
+                switch result {
+                    case .success(let response):
+                        let company = CompanyDTOMapper.map(dto: response)
+                        self.movieItem.company = company.company
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                }
             }
         }
+        
+        func getImageURL(imageSize: String, endPoint: String) -> URL {
+            return baseImageURL.appendingPathComponent(imageSize).appendingPathComponent(endPoint)
+        }
+        
+//DANGER NOTE! urlComponents is unwrapped, possibly causing crash. Ask Peter about this
+        // https://api.themoviedb.org/3/movie/###/credits?api_key=a042fdafc76ac6243a7d5c85b930f1f6
+        func getCastURL(movieID: Int) -> URL {
+            let castURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
+            var urlComponents = URLComponents(url: castURL, resolvingAgainstBaseURL: true)!
+            let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+            urlComponents.queryItems = [apiQuery]
+            return urlComponents.url!
+        }
+        
+        func getCompanyURL(movieID: Int) -> URL {
+            let compURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
+            var urlComponents = URLComponents(url: compURL, resolvingAgainstBaseURL: true)!
+            let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+            urlComponents.queryItems = [apiQuery]
+            return urlComponents.url!
+        }
     }
+    
+    /*
+     // old implementation
+     func getCast(movieID: Int, group: DispatchGroup) -> CastData  {
+     //        group.enter()
+     MovieAPI.shared.fetchCast(movieID: movieID, group: group) { (result: Result<CastResponse, MovieServiceAPI.APIServiceError>) in
+     //          defer { group.leave() }
+     switch result {
+     case .success(let response):
+     let cast = CastDTOMapper.map(dto: response)
+     self.castItem.actor = cast.actor
+     self.castItem.director = cast.director
+     self.castItem.movieID = cast.movieID
+     case .failure(let error):
+     print("localized error: \(error.localizedDescription)")
+     }
+     }
+     return castItem
+     }
+     
+     func getCompany(movieID: Int, group: DispatchGroup) -> CompanyData  {
+     //        group.enter()
+     MovieAPI.shared.fetchCompany(movieID: movieID, group: group) { (result: Result<CompanyResponse, MovieServiceAPI.APIServiceError>) in
+     //            defer { group.leave() }
+     switch result {
+     case .success(let response):
+     let company = CompanyDTOMapper.map(dto: response)
+     self.companyItem.company = company.company
+     self.companyItem.movieID = company.movieID
+     case .failure(let error):
+     print("localized error: \(error.localizedDescription)")
+     }
+     }
+     return companyItem
+     }
+     */
     
     func getMovieFromID(movieID: Int) -> [MovieListData] {
         // call movieserviceapi to get single movie response
@@ -224,18 +275,4 @@ extension MovieController {
         }
         return moviesOld
     }
-    
-    // https://image.tmdb.org/t/p/w780/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg
-//    func getImage(imageSize: String, imageEndpoint: String) -> UIImage? {
-//        var imageObject: UIImage?
-//        MovieServiceAPI.shared.fetchImage(imageSize: imageSize, imageEndpoint: imageEndpoint) { (success, error, image)  in
-//            if success {
-//                print("success getting image")
-//                imageObject = image
-//            } else {
-//                print("could not get image, error thrown \(error?.localizedDescription ?? "" )")
-//            }
-//        }
-//        return imageObject
-//    }
 }

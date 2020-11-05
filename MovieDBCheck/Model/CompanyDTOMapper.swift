@@ -9,12 +9,12 @@ import Foundation
 
 struct CompanyDTOMapper { // data transfer object
   static func map(dto: CompanyResponse) -> CompanyData {
-    var companyData = [String]()
+    var companies = [String]()
     
-    let companies = dto.productionCompanies
-    for company in companies {
-      companyData.append(company.name)
+    let productionCompanies = dto.productionCompanies
+    for company in productionCompanies {
+        companies.append(company.name)
     }
-    return CompanyData(company: companyData)
+    return CompanyData(movieID: dto.id, company: companies)
   }
 }

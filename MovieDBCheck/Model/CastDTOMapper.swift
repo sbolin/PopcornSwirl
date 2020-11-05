@@ -11,7 +11,6 @@ struct CastDTOMapper { // data transfer object
     static func map(dto: CastResponse) -> CastData {
         var director = ""
         var cast: [String] = []
-//        let movieID = dto.id
         let movieCast = dto.cast
         let movieCrew = dto.crew
         let movieID = dto.id

@@ -9,7 +9,7 @@ import Foundation
 
 struct CompanyResponse: Codable {
     var budget: Int
-    var id: Int // Movie.id, 550 in call above
+    var id: Int // Movie.id
     var imdbId: String
     var releaseDate: Date
     var revenue: Int

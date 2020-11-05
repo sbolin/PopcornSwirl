@@ -8,7 +8,8 @@
 import Foundation
 
 struct CompanyData: Hashable, Identifiable { // Domain model used in App
-  
-  let id = UUID()
-  let company: [String]
+    
+    var id = UUID()
+    var movieID: Int
+    var company: [String]
 }

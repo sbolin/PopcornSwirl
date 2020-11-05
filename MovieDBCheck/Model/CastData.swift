@@ -9,9 +9,9 @@ import Foundation
 
 struct CastData: Hashable, Identifiable { // Domain model used in App
     
-    let id = UUID()
-    let movieID: Int
+    var id = UUID()
+    var movieID: Int
 
-    let actor: [String]     // CastResponse.[CastMember].name
-    let director: String  // CastResponse.[CrewMember].name when Crew.CrewMember.job = "Director"
+    var actor: [String]     // CastResponse.[CastMember].name
+    var director: String  // CastResponse.[CrewMember].name when Crew.CrewMember.job = "Director"
 }
