@@ -55,8 +55,11 @@ class MovieServiceAPI {
     
     public func fetchMovies(from genre: Int, page: Int, group: DispatchGroup, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
 
-        var url: URL
-        let movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
+        var movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
+        if genre == 99999 {
+            movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent("upcoming")
+        }
+        
         guard var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true) else {
             result(.failure(.invalidEndpoint))
             return
@@ -76,17 +79,15 @@ class MovieServiceAPI {
         let release = URLQueryItem(name: "with_release_type", value: "\(releaseType)")
         let genreID = URLQueryItem(name: "with_genres", value: "\(genre)")
         
-        let queryItems = [apiQuery, languageQuery, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, voteCount, voteAverage, genreID, origLanguageQuery]
+        var queryItems = [apiQuery, languageQuery, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, voteCount, voteAverage, genreID, origLanguageQuery]
+        if genre == 99999 {
+            queryItems = [apiQuery]
+        }
         urlComponents.queryItems = queryItems
-        if urlComponents.url != nil {
-            url = urlComponents.url!
-        } else {
+        guard let url = urlComponents.url else {
+            result(.failure(.invalidEndpoint))
             return
         }
-        if genre == 99999 {
-            url = baseURL.appendingPathComponent("movie").appendingPathComponent("upcoming")
-        }
-
         fetchResources(url: url, group: group, completion: result)
     }
     
@@ -139,7 +140,7 @@ class MovieServiceAPI {
                         return
                     }
                     do {
-                        print("urlSession success, decode data")
+                        print("getMovie urlSession success")
                         let values = try self.jsonDecoder.decode(MovieResponse.self, from: data)
                         completion(.success(values))
                     } catch {
@@ -170,7 +171,7 @@ class MovieServiceAPI {
                         return
                     }
                     do {
-                        print("urlSession success, decode data")
+                        print("getCast urlSession success")
                         let values = try self.jsonDecoder.decode(CastResponse.self, from: data)
                         completion(.success(values))
                     } catch {
@@ -194,7 +195,7 @@ class MovieServiceAPI {
                         return
                     }
                     do {
-                        print("urlSession success, decode data")
+                        print("getCompany urlSession success")
                         let values = try self.jsonDecoder.decode(CompanyResponse.self, from: data)
                         completion(.success(values))
                     } catch {
@@ -317,11 +318,11 @@ class MovieServiceAPI {
 */
 // revised fetchResouces = url passed in is final url, no need to use urlComponents
     private func fetchResources<T: Decodable>(url: URL, group: DispatchGroup, completion: @escaping (Result<T, APIServiceError>) -> Void) {
-        print("fetchResources url: \(url)")
+        print("   fetchResources url: \(url)")
 // uses URLSession Extension
-////      group.enter()
+//        group.enter()
         urlSession.dataTask(with: url, group: group) { result in
-////            defer { group.leave() }
+ //           defer { group.leave() }
             switch result {
                 case .success(let (response, data)):
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
@@ -329,7 +330,7 @@ class MovieServiceAPI {
                         return
                     }
                     do {
-                        print("urlSession success, decode data")
+                        print("fetchResources urlSession success")
                         let values = try self.jsonDecoder.decode(T.self, from: data)
                         completion(.success(values))
                     } catch {
@@ -343,57 +344,6 @@ class MovieServiceAPI {
     }
 }
 
-/*
- // original fetchResources (commented out)
-private func fetchResources<T: Decodable>(url: URL, genre: Int, page: Int, completion: @escaping (Result<T, APIServiceError>) -> Void) {
-    guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-        completion(.failure(.invalidEndpoint))
-        return
-    }
-    let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-    let languageQuery = URLQueryItem(name: "language", value: language)
-    let origLanguageQuery = URLQueryItem(name: "with_original_language", value: origLanguage)
-    let voteAverage = URLQueryItem(name: "vote_average.gte", value: "\(voteAverageGTE)")
-    let voteCount = URLQueryItem(name: "vote_count.gte", value: "\(voteCountGTE)")
-    let sort = URLQueryItem(name: "sort_by", value: sortBy)
-    let adult = URLQueryItem(name: "include_adult", value: "false")
-    let video = URLQueryItem(name: "include_video", value: "false")
-    let page = URLQueryItem(name: "page", value: "\(page)")
-    let primaryReleaseDataGTE = URLQueryItem(name: "primary_release_date.gte", value: releaseDateGTE)
-    let primaryReleaseDataLTE = URLQueryItem(name: "primary_release_date.lte", value: releaseDateLTE)
-    let release = URLQueryItem(name: "with_release_type", value: "\(releaseType)")
-    let genreID = URLQueryItem(name: "with_genres", value: "\(genre)")
-    
-    let queryItems = [apiQuery, languageQuery, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, voteCount, voteAverage, genreID, origLanguageQuery]
-    urlComponents.queryItems = queryItems
-    guard let url = urlComponents.url else {
-        completion(.failure(.invalidEndpoint))
-        return
-    }
-    print("urlSession url: \(url)")
-    // uses UELSession Extension
-    urlSession.dataTask(with: url) { (result) in
-        switch result {
-            case .success(let (response, data)):
-                guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-                    completion(.failure(.invalidResponse))
-                    return
-                }
-                do {
-                    print("urlSession success, decode data")
-                    let values = try self.jsonDecoder.decode(T.self, from: data)
-                    completion(.success(values))
-                } catch {
-                    completion(.failure(.decodeError))
-                }
-            case .failure(let error):
-                print("error: \(error.localizedDescription)")
-                completion(.failure(.apiError))
-        }
-    }.resume()
-}
-}
-*/
 extension URLSession {
     func dataTask(with url: URL, group: DispatchGroup, result: @escaping (Result<(URLResponse, Data), Error>) -> Void) -> URLSessionDataTask {
         
