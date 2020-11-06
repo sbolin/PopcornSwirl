@@ -53,66 +53,41 @@ class MovieServiceAPI {
         case decodeError
     }
     
+/*
+    // original fetchMovies with revised url method
     public func fetchMovies(from genre: Int, page: Int, group: DispatchGroup, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
 
-        var movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
-        if genre == 99999 {
-            movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent("upcoming")
-        }
-        
-        guard var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true) else {
-            result(.failure(.invalidEndpoint))
-            return
-        }
-        
-        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-        let languageQuery = URLQueryItem(name: "language", value: language)
-        let origLanguageQuery = URLQueryItem(name: "with_original_language", value: origLanguage)
-        let voteAverage = URLQueryItem(name: "vote_average.gte", value: "\(voteAverageGTE)")
-        let voteCount = URLQueryItem(name: "vote_count.gte", value: "\(voteCountGTE)")
-        let sort = URLQueryItem(name: "sort_by", value: sortBy)
-        let adult = URLQueryItem(name: "include_adult", value: "false")
-        let video = URLQueryItem(name: "include_video", value: "false")
-        let page = URLQueryItem(name: "page", value: "\(page)")
-        let primaryReleaseDataGTE = URLQueryItem(name: "primary_release_date.gte", value: releaseDateGTE)
-        let primaryReleaseDataLTE = URLQueryItem(name: "primary_release_date.lte", value: releaseDateLTE)
-        let release = URLQueryItem(name: "with_release_type", value: "\(releaseType)")
-        let genreID = URLQueryItem(name: "with_genres", value: "\(genre)")
-        
-        var queryItems = [apiQuery, languageQuery, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, voteCount, voteAverage, genreID, origLanguageQuery]
-        if genre == 99999 {
-            queryItems = [apiQuery]
-        }
-        urlComponents.queryItems = queryItems
-        guard let url = urlComponents.url else {
-            result(.failure(.invalidEndpoint))
-            return
-        }
+        let url = getMoviesURL(from: genre, for: page)
         fetchResources(url: url, group: group, completion: result)
+    }
+*/
+    // new get movies method given Genre
+    public func getMovies<MovieResponse: Decodable>(from genre: Int, page: Int, group: DispatchGroup, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
+        let url = getMoviesURL(from: genre, for: page)
+        group.enter()
+        urlSession.dataTask(with: url, group: group) { result in
+            defer { group.leave() }
+            switch result {
+                case .success(let (response, data)):
+                    guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
+                        print("response error")
+                        return
+                    }
+                    do {
+                        print("getMovies urlSession success")
+                        let values = try self.jsonDecoder.decode(MovieResponse.self, from: data)
+                        completion(.success(values))
+                    } catch {
+                        print("decode error")
+                    }
+                case .failure(let error):
+                    print("error: \(error.localizedDescription)")
+            }
+        }.resume()
     }
     
     // fetch single movie by movie id
     //https://api.themoviedb.org/3/movie/###?api_key=a042fdafc76ac6243a7d5c85b930f1f6&language=en-US
-    public func fetchMovie(from movieId: Int, group: DispatchGroup, result: @escaping (Result<MovieData, APIServiceError>) -> Void) {
-        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieId))
-        guard var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true) else {
-            result(.failure(.invalidEndpoint))
-            return
-        }
-        
-        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-        let languageQuery = URLQueryItem(name: "language", value: language)
-        let regionQuery = URLQueryItem(name: "region", value: region)
-        let queryItems = [apiQuery, languageQuery, regionQuery]
-        urlComponents.queryItems = queryItems
-        guard let url = urlComponents.url else {
-            result(.failure(.invalidEndpoint))
-            return
-        }
-        fetchResources(url: url, group: group, completion: result)
-    }
-    
-    // new function, replace fetchMovie
     public func getMovie<MovieResponse: Decodable>(with movieID: Int, group: DispatchGroup, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
         
         let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
@@ -120,7 +95,6 @@ class MovieServiceAPI {
             print("invalid endpoint")
             return
         }
-        
         let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
         let languageQuery = URLQueryItem(name: "language", value: language)
         let regionQuery = URLQueryItem(name: "region", value: region)
@@ -152,13 +126,6 @@ class MovieServiceAPI {
         }.resume()
     }
     
-    // not needed - incorporate upcoming into regular fetchMovies function
-/*
-    public func fetchMovies(from endpoint: Endpoint, group: DispatchGroup, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
-        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(endpoint.rawValue)
-        fetchResources(url: movieURL, group: group, completion: result)
-    }
-*/
     // new function to get Cast data
     public func getCast<CastResponse: Decodable>(with url: URL, group: DispatchGroup, completion: @escaping (Result<CastResponse, Error>) -> Void) {
         group.enter()
@@ -215,107 +182,17 @@ class MovieServiceAPI {
             completionHandler(data, response, error)
         }.resume()
     }
+    
+// not needed - incorporate upcoming into regular fetchMovies function
+    /*
+     public func fetchMovies(from endpoint: Endpoint, group: DispatchGroup, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
+     let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(endpoint.rawValue)
+     fetchResources(url: movieURL, group: group, completion: result)
+     }
+     */
 
-
+    // try not to use...
 /*
-// fetchCast returns CastResponse object -- working
-    public func fetchCast(from movieID: Int, result: @escaping (Bool, Error?, CastResponse?) -> Void) {
-//       https://api.themoviedb.org/3/movie/###/credits?api_key=a042fdafc76ac6243a7d5c85b930f1f6
-        let url = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
-        guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
-            result(false, nil, nil)
-            return
-        }
-        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-        urlComponents.queryItems = [apiQuery]
-        guard let castURL = urlComponents.url else {
-            result(false, nil, nil)
-            return
-        }
-        print("cast url: \(castURL)")
-
-        // uses standard urlsession
-        urlSession.dataTask(with: castURL) { data, response, taskerror in
-            if let data = data, taskerror == nil {
-                if let response = response as? HTTPURLResponse,
-                   response.statusCode == 200 {
-                    do {
-                        let cast = try self.jsonDecoder.decode(CastResponse.self, from: data)
-                        result(true, nil, cast)
-                    } catch {
-                        print("decode error")
-                        result(false, nil, nil)
-                    }
-                } else {
-                    print("url response error: \(response.debugDescription)")
-                    result(false, nil, nil)
-                }
-            } else {
-                print("task error thrown: \(taskerror.debugDescription)")
-                result(false, taskerror, nil)
-            }
-        }.resume()
-    }
-    
-    // original call, uses fetchResources
-    public func fetchCast(movieID: Int, group: DispatchGroup, result: @escaping (Result<CastResponse, APIServiceError>) -> Void) {
-        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
-        // https://api.themoviedb.org/3/movie/###/credits?api_key=a042fdafc76ac6243a7d5c85b930f1f6
-        guard var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true) else {
-            result(.failure(.invalidEndpoint))
-            return
-        }
-        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-        urlComponents.queryItems = [apiQuery]
-        guard let castURL = urlComponents.url else {
-            result(.failure(.invalidEndpoint))
-            return
-        }
-        print("fetchCast url: \(castURL)")
-        fetchResources(url: castURL, group: group, completion: result)
-    }
-    
-    // original call, uses fetchResouces
-    // https://api.themoviedb.org/3/movie/###?api_key=a042fdafc76ac6243a7d5c85b930f1f6
-    public func fetchCompany(movieID: Int, group: DispatchGroup, result: @escaping (Result<CompanyResponse, APIServiceError>) -> Void) {
-        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
-        guard var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true) else {
-            result(.failure(.invalidEndpoint))
-            return
-        }
-        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-        urlComponents.queryItems = [apiQuery]
-        guard let companyURL = urlComponents.url else {
-            result(.failure(.invalidEndpoint))
-            return
-        }
-        print("fetchCompany url: \(companyURL)")
-        fetchResources(url: companyURL, group: group, completion: result)
-    }
-    
-    // original call, fetchImage returns an UIImage object given an image size and imageURL
-    public func fetchImage(imageSize: String, imageEndpoint: String, group: DispatchGroup, result: @escaping (Bool, Error?, UIImage?) -> Void) {
-        let movieURL = baseImageURL.appendingPathComponent(imageSize).appendingPathComponent(imageEndpoint)
-        print("image url: \(movieURL)")
-        group.enter()
-        urlSession.dataTask(with: movieURL) { data, response, taskerror in
-            defer { group.leave() }
-            if let data = data, taskerror == nil {
-                if let response = response as? HTTPURLResponse,
-                   response.statusCode == 200 {
-                    let artwork = UIImage(data: data)
-                    result(true, nil, artwork)
-                } else {
-                    print("url response error: \(response.debugDescription)")
-                    result(false, nil, nil)
-                }
-            } else {
-                print("task error thrown: \(taskerror.debugDescription)")
-                result(false, taskerror, nil)
-            }
-        }.resume()
-    }
-*/
 // revised fetchResouces = url passed in is final url, no need to use urlComponents
     private func fetchResources<T: Decodable>(url: URL, group: DispatchGroup, completion: @escaping (Result<T, APIServiceError>) -> Void) {
         print("   fetchResources url: \(url)")
@@ -341,6 +218,38 @@ class MovieServiceAPI {
                     completion(.failure(.apiError))
             }
         }.resume()
+    }
+ */
+    // get URL for movies from Genre
+    //DANGER NOTE! urlComponents is unwrapped, possibly causing crash. Ask Peter about this
+    func getMoviesURL(from genre: Int, for page: Int) -> URL {
+        var movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
+        if genre == 99999 {
+            movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent("upcoming")
+        }
+        
+        var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true)! // <---!!
+
+        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+        let languageQuery = URLQueryItem(name: "language", value: language)
+        let origLanguageQuery = URLQueryItem(name: "with_original_language", value: origLanguage)
+        let voteAverage = URLQueryItem(name: "vote_average.gte", value: "\(voteAverageGTE)")
+        let voteCount = URLQueryItem(name: "vote_count.gte", value: "\(voteCountGTE)")
+        let sort = URLQueryItem(name: "sort_by", value: sortBy)
+        let adult = URLQueryItem(name: "include_adult", value: "false")
+        let video = URLQueryItem(name: "include_video", value: "false")
+        let page = URLQueryItem(name: "page", value: "\(page)")
+        let primaryReleaseDataGTE = URLQueryItem(name: "primary_release_date.gte", value: releaseDateGTE)
+        let primaryReleaseDataLTE = URLQueryItem(name: "primary_release_date.lte", value: releaseDateLTE)
+        let release = URLQueryItem(name: "with_release_type", value: "\(releaseType)")
+        let genreID = URLQueryItem(name: "with_genres", value: "\(genre)")
+        
+        var queryItems = [apiQuery, languageQuery, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, voteCount, voteAverage, genreID, origLanguageQuery]
+        if genre == 99999 {
+            queryItems = [apiQuery]
+        }
+        urlComponents.queryItems = queryItems
+        return urlComponents.url! // <---!!
     }
 }
 

@@ -16,8 +16,6 @@ class MovieCollectionViewController: UIViewController {
     var dataSource: UICollectionViewDiffableDataSource<MovieController.MovieCollection, MovieController.Movie>! = nil
     var currentSnapshot: NSDiffableDataSourceSnapshot<MovieController.MovieCollection, MovieController.Movie>! = nil
     
- //   var movies = [MovieController.Movie]()
-    var moviesOld = [MovieListData]() // keep old movies def until change to MovieController is complete
     var castData = [CastData]()
     var actor = [String]()
     var director = ""
@@ -109,9 +107,7 @@ extension MovieCollectionViewController {
         ])
     }
     func configureDataSource() {
-        
         print("in configureDataSource()")
-                
         let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieController.Movie> {
             (cell, indexPath, movie) in
             // Populate the cell with our item description.
