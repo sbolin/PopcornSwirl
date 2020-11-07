@@ -158,7 +158,7 @@ extension MovieController {
 // _collections.append: created properly but sections/data not shown in collectionView
 //                          self.group.notify(queue: self.queue) {
 //                          self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
-//                      } // notify
+//                          } // notify
                         } // movie in movieList
                     case .failure(let error):
                         print(error.localizedDescription)
@@ -175,61 +175,6 @@ extension MovieController {
             } // getMovies
         } // section
 
-// original call to fetchMovies
-/*            MovieAPI.shared.fetchMovies(from: genreID, page: page, group: group) { (result: Result<MoviesResponse, MovieServiceAPI.APIServiceError>) in
-                switch result {
-                    case .success(let response):
-                        self.movieList = MovieDTOMapper.map(response)
-                        let collectionItem = MovieCollection(genreID: genreID, movies: self.movieList)
-//                        self.group.notify(queue: self.queue) {
-                            self._collections.append(collectionItem)
-//                        } // group.notify
-                        
-                        print("1. Movie Genre: \(section)/\(genreID)")
-                        print("1. movieList.count       = \(self.movieList.count)")
-                        print("1. _collections.count    = \(self._collections.count)")
-                        print("1. collections.count     = \(self.collections.count)")
-                        for movie in self.movieList {
-                            self.movieItem = movie
-                            let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
-                            let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
-                            let castURL = getCastURL(movieID: movie.id)
-                            let companyURL = getCompanyURL(movieID: movie.id)
-                            retrieveMovieImages(posterURL: posterURL, backdropURL: backdropURL, group: self.group)
-                            print("for movie in movieList:")
-                            print("Movie Title:   \(movie.title)")
-                            print("posterURL:     \(self.movieItem.posterPath)")
-                            print("posterImage:   \(self.movieItem.posterImage)")
-                            print("backdropURL:   \(self.movieItem.backdropPath)")
-                            print("backdropImage: \(self.movieItem.backdropImage)\n")
-                            retrieveSupplimentalMovieData(castURL: castURL, companyURL: companyURL, group: self.group)
-// _collections.append: created properly but sections/data not shown in collectionView
-//                          self.group.notify(queue: self.queue) {
-//                          self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
-//                            } // notify
-                        } // movie in movieList
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                } // switch result
-// _collections.append: created properly but sections/data not shown in collectionView
-//              self.group.notify(queue: self.queue) {
-//              print("2. group.notify called")
-//              self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
-                print("2. exited switch result")
-                print("2. movieList count:        \(self.movieList.count)")
-                print("2. _collections.count:     \(self._collections.count)")
-                print("2. collections.count:      \(self.collections.count)\n")
-//              } // notify
-            } // fetchMovies
-// _collections.append: only genre info is ok (and collectionview shows sections), but no movie data
-////        self.group.notify(queue: self.queue) {
-//          self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
-            print("3. exited fetchMovies")
-            print("3. movieList count: \(self.movieList.count)")
-            print("3. _collections.count: \(self._collections.count)")
-////       } // notify
-        } // section
-*/
         func retrieveMovieImages(posterURL: URL, backdropURL: URL, group: DispatchGroup) {
             
             let cache = NSCache<NSString, UIImage>()
@@ -269,10 +214,10 @@ extension MovieController {
                     case .success(let response):
                         let cast = CastDTOMapper.map(dto: response)
                         self.castList.insert(cast)
-                        print("getCast inserted:  \(cast)")
+                        print("getCast inserted:")
                         print("getCast movieID:   \(cast.movieID)")
                         print("getCast actors:    \(cast.actor)")
-                        print("getCast directors: \(cast.director)")
+                        print("getCast directors: \(cast.director)\n")
                     case .failure(let error):
                         print(error.localizedDescription)
                 }
@@ -283,9 +228,9 @@ extension MovieController {
                     case .success(let response):
                         let company = CompanyDTOMapper.map(dto: response)
                         self.companyList.insert(company)
-                        print("getCompany inserted: \(company)")
+                        print("getCompany inserted:")
                         print("getCompany movieID:  \(company.movieID)")
-                        print("getCompany companies: \(company.company)")
+                        print("getCompany companies: \(company.company)\n")
                     case .failure(let error):
                         print(error.localizedDescription)
                 }
