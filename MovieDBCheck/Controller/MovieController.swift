@@ -12,7 +12,8 @@ class MovieController {
     typealias MovieAPI = MovieDBCheck.MovieServiceAPI
     
     let group = DispatchGroup()
-    let queue = DispatchQueue.global(qos: .utility)
+    let queue = DispatchQueue.global(qos: .userInteractive)
+    let cache = NSCache<NSString, UIImage>()
     
     private let baseURL = URL(string: "https://api.themoviedb.org/3")! // 4 does not work
     private let apiKey = "a042fdafc76ac6243a7d5c85b930f1f6"
@@ -34,6 +35,7 @@ class MovieController {
     
     init() {
         populateMovieData()
+//       populateSupplementaryMovieData()
     }
     
     struct Movie: Hashable, Identifiable { // Domain model used in App
@@ -126,73 +128,49 @@ extension MovieController {
         
         for section in MovieCollection.Sections.allCases {
             let genreID = genres[section]! // force unwrap dictionary, ok as genres is clearly defined above
-            print("0. Genre: \(section)/\(genreID)")
 // new call to getMovies
-            MovieAPI.shared.getMovies(from: genreID, page: page, group: group) { (result: Result<MoviesResponse, Error>) in
+            MovieAPI.shared.getMovies(from: genreID, page: page, group: group) { [weak self] (result: Result<MoviesResponse, Error>) in
+                guard let strongSelf = self else { return }
                 switch result {
                     case .success(let response):
-                        self.movieList = MovieDTOMapper.map(response)
-                        let collectionItem = MovieCollection(genreID: genreID, movies: self.movieList)
-//                        self.group.notify(queue: self.queue) {
-                        self._collections.append(collectionItem)
-//                        } // group.notify
-                        
-                        print("1. Movie Genre: \(section)/\(genreID)")
-                        print("1. movieList.count       = \(self.movieList.count)")
-                        print("1. _collections.count    = \(self._collections.count)")
-                        print("1. collections.count     = \(self.collections.count)")
-                        for movie in self.movieList {
-                            self.movieItem = movie
+                        strongSelf.movieList = MovieDTOMapper.map(response)
+                        let collectionItem = MovieCollection(genreID: genreID, movies: strongSelf.movieList)
+                        strongSelf._collections.append(collectionItem)
+                        for movie in strongSelf.movieList {
+                            strongSelf.movieItem = movie
                             let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
                             let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
                             let castURL = getCastURL(movieID: movie.id)
                             let companyURL = getCompanyURL(movieID: movie.id)
-                            retrieveMovieImages(posterURL: posterURL, backdropURL: backdropURL, group: self.group)
-                            print("for movie in movieList:")
-                            print("Movie Title:   \(movie.title)")
-                            print("posterURL:     \(self.movieItem.posterPath)")
-                            print("posterImage:   \(self.movieItem.posterImage)")
-                            print("backdropURL:   \(self.movieItem.backdropPath)")
-                            print("backdropImage: \(self.movieItem.backdropImage)\n")
-                            retrieveSupplimentalMovieData(castURL: castURL, companyURL: companyURL, group: self.group)
-// _collections.append: created properly but sections/data not shown in collectionView
-//                          self.group.notify(queue: self.queue) {
-//                          self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
-//                          } // notify
+                            retrieveMovieImages(posterURL: posterURL, backdropURL: backdropURL, group: strongSelf.group)
+                            retrieveSupplimentalMovieData(castURL: castURL, companyURL: companyURL, group: strongSelf.group)
                         } // movie in movieList
                     case .failure(let error):
                         print(error.localizedDescription)
                 } // switch result
-// _collections.append: created properly but sections/data not shown in collectionView
-//              self.group.notify(queue: self.queue) {
-//              print("2. group.notify called")
-//              self._collections.append(MovieCollection(genreID: genreID, movies: self.movieList))
-                print("2. exited switch result")
-                print("2. movieList count:        \(self.movieList.count)")
-                print("2. _collections.count:     \(self._collections.count)")
-                print("2. collections.count:      \(self.collections.count)\n")
-//              } // notify
             } // getMovies
         } // section
 
         func retrieveMovieImages(posterURL: URL, backdropURL: URL, group: DispatchGroup) {
             
-            let cache = NSCache<NSString, UIImage>()
             let posterKey = "\(posterURL)" as NSString
             let backdropKey = "\(backdropURL)" as NSString
             
             if let posterCache = cache.object(forKey: posterKey) {
                 // use the cached version
+                print("use cached image")
                 self.movieItem.posterImage = posterCache
             } else {
                 // create it from scratch then store in the cache
                 MovieAPI.shared.getImage(with: posterURL, group: group) { (data, _, error) in
                     if error == nil, let data = data, let image = UIImage(data: data) {
-                        cache.setObject(image, forKey: posterKey)
+                        print("fetch image, save to cache for later use")
+                        
+                        self.cache.setObject(image, forKey: posterKey)
                         self.movieItem.posterImage = image
-                    }
-                }
-            }
+                    } // error
+                } // getImage
+            } // else
             
             if let backdropCache = cache.object(forKey: backdropKey) {
                 // use the cached version
@@ -201,12 +179,12 @@ extension MovieController {
                 // create it from scratch then store in the cache
                 MovieAPI.shared.getImage(with: backdropURL, group: group) { (data, _, error) in
                     if error == nil, let data = data, let image = UIImage(data: data) {
-                        cache.setObject(image, forKey: backdropKey)
+                        self.cache.setObject(image, forKey: backdropKey)
                         self.movieItem.backdropImage = image
-                    }
-                }
-            }
-        }
+                    } // error
+                } // getImage
+            } // else
+        } // retrieveMovieImages
     
         func retrieveSupplimentalMovieData(castURL: URL, companyURL: URL, group: DispatchGroup) {
             MovieAPI.shared.getCast(with: castURL, group: group) { (result: Result<CastResponse, Error>) in
@@ -214,28 +192,21 @@ extension MovieController {
                     case .success(let response):
                         let cast = CastDTOMapper.map(dto: response)
                         self.castList.insert(cast)
-                        print("getCast inserted:")
-                        print("getCast movieID:   \(cast.movieID)")
-                        print("getCast actors:    \(cast.actor)")
-                        print("getCast directors: \(cast.director)\n")
                     case .failure(let error):
                         print(error.localizedDescription)
-                }
-            }
+                } // switch
+            } // getCast
         
             MovieAPI.shared.getCompany(with: companyURL, group: group) { (result: Result<CompanyResponse, Error>) in
                 switch result {
                     case .success(let response):
                         let company = CompanyDTOMapper.map(dto: response)
                         self.companyList.insert(company)
-                        print("getCompany inserted:")
-                        print("getCompany movieID:  \(company.movieID)")
-                        print("getCompany companies: \(company.company)\n")
                     case .failure(let error):
                         print(error.localizedDescription)
-                }
-            }
-        }
+                } // switch
+            } // getCompany
+        } // retrieveSupplimentalMovieData
         
         // images
         func getImageURL(imageSize: String, endPoint: String) -> URL {
@@ -248,7 +219,6 @@ extension MovieController {
         func getCastURL(movieID: Int) -> URL {
             let castURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
             var urlComponents = URLComponents(url: castURL, resolvingAgainstBaseURL: true)! // <---!!
-            
             let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
             urlComponents.queryItems = [apiQuery]
             return urlComponents.url! // <---!!
@@ -261,6 +231,29 @@ extension MovieController {
             let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
             urlComponents.queryItems = [apiQuery]
             return urlComponents.url! // <---!!
+        }
+    }
+    
+    func populateSupplementaryMovieData() {
+        
+        let genres: [MovieCollection.Sections : Int] = [
+            .Adventure   : 12,
+            .Animation   : 16,
+            .Drama       : 18,
+            .Action      : 28,
+            .Comedy      : 35,
+            .Thriller    : 53,
+            .Mystery     : 9648,
+            .Family      : 10751,
+            .Upcoming    : 99999
+        ]
+        
+        for section in MovieCollection.Sections.allCases {
+            let genreID = genres[section]!
+            for movie in collections {
+                movie.genreID
+            }
+            
         }
     }
 }

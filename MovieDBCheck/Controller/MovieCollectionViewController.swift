@@ -119,13 +119,29 @@ extension MovieCollectionViewController {
             cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
         }
         
+/*        // badges
+        let supplementaryRegistration = UICollectionView.SupplementaryRegistration
+        <BadgeSupplementaryView>(elementKind: BadgeSupplementaryView.reuseIdentifier) {
+            (badgeView, string, indexPath) in
+            guard let model = self.dataSource.itemIdentifier(for: indexPath) else { return }
+            let hasBadgeCount =  model.favorite  // model.fav > 0
+            // Set the badge count as its label (and hide the view if the badge count is zero).
+            badgeView.label.text =  "1" // "\(model.badgeCount)"
+            badgeView.isHidden = !hasBadgeCount
+        }
+*/
         dataSource = UICollectionViewDiffableDataSource<MovieController.MovieCollection, MovieController.Movie>(collectionView: collectionView) { // data source changed
             (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieController.Movie) -> UICollectionViewCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
-        
-        let supplementaryRegistration = UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") {
+/*        // badges
+        dataSource.supplementaryViewProvider = {
+            return self.collectionView.dequeueConfiguredReusableSupplementary(using: supplementaryRegistration, for: $2)
+        }
+*/
+        // section header
+        let headerRegistration = UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") {
             (supplementaryView, string, indexPath) in
             if let snapshot = self.currentSnapshot {
                 let movieCollection = snapshot.sectionIdentifiers[indexPath.section]
@@ -133,9 +149,10 @@ extension MovieCollectionViewController {
             }
         }
         
+        // section header
         dataSource.supplementaryViewProvider = { (view, kind, index) in
             return self.collectionView.dequeueConfiguredReusableSupplementary(
-                using: supplementaryRegistration, for: index)
+                using: headerRegistration, for: index)
         }
         
         currentSnapshot = NSDiffableDataSourceSnapshot<MovieController.MovieCollection, MovieController.Movie>()
@@ -147,5 +164,16 @@ extension MovieCollectionViewController {
             currentSnapshot.appendItems(collection.movies)
         }
         dataSource.apply(currentSnapshot, animatingDifferences: false)
+    }
+}
+
+extension MovieCollectionViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
+            collectionView.deselectItem(at: indexPath, animated: true)
+            return
+        }
+        let detailViewController = MovieDetailViewController(with: movie)
+        self.navigationController?.pushViewController(detailViewController, animated: true)
     }
 }

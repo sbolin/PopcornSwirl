@@ -66,7 +66,6 @@ class MovieServiceAPI {
         let url = getMoviesURL(from: genre, for: page)
         group.enter()
         urlSession.dataTask(with: url, group: group) { result in
-            defer { group.leave() }
             switch result {
                 case .success(let (response, data)):
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
@@ -84,6 +83,7 @@ class MovieServiceAPI {
                     print("error: \(error.localizedDescription)")
             }
         }.resume()
+        group.leave()
     }
     
     // fetch single movie by movie id
@@ -106,7 +106,6 @@ class MovieServiceAPI {
         }
         group.enter()
         urlSession.dataTask(with: url, group: group) { result in
-            defer { group.leave() }
             switch result {
                 case .success(let (response, data)):
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
@@ -124,13 +123,13 @@ class MovieServiceAPI {
                     print("error: \(error.localizedDescription)")
             }
         }.resume()
+        group.leave()
     }
     
     // new function to get Cast data
     public func getCast<CastResponse: Decodable>(with url: URL, group: DispatchGroup, completion: @escaping (Result<CastResponse, Error>) -> Void) {
         group.enter()
         urlSession.dataTask(with: url, group: group) { result in
-            defer { group.leave() }
             switch result {
                 case .success(let (response, data)):
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
@@ -148,13 +147,13 @@ class MovieServiceAPI {
                     print("error: \(error.localizedDescription)")
             }
         }.resume()
+        group.leave()
     }
     
    // new function to get Commpany data
     public func getCompany<CompanyResponse: Decodable>(with url: URL, group: DispatchGroup, completion: @escaping (Result<CompanyResponse, Error>) -> Void) {
         group.enter()
         urlSession.dataTask(with: url, group: group) { result in
-            defer { group.leave() }
             switch result {
                 case .success(let (response, data)):
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
@@ -172,24 +171,17 @@ class MovieServiceAPI {
                     print("error: \(error.localizedDescription)")
             }
         }.resume()
+        group.leave()
     }
     
     // new image function
     public func getImage(with url: URL, group: DispatchGroup, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
         group.enter()
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            defer { group.leave() }
+        urlSession.dataTask(with: url) { data, response, error in // urlSession.dataTask
             completionHandler(data, response, error)
         }.resume()
+        group.leave()
     }
-    
-// not needed - incorporate upcoming into regular fetchMovies function
-    /*
-     public func fetchMovies(from endpoint: Endpoint, group: DispatchGroup, result: @escaping (Result<MoviesResponse, APIServiceError>) -> Void) {
-     let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(endpoint.rawValue)
-     fetchResources(url: movieURL, group: group, completion: result)
-     }
-     */
 
     // try not to use...
 /*
