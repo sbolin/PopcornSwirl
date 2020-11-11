@@ -35,7 +35,8 @@ class MovieController {
     
     init() {
         populateMovieData()
-//       populateSupplementaryMovieData()
+        populateMovieImages()
+        populateSupplementaryMovieData()
     }
     
     struct Movie: Hashable, Identifiable { // Domain model used in App
@@ -136,124 +137,131 @@ extension MovieController {
                         strongSelf.movieList = MovieDTOMapper.map(response)
                         let collectionItem = MovieCollection(genreID: genreID, movies: strongSelf.movieList)
                         strongSelf._collections.append(collectionItem)
-                        for movie in strongSelf.movieList {
-                            strongSelf.movieItem = movie
-                            let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
-                            let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
-                            let castURL = getCastURL(movieID: movie.id)
-                            let companyURL = getCompanyURL(movieID: movie.id)
-                            retrieveMovieImages(posterURL: posterURL, backdropURL: backdropURL, group: strongSelf.group)
-                            retrieveSupplimentalMovieData(castURL: castURL, companyURL: companyURL, group: strongSelf.group)
-                        } // movie in movieList
+                        
                     case .failure(let error):
                         print(error.localizedDescription)
                 } // switch result
             } // getMovies
         } // section
-
-        func retrieveMovieImages(posterURL: URL, backdropURL: URL, group: DispatchGroup) {
-            
-            let posterKey = "\(posterURL)" as NSString
-            let backdropKey = "\(backdropURL)" as NSString
-            
-            if let posterCache = cache.object(forKey: posterKey) {
-                // use the cached version
-                print("use cached image")
-                self.movieItem.posterImage = posterCache
-            } else {
-                // create it from scratch then store in the cache
-                MovieAPI.shared.getImage(with: posterURL, group: group) { (data, _, error) in
-                    if error == nil, let data = data, let image = UIImage(data: data) {
-                        print("fetch image, save to cache for later use")
-                        
-                        self.cache.setObject(image, forKey: posterKey)
-                        self.movieItem.posterImage = image
-                    } // error
-                } // getImage
-            } // else
-            
-            if let backdropCache = cache.object(forKey: backdropKey) {
-                // use the cached version
-                self.movieItem.posterImage = backdropCache
-            } else {
-                // create it from scratch then store in the cache
-                MovieAPI.shared.getImage(with: backdropURL, group: group) { (data, _, error) in
-                    if error == nil, let data = data, let image = UIImage(data: data) {
-                        self.cache.setObject(image, forKey: backdropKey)
-                        self.movieItem.backdropImage = image
-                    } // error
-                } // getImage
-            } // else
-        } // retrieveMovieImages
-    
-        func retrieveSupplimentalMovieData(castURL: URL, companyURL: URL, group: DispatchGroup) {
-            MovieAPI.shared.getCast(with: castURL, group: group) { (result: Result<CastResponse, Error>) in
-                switch result {
-                    case .success(let response):
-                        let cast = CastDTOMapper.map(dto: response)
-                        self.castList.insert(cast)
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                } // switch
-            } // getCast
+    } // func
         
-            MovieAPI.shared.getCompany(with: companyURL, group: group) { (result: Result<CompanyResponse, Error>) in
-                switch result {
-                    case .success(let response):
-                        let company = CompanyDTOMapper.map(dto: response)
-                        self.companyList.insert(company)
-                    case .failure(let error):
-                        print(error.localizedDescription)
-                } // switch
-            } // getCompany
-        } // retrieveSupplimentalMovieData
-        
-        // images
-        func getImageURL(imageSize: String, endPoint: String) -> URL {
-            return baseImageURL.appendingPathComponent(imageSize).appendingPathComponent(endPoint)
-        }
-        
-        //DANGER NOTE! urlComponents is unwrapped, possibly causing crash. Ask Peter about this
-        // https://api.themoviedb.org/3/movie/###/credits?api_key=a042fdafc76ac6243a7d5c85b930f1f6
-        // cast data
-        func getCastURL(movieID: Int) -> URL {
-            let castURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
-            var urlComponents = URLComponents(url: castURL, resolvingAgainstBaseURL: true)! // <---!!
-            let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-            urlComponents.queryItems = [apiQuery]
-            return urlComponents.url! // <---!!
-        }
-        
-        // company data
-        func getCompanyURL(movieID: Int) -> URL {
-            let compURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
-            var urlComponents = URLComponents(url: compURL, resolvingAgainstBaseURL: true)! // <---!!
-            let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-            urlComponents.queryItems = [apiQuery]
-            return urlComponents.url! // <---!!
-        }
-    }
+    func populateMovieImages() {
+        for movie in movieList {
+            movieItem = movie
+            let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
+            let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
+            retrieveMovieImages(posterURL: posterURL, backdropURL: backdropURL, group: group)
+        } // movie in movieList
+    } // func
     
     func populateSupplementaryMovieData() {
+        for movie in movieList {
+            let castURL = getCastURL(movieID: movie.id)
+            let companyURL = getCompanyURL(movieID: movie.id)
+            retrieveSupplimentalMovieData(castURL: castURL, companyURL: companyURL, group: group)
+        } // movie in movieList
+    } // func
+    
+    func retrieveMovieImages(posterURL: URL, backdropURL: URL, group: DispatchGroup) {
         
-        let genres: [MovieCollection.Sections : Int] = [
-            .Adventure   : 12,
-            .Animation   : 16,
-            .Drama       : 18,
-            .Action      : 28,
-            .Comedy      : 35,
-            .Thriller    : 53,
-            .Mystery     : 9648,
-            .Family      : 10751,
-            .Upcoming    : 99999
-        ]
+        let posterKey = "\(posterURL)" as NSString
+        let backdropKey = "\(backdropURL)" as NSString
         
-        for section in MovieCollection.Sections.allCases {
-            let genreID = genres[section]!
-            for movie in collections {
-                movie.genreID
-            }
+        if let posterCache = cache.object(forKey: posterKey) {
+            // use the cached version if available
+            print("use cached image")
+            self.movieItem.posterImage = posterCache
+        } else {
+            // fetch then store in the cache if not
+            group.enter()
+            URLSession.shared.dataTask(with: posterURL) { (data, response, error) in
+                if error == nil, let data = data, let image = UIImage(data: data) {
+                    print("fetch image, save to cache for later use")
+                    self.cache.setObject(image, forKey: posterKey)
+                    
+                    self.movieItem.posterImage = image
+                } // error
+            }.resume() // dataTask
+            group.leave()
+//            MovieAPI.shared.getImage(with: posterURL, group: group) { (data, _, error) in
+//                if error == nil, let data = data, let image = UIImage(data: data) {
+//                    print("fetch image, save to cache for later use")
+//                    self.cache.setObject(image, forKey: posterKey)
+//                    self.movieItem.posterImage = image
+//                } // error
+//            } // getImage
+        } // else
+        
+        if let backdropCache = cache.object(forKey: backdropKey) {
+            // use the cached version if available
+            self.movieItem.backdropImage = backdropCache
+        } else {
+            // fetch then store in the cache if not
+            group.enter()
+            URLSession.shared.dataTask(with: backdropURL) { (data, response, error) in
+                if error == nil, let data = data, let image = UIImage(data: data) {
+                    print("fetch image, save to cache for later use")
+                    self.cache.setObject(image, forKey: posterKey)
+                    self.movieItem.posterImage = image
+                } // error
+            }.resume() // dataTask
+            group.leave()
             
-        }
+//            MovieAPI.shared.getImage(with: backdropURL, group: group) { (data, _, error) in
+//                if error == nil, let data = data, let image = UIImage(data: data) {
+//                    self.cache.setObject(image, forKey: backdropKey)
+//                    self.movieItem.backdropImage = image
+//                } // error
+//            } // getImage
+        } // else
+    } // retrieveMovieImages
+    
+    
+    func retrieveSupplimentalMovieData(castURL: URL, companyURL: URL, group: DispatchGroup) {
+        MovieAPI.shared.getCast(with: castURL, group: group) { (result: Result<CastResponse, Error>) in
+            switch result {
+                case .success(let response):
+                    let cast = CastDTOMapper.map(dto: response)
+                    self.castList.insert(cast)
+                case .failure(let error):
+                    print(error.localizedDescription)
+            } // switch
+        } // getCast
+        
+        MovieAPI.shared.getCompany(with: companyURL, group: group) { (result: Result<CompanyResponse, Error>) in
+            switch result {
+                case .success(let response):
+                    let company = CompanyDTOMapper.map(dto: response)
+                    self.companyList.insert(company)
+                case .failure(let error):
+                    print(error.localizedDescription)
+            } // switch
+        } // getCompany
+    } // retrieveSupplimentalMovieData
+    
+    // images
+    func getImageURL(imageSize: String, endPoint: String) -> URL {
+        return baseImageURL.appendingPathComponent(imageSize).appendingPathComponent(endPoint)
+    }
+    
+    //DANGER NOTE! urlComponents is unwrapped, possibly causing crash. Ask Peter about this
+    // https://api.themoviedb.org/3/movie/###/credits?api_key=a042fdafc76ac6243a7d5c85b930f1f6
+    // cast data
+    func getCastURL(movieID: Int) -> URL {
+        let castURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
+        var urlComponents = URLComponents(url: castURL, resolvingAgainstBaseURL: true)! // <---!!
+        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+        urlComponents.queryItems = [apiQuery]
+        return urlComponents.url! // <---!!
+    }
+    
+    // company data
+    func getCompanyURL(movieID: Int) -> URL {
+        let compURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
+        var urlComponents = URLComponents(url: compURL, resolvingAgainstBaseURL: true)! // <---!!
+        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+        urlComponents.queryItems = [apiQuery]
+        return urlComponents.url! // <---!!
     }
 }
+

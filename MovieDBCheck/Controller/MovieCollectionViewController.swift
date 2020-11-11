@@ -16,9 +16,9 @@ class MovieCollectionViewController: UIViewController {
     var dataSource: UICollectionViewDiffableDataSource<MovieController.MovieCollection, MovieController.Movie>! = nil
     var currentSnapshot: NSDiffableDataSourceSnapshot<MovieController.MovieCollection, MovieController.Movie>! = nil
     
-    var castData = [CastData]()
-    var actor = [String]()
-    var director = ""
+//    var castData = [CastData]()
+//    var actor = [String]()
+//    var director = ""
     let formatter = DateFormatter()
     
     static let sectionHeaderElementKind = "section-header-element-kind"
@@ -113,10 +113,12 @@ extension MovieCollectionViewController {
             // Populate the cell with our item description.
             print("configureDataSource, cellRegistration")
             self.formatter.dateFormat = "yyyy"
-            cell.imageView.image = movie.posterImage
-            cell.titleLabel.text = movie.title
-            cell.descriptionLabel.text = movie.overview
-            cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
+            DispatchQueue.main.async {
+                cell.imageView.image = movie.posterImage
+                cell.titleLabel.text = movie.title
+                cell.descriptionLabel.text = movie.overview
+                cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
+            }
         }
         
 /*        // badges
@@ -169,10 +171,12 @@ extension MovieCollectionViewController {
 
 extension MovieCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("item \(indexPath.section), \(indexPath.row) selected")
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
             collectionView.deselectItem(at: indexPath, animated: true)
             return
         }
+        print("go to detailView")
         let detailViewController = MovieDetailViewController(with: movie)
         self.navigationController?.pushViewController(detailViewController, animated: true)
     }
