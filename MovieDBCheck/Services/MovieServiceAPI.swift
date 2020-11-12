@@ -64,7 +64,7 @@ class MovieServiceAPI {
     // new get movies method given Genre
     public func getMovies<MovieResponse: Decodable>(from genre: Int, page: Int, group: DispatchGroup, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
         let url = getMoviesURL(from: genre, for: page)
-        group.enter()
+//        group.enter()
         urlSession.dataTask(with: url, group: group) { result in
             switch result {
                 case .success(let (response, data)):
@@ -83,7 +83,7 @@ class MovieServiceAPI {
                     print("error: \(error.localizedDescription)")
             }
         }.resume()
-        group.leave()
+//        group.leave()
     }
     
     // fetch single movie by movie id
@@ -104,7 +104,7 @@ class MovieServiceAPI {
             print("invalid endpoint")
             return
         }
-        group.enter()
+//        group.enter()
         urlSession.dataTask(with: url, group: group) { result in
             switch result {
                 case .success(let (response, data)):
@@ -123,12 +123,12 @@ class MovieServiceAPI {
                     print("error: \(error.localizedDescription)")
             }
         }.resume()
-        group.leave()
+//        group.leave()
     }
     
     // new function to get Cast data
     public func getCast<CastResponse: Decodable>(with url: URL, group: DispatchGroup, completion: @escaping (Result<CastResponse, Error>) -> Void) {
-        group.enter()
+//        group.enter()
         urlSession.dataTask(with: url, group: group) { result in
             switch result {
                 case .success(let (response, data)):
@@ -147,12 +147,12 @@ class MovieServiceAPI {
                     print("error: \(error.localizedDescription)")
             }
         }.resume()
-        group.leave()
+//        group.leave()
     }
     
    // new function to get Commpany data
     public func getCompany<CompanyResponse: Decodable>(with url: URL, group: DispatchGroup, completion: @escaping (Result<CompanyResponse, Error>) -> Void) {
-        group.enter()
+ //       group.enter()
         urlSession.dataTask(with: url, group: group) { result in
             switch result {
                 case .success(let (response, data)):
@@ -171,16 +171,19 @@ class MovieServiceAPI {
                     print("error: \(error.localizedDescription)")
             }
         }.resume()
-        group.leave()
+ //       group.leave()
     }
     
+    
+    
     // new image function
-    public func getImage(with url: URL, group: DispatchGroup, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) {
-        group.enter()
+//    public func getImage(with url: URL, group: DispatchGroup, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+    public func getImage(with url: URL, group: DispatchGroup, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
+ //       group.enter()
         urlSession.dataTask(with: url) { data, response, error in // urlSession.dataTask
-            completionHandler(data, response, error)
+            completion(data, response, error)
         }.resume()
-        group.leave()
+//        group.leave()
     }
 
     // try not to use...
