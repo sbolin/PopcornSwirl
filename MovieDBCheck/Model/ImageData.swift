@@ -1,6 +1,6 @@
 //
 //  ImageData.swift
-//  MovieDBCheck
+//  PopcornSwirl
 //
 //  Created by Scott Bolin on 11/12/20.
 //
@@ -15,6 +15,7 @@ struct ImageData: Hashable, Identifiable {
     
     var imagePath: URL
     var image: UIImage
+    var imageType: Int
     
     static func == (lhs: ImageData, rhs: ImageData) -> Bool {
         lhs.id == rhs.id

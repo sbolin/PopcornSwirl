@@ -1,6 +1,6 @@
 //
 //  BadgeSupplementaryViewCollectionReusableView.swift
-//  MovieDBCheck
+//  PopcornSwirl
 //
 //  Created by Scott Bolin on 11/9/20.
 //

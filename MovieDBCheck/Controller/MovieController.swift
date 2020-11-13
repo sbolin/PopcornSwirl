@@ -1,6 +1,6 @@
 //
 //  MovieController.swift
-//  MovieDBCheck
+//  PopcornSwirl
 //
 //  Created by Scott Bolin on 10/28/20.
 //
@@ -9,7 +9,7 @@ import UIKit
 
 class MovieController {
     
-    typealias MovieAPI = MovieDBCheck.MovieServiceAPI
+    typealias MovieAPI = PopcornSwirl.MovieServiceAPI
     
     let group = DispatchGroup()
     let queue = DispatchQueue.global(qos: .userInteractive)
@@ -28,7 +28,7 @@ class MovieController {
     var companyItem = CompanyData(movieID: 0, company: [""])
     var companyList = Set<CompanyData>()
     
-    var imageItem = ImageData(movieID: 0, imagePath: URL(string: "https://image.tmdb.org/t/p")!, image: UIImage())
+    var imageItem = ImageData(movieID: 0, imagePath: URL(string: "https://image.tmdb.org/t/p")!, image: UIImage(), imageType: 0)
     var imageList = Set<ImageData>()
         
     fileprivate var _collections = [MovieCollection]()
@@ -37,9 +37,22 @@ class MovieController {
         return _collections
     }
     
+    let genresByName: [MovieCollection.Sections : Int] = [
+        .Adventure   : 12,
+        .Animation   : 16,
+        .Drama       : 18,
+        .Action      : 28,
+        .Comedy      : 35,
+        .Thriller    : 53,
+        .Mystery     : 9648,
+        .Family      : 10751,
+        .Upcoming    : 99999
+    ]
+    
     init() {
         populateMovieData()
         populateSupplementaryMovieData()
+        compileMovieData()
     }
     
     struct Movie: Hashable, Identifiable { // Domain model used in App
@@ -80,7 +93,7 @@ class MovieController {
     struct MovieCollection: Hashable {
         let identifier = UUID()
         let genreID: Int
-        let movies: [Movie]
+        var movies: [Movie]
         var genreName: String {
             return getGenreName(genreID: genreID)
         }
@@ -91,7 +104,7 @@ class MovieController {
         
         func getGenreName(genreID: Int) -> String {
             
-            let genres: [Int : Sections] = [
+            let genresByID: [Int : Sections] = [
                 12:    .Adventure,
                 16:    .Animation,
                 18:    .Drama,
@@ -103,7 +116,7 @@ class MovieController {
                 99999: .Upcoming
             ]
             
-            return genres[genreID]!.rawValue
+            return genresByID[genreID]!.rawValue
         }
         
         func hash(into hasher: inout Hasher) {
@@ -118,21 +131,9 @@ extension MovieController {
         print("in populateMovieData")
         let page = 1
         
-        let genres: [MovieCollection.Sections : Int] = [
-            .Adventure   : 12,
-            .Animation   : 16,
-            .Drama       : 18,
-            .Action      : 28,
-            .Comedy      : 35,
-            .Thriller    : 53,
-            .Mystery     : 9648,
-            .Family      : 10751,
-            .Upcoming    : 99999
-        ]
-        
         for section in MovieCollection.Sections.allCases {
-            let genreID = genres[section]! // force unwrap dictionary, ok as genres is clearly defined above
-// new call to getMovies
+            let genreID = genresByName[section]! // force unwrap dictionary, ok as genres is clearly defined above
+//            group.enter()
             MovieAPI.shared.getMovies(from: genreID, page: page, group: group) { [weak self] (result: Result<MoviesResponse, Error>) in
                 guard let self = self else { return }
                 switch result {
@@ -145,12 +146,19 @@ extension MovieController {
                         print(error.localizedDescription)
                 } // switch result
             } // getMovies
+//            group.leave()
         } // section
     } // func
     
     func populateSupplementaryMovieData() {
         for movie in movieList {
-            movieItem = movie
+  //          movieItem = movie
+            
+            let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
+            populateMovieImages(movieID: movie.id, url: posterURL, group: group, imageType: 0)
+            
+            let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
+            populateMovieImages(movieID: movie.id, url: backdropURL, group: group, imageType: 1)
             
             let castURL = getCastURL(movieID: movie.id)
             populateCastData(castURL: castURL, group: group)
@@ -158,41 +166,61 @@ extension MovieController {
             let companyURL = getCompanyURL(movieID: movie.id)
             populateCompanyData(companyURL: companyURL, group: group)
 
-            let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
-            populateMovieImages(movieID: movie.id, url: posterURL, group: group)
-            
-            let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
-            populateMovieImages(movieID: movie.id, url: backdropURL, group: group)
         } // movie in movieList
     } // func
     
-    func populateMovieImages(movieID: Int, url: URL, group: DispatchGroup) {
+    func compileMovieData() {
+        group.notify(queue: queue) {
+            self._collections = self._collections.map { item in
+                var actors = [""]
+                var director = ""
+                var item = item
+                item.movies = item.movies.map { movie in
+                    var movie = movie
+                    let id = movie.id
+                    let cast = self.castList.filter( {$0.movieID == id})
+                    cast.forEach { castData in
+                        actors = castData.actor
+                        director = castData.director
+                    }
+                    let companies = self.companyList.filter( {$0.movieID == id}).flatMap( {return $0.company})
+                    let posterImage = self.imageList.filter( {$0.movieID == id && $0.imageType == 0}).map({return $0.image})
+                    let backdropImage = self.imageList.filter( {$0.movieID == id && $0.imageType == 1}).map({return $0.image})
+                    
+                    movie.actor = actors
+                    movie.director = director
+                    movie.company = companies
+                    
+                    movie.posterImage = posterImage[0]
+                    movie.backdropImage = backdropImage[0]
+                    return movie
+                }
+                return item
+            }
+        }
+    }
+                
+    
+    func populateMovieImages(movieID: Int, url: URL, group: DispatchGroup, imageType: Int) {
         let imageKey = "\(url)" as NSString
-//        let backdropKey = "\(backdropURL)" as NSString
         
         if let imageCache = cache.object(forKey: imageKey) {
             // use the cached version if available
             print("use cached image")
-            self.movieItem.posterImage = imageCache
+            let imageData = ImageData(movieID: movieID, imagePath: url, image: imageCache, imageType: imageType)
+            imageList.insert(imageData)
         } else {
             // fetch then store in the cache if not
             group.enter()
-            URLSession.shared.dataTask(with: url) { [weak self]  (data, response, error) in
+            MovieAPI.shared.getImage(with: url, group: group) { [weak self] (data, response, error) in
                 if error == nil, let data = data, let image = UIImage(data: data) {
                     print("fetch image, save to cache for later use")
                     self?.cache.setObject(image, forKey: imageKey)
-                    let imageData = ImageData(movieID: movieID, imagePath: url, image: image)
+                    let imageData = ImageData(movieID: movieID, imagePath: url, image: image, imageType: imageType)
                     self?.imageList.insert(imageData)
                 } // error
-            }.resume() // dataTask
+            } // getImage
             group.leave()
-//            MovieAPI.shared.getImage(with: posterURL, group: group) { (data, _, error) in
-//                if error == nil, let data = data, let image = UIImage(data: data) {
-//                    print("fetch image, save to cache for later use")
-//                    self.cache.setObject(image, forKey: posterKey)
-//                    self.movieItem.posterImage = image
-//                } // error
-//            } // getImage
         } // else
     } // retrieveMovieImages
     

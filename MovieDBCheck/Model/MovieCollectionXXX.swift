@@ -1,6 +1,6 @@
 //
 //  MovieCollection.swift
-//  MovieDBCheck
+//  PopcornSwirl
 //
 //  Created by Scott Bolin on 10/23/20.
 //

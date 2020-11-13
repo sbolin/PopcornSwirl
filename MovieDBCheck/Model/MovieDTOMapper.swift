@@ -28,7 +28,7 @@ struct MovieDTOMapper { // data transfer object
             movieData.append(movie)
 
         }
-        print("in map, movieListData.count = \(movieData.count)")
+        print("in map, movieData.count = \(movieData.count)")
         return movieData
     }
     

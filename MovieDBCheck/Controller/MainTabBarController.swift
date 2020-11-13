@@ -1,6 +1,6 @@
 //
 //  MainTabBarController.swift
-//  MovieDBCheck
+//  PopcornSwirl
 //
 //  Created by Scott Bolin on 11/7/20.
 //

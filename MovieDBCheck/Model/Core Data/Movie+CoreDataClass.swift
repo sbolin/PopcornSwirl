@@ -1,6 +1,6 @@
 //
 //  Movie+CoreDataClass.swift
-//  MovieDBCheck
+//  PopcornSwirl
 //
 //  Created by Scott Bolin on 10/24/20.
 //
