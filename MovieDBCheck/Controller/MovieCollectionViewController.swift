@@ -16,9 +16,6 @@ class MovieCollectionViewController: UIViewController {
     var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.Movie>! = nil
     var currentSnapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.Movie>! = nil
     
-//    var castData = [CastData]()
-//    var actor = [String]()
-//    var director = ""
     let formatter = DateFormatter()
     
     static let sectionHeaderElementKind = "section-header-element-kind"
@@ -39,16 +36,9 @@ class MovieCollectionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Popcorn Swirl"
+        navigationItem.title = "All Movies"
         configureHierarchy()
         configureDataSource()
-        
-        
-        //        let cast = getCastData(movieID: 550)
-        //        let movie = getMovieFromID(movieID: 550)
-        //        let company = getCompanyData(movieID: 550)
-        //        let image = getImage(imageSize: "w780", imageEndpoint: "/plzV6fap5bGqMaIpOrihmhtd7lW.jpg")
-        
     }
 }
 
@@ -61,8 +51,7 @@ extension MovieCollectionViewController {
         let config = UICollectionViewCompositionalLayoutConfiguration()
         config.interSectionSpacing = 8
         
-        let sectionProvider = {
-            (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+        let sectionProvider = { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
             let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                   heightDimension: .fractionalHeight(1.0))
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
@@ -113,12 +102,12 @@ extension MovieCollectionViewController {
             // Populate the cell with our item description.
             print("configureDataSource, cellRegistration")
             self.formatter.dateFormat = "yyyy"
-            DispatchQueue.main.async {
+//            DispatchQueue.main.async {
                 cell.imageView.image = movie.posterImage
                 cell.titleLabel.text = movie.title
                 cell.descriptionLabel.text = movie.overview
                 cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
-            }
+//            }
         }
         
 /*        // badges
@@ -133,7 +122,7 @@ extension MovieCollectionViewController {
         }
 */
         dataSource = UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.Movie>(collectionView: collectionView) { // data source changed
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.Movie) -> UICollectionViewCell? in
+            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.Movie) -> MovieCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
@@ -172,10 +161,8 @@ extension MovieCollectionViewController {
 extension MovieCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("item \(indexPath.section), \(indexPath.row) selected")
-        guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
-//            collectionView.deselectItem(at: indexPath, animated: true)
-            return
-        }
+        guard let movie = self.dataSource.itemIdentifier(for: indexPath) else { return }
+        collectionView.deselectItem(at: indexPath, animated: true)
         print("go to detailView")
         let detailViewController = MovieDetailViewController(with: movie)
         self.navigationController?.pushViewController(detailViewController, animated: true)

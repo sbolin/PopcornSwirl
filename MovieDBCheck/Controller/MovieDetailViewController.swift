@@ -22,6 +22,8 @@ class MovieDetailViewController: UIViewController {
     @IBOutlet weak var movieAverageScore: UILabel!
     @IBOutlet weak var movieVoteCount: UILabel!
     
+    @IBOutlet weak var movieNotes: UITextField!
+    
     @IBOutlet weak var favoriteButton: UIButton!
     @IBOutlet weak var bookmarkButton: UIButton!
     @IBOutlet weak var watchedButton: UIButton!
@@ -63,15 +65,23 @@ class MovieDetailViewController: UIViewController {
     //MARK: - Actions
     
     @IBAction func buyTapped(_ sender: UIButton) {
+        print("buyTapped")
+        buyButton.isSelected.toggle()
     }
     
     @IBAction func watchTapped(_ sender: UIButton) {
+        print("watchTapped")
+        watchedButton.isSelected.toggle()
     }
     
     @IBAction func bookmarkTapped(_ sender: UIButton) {
+        print("bookmarkTapped")
+        bookmarkButton.isSelected.toggle()
     }
     
     @IBAction func favoriteTapped(_ sender: UIButton) {
+        print("favoriteTapped")
+        favoriteButton.isSelected.toggle()
     }
     
     

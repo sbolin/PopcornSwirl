@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		150DD150255ED9D90068A1B8 /* ListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150DD14F255ED9D90068A1B8 /* ListViewCell.swift */; };
 		1585D78E254367C8006A9433 /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1585D78D254367C8006A9433 /* CoreDataController.swift */; };
 		1597CAF32559518A001FBA8F /* BadgeSupplementaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1597CAF22559518A001FBA8F /* BadgeSupplementaryView.swift */; };
 		1597CB2F255C5619001FBA8F /* ImageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1597CB2E255C5619001FBA8F /* ImageData.swift */; };
@@ -50,6 +51,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		150DD14F255ED9D90068A1B8 /* ListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewCell.swift; sourceTree = "<group>"; };
 		1585D78D254367C8006A9433 /* CoreDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataController.swift; sourceTree = "<group>"; };
 		1597CAF22559518A001FBA8F /* BadgeSupplementaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BadgeSupplementaryView.swift; sourceTree = "<group>"; };
 		1597CB2E255C5619001FBA8F /* ImageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageData.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				15A4B607254944C900534EFE /* MovieCell.swift */,
+				150DD14F255ED9D90068A1B8 /* ListViewCell.swift */,
 				1597CAF22559518A001FBA8F /* BadgeSupplementaryView.swift */,
 				15A4B60A2549455800534EFE /* TitleSupplementaryView.swift */,
 				15E7EA022540987D00D459FA /* Main.storyboard */,
@@ -145,9 +148,9 @@
 				15A4B60125493DCF00534EFE /* MovieCollectionViewController+Extensions.swift */,
 				15C29878255663090064B074 /* MovieDetailViewController.swift */,
 				15C2987F255668210064B074 /* BookmarksViewController.swift */,
-				15C2987C2556640D0064B074 /* MainTabBarController.swift */,
 				15C29882255668430064B074 /* WatchedViewController.swift */,
 				15C29886255668550064B074 /* FavoritesViewController.swift */,
+				15C2987C2556640D0064B074 /* MainTabBarController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -293,6 +296,7 @@
 				15A4B5FB2548595600534EFE /* Actor+CoreDataProperties.swift in Sources */,
 				15E7EA12254098A700D459FA /* MoviesResponse.swift in Sources */,
 				15CF92972542F55500CCBBF9 /* CompanyDTOMapper.swift in Sources */,
+				150DD150255ED9D90068A1B8 /* ListViewCell.swift in Sources */,
 				15CF92902542F51F00CCBBF9 /* CastData.swift in Sources */,
 				15E7EA232542048000D459FA /* CompanyResponse.swift in Sources */,
 				15CF92B525434CC200CCBBF9 /* Collection+CoreDataProperties.swift in Sources */,
