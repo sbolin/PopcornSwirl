@@ -40,4 +40,4 @@ struct MovieListData: Hashable, Identifiable { // Domain model used in App
     }
 }
 
-// ***NOTE: THIS IS NOT USED, CHANGED TO MovieController***
+// ***NOTE: THIS IS NOT USED, CHANGED TO MovieDataController***

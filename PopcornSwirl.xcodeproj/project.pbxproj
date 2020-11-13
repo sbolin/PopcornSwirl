@@ -16,7 +16,7 @@
 		15A4B60225493DCF00534EFE /* MovieCollectionViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B60125493DCF00534EFE /* MovieCollectionViewController+Extensions.swift */; };
 		15A4B608254944C900534EFE /* MovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B607254944C900534EFE /* MovieCell.swift */; };
 		15A4B60B2549455800534EFE /* TitleSupplementaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B60A2549455800534EFE /* TitleSupplementaryView.swift */; };
-		15A4B60E2549D8AC00534EFE /* MovieController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B60D2549D8AC00534EFE /* MovieController.swift */; };
+		15A4B60E2549D8AC00534EFE /* MovieDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B60D2549D8AC00534EFE /* MovieDataController.swift */; };
 		15C29879255663090064B074 /* MovieDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C29878255663090064B074 /* MovieDetailViewController.swift */; };
 		15C2987D2556640D0064B074 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2987C2556640D0064B074 /* MainTabBarController.swift */; };
 		15C29880255668210064B074 /* BookmarksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2987F255668210064B074 /* BookmarksViewController.swift */; };
@@ -59,7 +59,7 @@
 		15A4B60125493DCF00534EFE /* MovieCollectionViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MovieCollectionViewController+Extensions.swift"; sourceTree = "<group>"; };
 		15A4B607254944C900534EFE /* MovieCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCell.swift; sourceTree = "<group>"; };
 		15A4B60A2549455800534EFE /* TitleSupplementaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleSupplementaryView.swift; sourceTree = "<group>"; };
-		15A4B60D2549D8AC00534EFE /* MovieController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieController.swift; sourceTree = "<group>"; };
+		15A4B60D2549D8AC00534EFE /* MovieDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDataController.swift; sourceTree = "<group>"; };
 		15C29878255663090064B074 /* MovieDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewController.swift; sourceTree = "<group>"; };
 		15C2987C2556640D0064B074 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		15C2987F255668210064B074 /* BookmarksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksViewController.swift; sourceTree = "<group>"; };
@@ -119,8 +119,8 @@
 				15CF92992542F58A00CCBBF9 /* CompanyData.swift */,
 				15E7EA222542048000D459FA /* CompanyResponse.swift */,
 				15CF92962542F55500CCBBF9 /* CompanyDTOMapper.swift */,
-				15CF92AB25434C9A00CCBBF9 /* Core Data */,
 				1597CB2E255C5619001FBA8F /* ImageData.swift */,
+				15CF92AB25434C9A00CCBBF9 /* Core Data */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -140,7 +140,7 @@
 		15CF928C2542F4E700CCBBF9 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				15A4B60D2549D8AC00534EFE /* MovieController.swift */,
+				15A4B60D2549D8AC00534EFE /* MovieDataController.swift */,
 				15E7EA002540987D00D459FA /* MovieCollectionViewController.swift */,
 				15A4B60125493DCF00534EFE /* MovieCollectionViewController+Extensions.swift */,
 				15C29878255663090064B074 /* MovieDetailViewController.swift */,
@@ -297,7 +297,7 @@
 				15E7EA232542048000D459FA /* CompanyResponse.swift in Sources */,
 				15CF92B525434CC200CCBBF9 /* Collection+CoreDataProperties.swift in Sources */,
 				15A4B60225493DCF00534EFE /* MovieCollectionViewController+Extensions.swift in Sources */,
-				15A4B60E2549D8AC00534EFE /* MovieController.swift in Sources */,
+				15A4B60E2549D8AC00534EFE /* MovieDataController.swift in Sources */,
 				15CF92B725434CC200CCBBF9 /* Company+CoreDataProperties.swift in Sources */,
 				15C29879255663090064B074 /* MovieDetailViewController.swift in Sources */,
 				15CF927F2542EF1200CCBBF9 /* MovieListDataXXX.swift in Sources */,

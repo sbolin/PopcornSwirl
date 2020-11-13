@@ -11,10 +11,10 @@ import UIKit
 class MovieCollectionViewController: UIViewController {
     
     // MARK: - Properties
-    var movieCollections = MovieController()
+    var movieCollections = MovieDataController()
     var collectionView: UICollectionView! = nil
-    var dataSource: UICollectionViewDiffableDataSource<MovieController.MovieCollection, MovieController.Movie>! = nil
-    var currentSnapshot: NSDiffableDataSourceSnapshot<MovieController.MovieCollection, MovieController.Movie>! = nil
+    var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.Movie>! = nil
+    var currentSnapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.Movie>! = nil
     
 //    var castData = [CastData]()
 //    var actor = [String]()
@@ -108,7 +108,7 @@ extension MovieCollectionViewController {
     }
     func configureDataSource() {
         print("in configureDataSource()")
-        let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieController.Movie> {
+        let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.Movie> {
             (cell, indexPath, movie) in
             // Populate the cell with our item description.
             print("configureDataSource, cellRegistration")
@@ -132,8 +132,8 @@ extension MovieCollectionViewController {
             badgeView.isHidden = !hasBadgeCount
         }
 */
-        dataSource = UICollectionViewDiffableDataSource<MovieController.MovieCollection, MovieController.Movie>(collectionView: collectionView) { // data source changed
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieController.Movie) -> UICollectionViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.Movie>(collectionView: collectionView) { // data source changed
+            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.Movie) -> UICollectionViewCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
@@ -157,7 +157,7 @@ extension MovieCollectionViewController {
                 using: headerRegistration, for: index)
         }
         
-        currentSnapshot = NSDiffableDataSourceSnapshot<MovieController.MovieCollection, MovieController.Movie>()
+        currentSnapshot = NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.Movie>()
         print("in currentSnapshot: \(movieCollections.collections.count)")
         movieCollections.collections.forEach {
             let collection = $0
@@ -173,7 +173,7 @@ extension MovieCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("item \(indexPath.section), \(indexPath.row) selected")
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
-            collectionView.deselectItem(at: indexPath, animated: true)
+//            collectionView.deselectItem(at: indexPath, animated: true)
             return
         }
         print("go to detailView")

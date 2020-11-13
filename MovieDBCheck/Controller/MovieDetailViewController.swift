@@ -9,9 +9,31 @@ import UIKit
 
 class MovieDetailViewController: UIViewController {
     
-    let movie: MovieController.Movie
+    //MARK: - Outlets
     
-    init(with movie: MovieController.Movie) {
+    @IBOutlet weak var heroImage: UIImageView!
+    @IBOutlet weak var movieTitle: UILabel!
+    @IBOutlet weak var movieYear: UILabel!
+    @IBOutlet weak var movieOverview: UILabel!
+    @IBOutlet weak var movieActor: UILabel!
+    @IBOutlet weak var movieDirector: UILabel!
+    
+    @IBOutlet weak var movieRating: UILabel!
+    @IBOutlet weak var movieAverageScore: UILabel!
+    @IBOutlet weak var movieVoteCount: UILabel!
+    
+    @IBOutlet weak var favoriteButton: UIButton!
+    @IBOutlet weak var bookmarkButton: UIButton!
+    @IBOutlet weak var watchedButton: UIButton!
+    @IBOutlet weak var buyButton: UIButton!
+    
+    @IBOutlet weak var relatedCollectionView: UICollectionView!
+    
+    
+    //MARK: - Properties
+    let movie: MovieDataController.Movie
+    
+    init(with movie: MovieDataController.Movie) {
         self.movie = movie
         super.init(nibName: nil, bundle: nil)
     }
@@ -20,23 +42,37 @@ class MovieDetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-
     override func viewDidLoad() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy"
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        heroImage.image = movie.backdropImage
+        movieTitle.text = movie.title
+        movieYear.text = formatter.string(from: movie.releaseDate)
+        movieOverview.text = movie.overview
+        movieActor.text = movie.actor[0]
+        movieDirector.text = movie.director
+        movieRating.text = String(movie.popularity)
+        movieAverageScore.text = String(movie.voteAverage)
+        movieVoteCount.text = String(movie.voteCount)
+        
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    
+    
+    //MARK: - Actions
+    
+    @IBAction func buyTapped(_ sender: UIButton) {
     }
-    */
-
+    
+    @IBAction func watchTapped(_ sender: UIButton) {
+    }
+    
+    @IBAction func bookmarkTapped(_ sender: UIButton) {
+    }
+    
+    @IBAction func favoriteTapped(_ sender: UIButton) {
+    }
+    
+    
 }

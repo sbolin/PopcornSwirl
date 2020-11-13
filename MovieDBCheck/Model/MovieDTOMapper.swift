@@ -9,10 +9,10 @@ import Foundation
 
 struct MovieDTOMapper { // data transfer object
 //    static func map(_ dto: MoviesResponse) -> [MovieListData] {  // Original call
-    static func map(_ dto: MoviesResponse) -> [MovieController.Movie] {  // call when change to MovieController
-        var movieData = [MovieController.Movie]() // when change to MovieController
+    static func map(_ dto: MoviesResponse) -> [MovieDataController.Movie] {  // call when change to MovieController
+        var movieData = [MovieDataController.Movie]() // when change to MovieController
         for result in dto.results {
-            let movie = MovieController.Movie( // when change to MovieController
+            let movie = MovieDataController.Movie( // when change to MovieController
                 id: result.id,
                 title: result.title,
                 overview: result.overview,

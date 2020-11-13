@@ -1,5 +1,5 @@
 //
-//  MovieController.swift
+//  MovieDataController.swift
 //  PopcornSwirl
 //
 //  Created by Scott Bolin on 10/28/20.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MovieController {
+class MovieDataController {
     
     typealias MovieAPI = PopcornSwirl.MovieServiceAPI
     
@@ -125,7 +125,7 @@ class MovieController {
     }
 }
 
-extension MovieController {
+extension MovieDataController {
     
     func populateMovieData() {
         print("in populateMovieData")
