@@ -7,19 +7,20 @@
 
 import UIKit
 
-private enum Section: Hashable {
-    case main
-}
-
 class WatchedViewController: UIViewController {
 
     // MARK: - Properties
     private var movieCollections = MovieDataController()
     private var collectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataController.Movie>! = nil
-    private var currentSnapshot: NSDiffableDataSourceSnapshot<Section, MovieDataController.Movie>! = nil
-    
+//    private var currentSnapshot: NSDiffableDataSourceSnapshot<Section, MovieDataController.Movie>! = nil
+    private var movies = [MovieDataController.Movie]()
+
     private let formatter = DateFormatter()
+    
+    enum Section {
+        case main
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,13 +65,10 @@ extension WatchedViewController {
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
-        
-        movieCollections.collections.forEach {
-            let collection = $0
-            currentSnapshot.appendSections([.main])
-            currentSnapshot.appendItems(collection.movies)
-            dataSource.apply(currentSnapshot, animatingDifferences: false)
-        }
+        var currentSnapshot = NSDiffableDataSourceSnapshot<Section, MovieDataController.Movie>()
+        currentSnapshot.appendSections([.main])
+        currentSnapshot.appendItems(movies)
+        dataSource.apply(currentSnapshot, animatingDifferences: true)
     }
 }
 
