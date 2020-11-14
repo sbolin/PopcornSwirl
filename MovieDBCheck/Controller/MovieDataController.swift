@@ -156,15 +156,19 @@ extension MovieDataController {
             
             let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
             populateMovieImages(movieID: movie.id, url: posterURL, group: group, imageType: 0)
+            print("posterURL: \(posterURL)")
             
             let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
             populateMovieImages(movieID: movie.id, url: backdropURL, group: group, imageType: 1)
+            print("backdropURL: \(backdropURL)")
             
             let castURL = getCastURL(movieID: movie.id)
             populateCastData(castURL: castURL, group: group)
+            print("castURL: \(castURL)")
 
             let companyURL = getCompanyURL(movieID: movie.id)
             populateCompanyData(companyURL: companyURL, group: group)
+            print("companyURL: \(companyURL)")
 
         } // movie in movieList
     } // func
@@ -213,11 +217,13 @@ extension MovieDataController {
             // fetch then store in the cache if not
             group.enter()
             MovieAPI.shared.getImage(with: url, group: group) { [weak self] (data, response, error) in
+                guard let self = self else { return }
                 if error == nil, let data = data, let image = UIImage(data: data) {
                     print("fetch image, save to cache for later use")
-                    self?.cache.setObject(image, forKey: imageKey)
+                    self.cache.setObject(image, forKey: imageKey)
                     let imageData = ImageData(movieID: movieID, imagePath: url, image: image, imageType: imageType)
-                    self?.imageList.insert(imageData)
+                    self.imageList.insert(imageData)
+                    print("imageList length: \(self.imageList.count)")
                 } // error
             } // getImage
             group.leave()
@@ -226,11 +232,12 @@ extension MovieDataController {
     
     func populateCastData(castURL: URL, group: DispatchGroup) {
         MovieAPI.shared.getCast(with: castURL, group: group) { [weak self] (result: Result<CastResponse, Error>) in
+            guard let self = self else { return }
             group.enter()
             switch result {
                 case .success(let response):
                     let cast = CastDTOMapper.map(dto: response)
-                    self?.castList.insert(cast)
+                    self.castList.insert(cast)
                 case .failure(let error):
                     print(error.localizedDescription)
             } // switch
@@ -240,11 +247,12 @@ extension MovieDataController {
         
     func populateCompanyData(companyURL: URL, group: DispatchGroup) {
         MovieAPI.shared.getCompany(with: companyURL, group: group) { [weak self] (result: Result<CompanyResponse, Error>) in
+            guard let self = self else { return }
             group.enter()
             switch result {
                 case .success(let response):
                     let company = CompanyDTOMapper.map(dto: response)
-                    self?.companyList.insert(company)
+                    self.companyList.insert(company)
                 case .failure(let error):
                     print(error.localizedDescription)
             } // switch
