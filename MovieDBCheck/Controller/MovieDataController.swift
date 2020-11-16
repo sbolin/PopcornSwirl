@@ -33,7 +33,6 @@ class MovieDataController {
         
     fileprivate var _collections = [MovieCollection]()
     var collections: [MovieCollection] {
-        print("...collections updated...")
         return _collections
     }
     
@@ -50,9 +49,9 @@ class MovieDataController {
     ]
     
     init() {
-        populateMovieData()
-        populateSupplementaryMovieData()
-        compileMovieData()
+//        populateMovieData()
+//        populateSupplementaryMovieData()
+//        compileMovieData()
     }
     
     struct Movie: Hashable, Identifiable { // Domain model used in App
@@ -133,24 +132,29 @@ extension MovieDataController {
         
         for section in MovieCollection.Sections.allCases {
             let genreID = genresByName[section]! // force unwrap dictionary, ok as genres is clearly defined above
-//            group.enter()
+            group.enter()
             MovieAPI.shared.getMovies(from: genreID, page: page, group: group) { [weak self] (result: Result<MoviesResponse, Error>) in
-                guard let self = self else { return }
+                guard let strongSelf = self else {
+                    self?.group.leave()
+                    return }
                 switch result {
                     case .success(let response):
-                        self.movieList = MovieDTOMapper.map(response)
-                        let collectionItem = MovieCollection(genreID: genreID, movies: self.movieList)
-                        self._collections.append(collectionItem)
+                        strongSelf.movieList = MovieDTOMapper.map(response)
+                        let collectionItem = MovieCollection(genreID: genreID, movies: strongSelf.movieList)
+                        strongSelf._collections.append(collectionItem)
                         
                     case .failure(let error):
                         print(error.localizedDescription)
                 } // switch result
+                strongSelf.group.leave()
             } // getMovies
 //            group.leave()
         } // section
     } // func
     
     func populateSupplementaryMovieData() {
+        print("populateSupplementaryMovieData")
+        print("movieList.count = \(movieList.count)")
         for movie in movieList {
   //          movieItem = movie
             
@@ -174,12 +178,16 @@ extension MovieDataController {
     } // func
     
     func compileMovieData() {
+        print("in compileMovieData")
+        print("_collections: \(_collections)")
         group.notify(queue: queue) {
             self._collections = self._collections.map { item in
+                print("_collections.map {item}: \(item)")
                 var actors = [""]
                 var director = ""
                 var item = item
                 item.movies = item.movies.map { movie in
+                    print("item.movies.map {movie}: \(movie)")
                     var movie = movie
                     let id = movie.id
                     let cast = self.castList.filter( {$0.movieID == id})
@@ -195,8 +203,15 @@ extension MovieDataController {
                     movie.director = director
                     movie.company = companies
                     
-                    movie.posterImage = posterImage[0]
-                    movie.backdropImage = backdropImage[0]
+                    
+                    print("actors = \(actors)")
+                    print("director = \(director)")
+                    print("companies = \(companies)")
+                    print("posterImages: \(posterImage.count)")
+                    print("backdropImages: \(backdropImage.count)")
+
+//                    movie.posterImage = posterImage[0]
+//                    movie.backdropImage = backdropImage[0]
                     return movie
                 }
                 return item
@@ -231,6 +246,7 @@ extension MovieDataController {
     } // retrieveMovieImages
     
     func populateCastData(castURL: URL, group: DispatchGroup) {
+        print("populateCastData")
         MovieAPI.shared.getCast(with: castURL, group: group) { [weak self] (result: Result<CastResponse, Error>) in
             guard let self = self else { return }
             group.enter()
@@ -238,6 +254,7 @@ extension MovieDataController {
                 case .success(let response):
                     let cast = CastDTOMapper.map(dto: response)
                     self.castList.insert(cast)
+                    print("cast added: \(cast)")
                 case .failure(let error):
                     print(error.localizedDescription)
             } // switch
@@ -246,6 +263,7 @@ extension MovieDataController {
     } // populateCastData
         
     func populateCompanyData(companyURL: URL, group: DispatchGroup) {
+        print("populateCompanyData")
         MovieAPI.shared.getCompany(with: companyURL, group: group) { [weak self] (result: Result<CompanyResponse, Error>) in
             guard let self = self else { return }
             group.enter()
@@ -253,6 +271,7 @@ extension MovieDataController {
                 case .success(let response):
                     let company = CompanyDTOMapper.map(dto: response)
                     self.companyList.insert(company)
+                    print("company added: \(company)")
                 case .failure(let error):
                     print(error.localizedDescription)
             } // switch

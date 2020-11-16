@@ -34,11 +34,22 @@ class MovieCollectionViewController: UIViewController {
         .Family          : 10751
     ]
     
+    override func loadView() {
+        super.loadView()
+        movieCollections.populateMovieData()
+        movieCollections.populateSupplementaryMovieData()
+        movieCollections.compileMovieData()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "All Movies"
-        configureHierarchy()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        configureCollectionView()
         configureDataSource()
+        collectionView.reloadData()
     }
 }
 
@@ -83,7 +94,7 @@ extension MovieCollectionViewController {
 }
 
 extension MovieCollectionViewController {
-    func configureHierarchy() {
+    func configureCollectionView() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemBackground
@@ -102,12 +113,15 @@ extension MovieCollectionViewController {
             // Populate the cell with our item description.
             print("configureDataSource, cellRegistration")
             self.formatter.dateFormat = "yyyy"
-//            DispatchQueue.main.async {
-                cell.imageView.image = movie.posterImage
+            DispatchQueue.main.async {
                 cell.titleLabel.text = movie.title
                 cell.descriptionLabel.text = movie.overview
                 cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
-//            }
+                cell.activityIndicator.startAnimating()
+                // load image...
+                cell.imageView.image = movie.posterImage
+
+            }
         }
         
 /*        // badges

@@ -14,6 +14,7 @@ class MovieCell: UICollectionViewCell {
     let titleLabel = UILabel()
     let descriptionLabel = UILabel()
     let yearLabel = UILabel()
+    let activityIndicator = UIActivityIndicatorView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,11 +31,13 @@ extension MovieCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         yearLabel.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         
-        contentView.addSubview(imageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(yearLabel)
+        contentView.addSubview(imageView)
+        contentView.addSubview(activityIndicator)
         
         titleLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
         titleLabel.adjustsFontForContentSizeCategory = true
@@ -53,10 +56,15 @@ extension MovieCell {
         imageView.layer.cornerRadius = 4
         imageView.backgroundColor = UIColor.systemIndigo.withAlphaComponent(0.5)
         
-        let spacing = CGFloat(10)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .medium
+        activityIndicator.color = .white
+        
+        let spacing = CGFloat(6)
         
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            imageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, constant: -40),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
 
@@ -69,9 +77,15 @@ extension MovieCell {
             descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             descriptionLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 
-            yearLabel.topAnchor.constraint(equalTo: titleLabel.topAnchor, constant: -14),
+            yearLabel.topAnchor.constraint(equalTo: titleLabel.topAnchor, constant: -20),
             yearLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
-            yearLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+            yearLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            
+//            activityIndicator.topAnchor.constraint(equalTo: imageView.topAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
+            activityIndicator.heightAnchor.constraint(equalTo: imageView.heightAnchor),
+            activityIndicator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            activityIndicator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
         ])
     }
 }

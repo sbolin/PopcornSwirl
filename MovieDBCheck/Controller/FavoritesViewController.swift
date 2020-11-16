@@ -25,7 +25,7 @@ class FavoritesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Bookmarked Movies"
-        configureHierarchy()
+        configureView()
         configureDataSource()
     }
 }
@@ -38,7 +38,7 @@ extension FavoritesViewController {
 }
 
 extension FavoritesViewController {
-    private func configureHierarchy() {
+    private func configureView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(collectionView)
