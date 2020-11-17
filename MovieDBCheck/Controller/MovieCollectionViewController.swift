@@ -57,7 +57,7 @@ extension MovieCollectionViewController {
     
     func createLayout() -> UICollectionViewLayout {
         
-        let cellHeight:CGFloat = 250
+        let cellHeight:CGFloat = 220
         
         let config = UICollectionViewCompositionalLayoutConfiguration()
         config.interSectionSpacing = 8
