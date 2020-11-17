@@ -37,8 +37,8 @@ class MovieCollectionViewController: UIViewController {
     override func loadView() {
         super.loadView()
         movieCollections.populateMovieData()
-        movieCollections.populateSupplementaryMovieData()
-        movieCollections.compileMovieData()
+//        movieCollections.populateSupplementaryMovieData()
+//        movieCollections.compileMovieData()
     }
     
     override func viewDidLoad() {
@@ -107,22 +107,28 @@ extension MovieCollectionViewController {
         ])
     }
     func configureDataSource() {
+        
         print("in configureDataSource()")
-        let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.Movie> {
-            (cell, indexPath, movie) in
+        formatter.dateFormat = "yyyy"
+        let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.Movie> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
-            print("configureDataSource, cellRegistration")
-            self.formatter.dateFormat = "yyyy"
-            DispatchQueue.main.async {
-                cell.titleLabel.text = movie.title
-                cell.descriptionLabel.text = movie.overview
-                cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
-                cell.activityIndicator.startAnimating()
-                // load image...
-                cell.imageView.image = movie.posterImage
-
-            }
-        }
+            cell.titleLabel.text = movie.title
+            cell.descriptionLabel.text = movie.overview
+            cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
+            cell.activityIndicator.startAnimating()
+            // load image...
+            let backdropURL = self.movieCollections.getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
+//            var updatedSnapshot = self.dataSource.snapshot()
+            self.movieCollections.getMovieImage(imageURL: backdropURL) { (success, image) in
+                if success, let image = image {
+//                    movie.posterImage = image
+                    DispatchQueue.main.async {
+                        cell.imageView.image = image
+                        cell.activityIndicator.stopAnimating()
+                    } // Dispatch
+                } // success
+            } // getMovieImage
+        } // cellRegistration
         
 /*        // badges
         let supplementaryRegistration = UICollectionView.SupplementaryRegistration
@@ -168,15 +174,17 @@ extension MovieCollectionViewController {
             currentSnapshot.appendSections([collection])
             currentSnapshot.appendItems(collection.movies)
         }
-        dataSource.apply(currentSnapshot, animatingDifferences: false)
+        dataSource.apply(currentSnapshot, animatingDifferences: true)
     }
 }
 
 extension MovieCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("item \(indexPath.section), \(indexPath.row) selected")
-        guard let movie = self.dataSource.itemIdentifier(for: indexPath) else { return }
-        collectionView.deselectItem(at: indexPath, animated: true)
+        guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
+            collectionView.deselectItem(at: indexPath, animated: true)
+            return
+        }
         print("go to detailView")
         let detailViewController = MovieDetailViewController(with: movie)
         self.navigationController?.pushViewController(detailViewController, animated: true)

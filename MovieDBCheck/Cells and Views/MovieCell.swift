@@ -51,6 +51,7 @@ extension MovieCell {
         yearLabel.adjustsFontForContentSizeCategory = true
         yearLabel.textColor = .secondaryLabel
         
+        imageView.contentMode = .scaleAspectFill
         imageView.layer.borderColor = UIColor.systemIndigo.cgColor
         imageView.layer.borderWidth = 1
         imageView.layer.cornerRadius = 4

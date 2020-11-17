@@ -218,7 +218,28 @@ extension MovieDataController {
             }
         }
     }
-                
+    
+    func getMovieImage(imageURL: URL, completion: @escaping (Bool, UIImage?) -> Void) {
+        let session = URLSession(configuration: .default)
+        let imageKey = "\(imageURL)" as NSString
+        
+        if let imageCache = cache.object(forKey: imageKey) {
+            completion(true, imageCache)
+        } else {
+            let task = session.dataTask(with: imageURL) { (data, response, error) in
+                if let data = data, error == nil,
+                   let response = response as? HTTPURLResponse,
+                   response.statusCode == 200 {
+                    let image = UIImage(data: data)
+                    completion(true, image)
+                }
+                else {
+                    completion(false, nil)
+                }
+            }
+            task.resume()
+        }
+    }
     
     func populateMovieImages(movieID: Int, url: URL, group: DispatchGroup, imageType: Int) {
         let imageKey = "\(url)" as NSString
