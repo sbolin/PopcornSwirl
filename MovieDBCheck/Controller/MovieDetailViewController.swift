@@ -45,9 +45,13 @@ class MovieDetailViewController: UIViewController {
     }
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy"
-        super.viewDidLoad()
+        
+        self.view.backgroundColor = .systemBackground
+        
         heroImage.image = movie.backdropImage
         movieTitle.text = movie.title
         movieYear.text = formatter.string(from: movie.releaseDate)
@@ -57,16 +61,14 @@ class MovieDetailViewController: UIViewController {
         movieRating.text = String(movie.popularity)
         movieAverageScore.text = String(movie.voteAverage)
         movieVoteCount.text = String(movie.voteCount)
-        
     }
-    
-    
     
     //MARK: - Actions
     
     @IBAction func buyTapped(_ sender: UIButton) {
         print("buyTapped")
         buyButton.isSelected.toggle()
+        
     }
     
     @IBAction func watchTapped(_ sender: UIButton) {

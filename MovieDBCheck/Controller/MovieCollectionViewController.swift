@@ -16,6 +16,11 @@ class MovieCollectionViewController: UIViewController {
     var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.Movie>! = nil
     var currentSnapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.Movie>! = nil
     
+    var bookmarkedMovie = Set<Movie>()
+    var favoritedMovie = Set<Movie>()
+    var boughtMovie = Set<Movie>()
+    var watchedMovie = Set<Movie>()
+    
     let formatter = DateFormatter()
     
     static let sectionHeaderElementKind = "section-header-element-kind"
@@ -43,17 +48,54 @@ class MovieCollectionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        configureTabItem()
+        configureCollectionView() 
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureCollectionView()
+        
         configureDataSource()
-        collectionView.reloadData()
+        
+        if let indexPath = self.collectionView.indexPathsForSelectedItems?.first {
+            if let coordinator = self.transitionCoordinator {
+                coordinator.animate(alongsideTransition: { context in
+                    self.collectionView.deselectItem(at: indexPath, animated: true)
+                }) { (context) in
+                    if context.isCancelled {
+                        self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+                    }
+                }
+            } else {
+                self.collectionView.deselectItem(at: indexPath, animated: animated)
+            }
+        }
     }
 }
 
 extension MovieCollectionViewController {
+    
+    func configureTabItem() {
+        navigationItem.title = "Movie List"
+        navigationItem.largeTitleDisplayMode = .always
+    }
+    
+    func configureCollectionView() {
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout()) // frame: .zero
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+ //       collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .systemGroupedBackground
+        collectionView.delegate = self
+        view.addSubview(collectionView)
+//        NSLayoutConstraint.activate([
+//            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+//            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+//            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+//            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+//        ])
+    }
     
     func createLayout() -> UICollectionViewLayout {
         
@@ -94,18 +136,7 @@ extension MovieCollectionViewController {
 }
 
 extension MovieCollectionViewController {
-    func configureCollectionView() {
-        collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = .systemBackground
-        view.addSubview(collectionView)
-        NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-    }
+    
     func configureDataSource() {
         
         print("in configureDataSource()")
@@ -130,27 +161,12 @@ extension MovieCollectionViewController {
             } // getMovieImage
         } // cellRegistration
         
-/*        // badges
-        let supplementaryRegistration = UICollectionView.SupplementaryRegistration
-        <BadgeSupplementaryView>(elementKind: BadgeSupplementaryView.reuseIdentifier) {
-            (badgeView, string, indexPath) in
-            guard let model = self.dataSource.itemIdentifier(for: indexPath) else { return }
-            let hasBadgeCount =  model.favorite  // model.fav > 0
-            // Set the badge count as its label (and hide the view if the badge count is zero).
-            badgeView.label.text =  "1" // "\(model.badgeCount)"
-            badgeView.isHidden = !hasBadgeCount
-        }
-*/
         dataSource = UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.Movie>(collectionView: collectionView) { // data source changed
             (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.Movie) -> MovieCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
-/*        // badges
-        dataSource.supplementaryViewProvider = {
-            return self.collectionView.dequeueConfiguredReusableSupplementary(using: supplementaryRegistration, for: $2)
-        }
-*/
+
         // section header
         let headerRegistration = UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") {
             (supplementaryView, string, indexPath) in
@@ -170,11 +186,28 @@ extension MovieCollectionViewController {
         print("in currentSnapshot: \(movieCollections.collections.count)")
         movieCollections.collections.forEach {
             let collection = $0
-            print("in forEach: \(collection.movies.count)")
             currentSnapshot.appendSections([collection])
             currentSnapshot.appendItems(collection.movies)
         }
         dataSource.apply(currentSnapshot, animatingDifferences: true)
+        
+        
+/*        // badges
+         let supplementaryRegistration = UICollectionView.SupplementaryRegistration
+         <BadgeSupplementaryView>(elementKind: BadgeSupplementaryView.reuseIdentifier) {
+         (badgeView, string, indexPath) in
+         guard let model = self.dataSource.itemIdentifier(for: indexPath) else { return }
+         let hasBadgeCount =  model.favorite  // model.fav > 0
+         // Set the badge count as its label (and hide the view if the badge count is zero).
+         badgeView.label.text =  "1" // "\(model.badgeCount)"
+         badgeView.isHidden = !hasBadgeCount
+         }
+         */
+        /*        // badges
+         dataSource.supplementaryViewProvider = {
+         return self.collectionView.dequeueConfiguredReusableSupplementary(using: supplementaryRegistration, for: $2)
+         }
+         */
     }
 }
 

@@ -52,10 +52,12 @@ extension MovieCell {
         yearLabel.textColor = .secondaryLabel
         
         imageView.contentMode = .scaleAspectFill
-        imageView.layer.borderColor = UIColor.systemIndigo.cgColor
-        imageView.layer.borderWidth = 1
-        imageView.layer.cornerRadius = 4
+        imageView.layer.borderColor = UIColor.systemGray5.cgColor
+        imageView.layer.borderWidth = 0
+        imageView.layer.cornerRadius = 8
+        imageView.clipsToBounds = true
         imageView.backgroundColor = UIColor.systemIndigo.withAlphaComponent(0.5)
+        imageView.image = UIImage(systemName: "film")
         
         activityIndicator.hidesWhenStopped = true
         activityIndicator.style = .medium
