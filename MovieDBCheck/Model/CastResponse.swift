@@ -8,7 +8,7 @@
 import Foundation
 
 struct CastResponse: Codable {
-    let id: Int // Movie.id, 550 in call
+    let id: Int // MovieItem.id, 550 in call
     let cast: [CastMember]
     let crew: [CrewMember]
 }

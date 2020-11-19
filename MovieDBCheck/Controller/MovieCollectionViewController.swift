@@ -13,8 +13,8 @@ class MovieCollectionViewController: UIViewController {
     // MARK: - Properties
     var movieCollections = MovieDataController()
     var collectionView: UICollectionView! = nil
-    var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.Movie>! = nil
-    var currentSnapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.Movie>! = nil
+    var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.MovieItem>! = nil
+    var currentSnapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.MovieItem>! = nil
     
     var bookmarkedMovie = Set<Movie>()
     var favoritedMovie = Set<Movie>()
@@ -141,7 +141,7 @@ extension MovieCollectionViewController {
         
         print("in configureDataSource()")
         formatter.dateFormat = "yyyy"
-        let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.Movie> { (cell, indexPath, movie) in
+        let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.MovieItem> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
@@ -149,10 +149,8 @@ extension MovieCollectionViewController {
             cell.activityIndicator.startAnimating()
             // load image...
             let backdropURL = self.movieCollections.getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
-//            var updatedSnapshot = self.dataSource.snapshot()
             self.movieCollections.getMovieImage(imageURL: backdropURL) { (success, image) in
                 if success, let image = image {
-//                    movie.posterImage = image
                     DispatchQueue.main.async {
                         cell.imageView.image = image
                         cell.activityIndicator.stopAnimating()
@@ -161,8 +159,8 @@ extension MovieCollectionViewController {
             } // getMovieImage
         } // cellRegistration
         
-        dataSource = UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.Movie>(collectionView: collectionView) { // data source changed
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.Movie) -> MovieCell? in
+        dataSource = UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.MovieItem>(collectionView: collectionView) { // data source changed
+            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> MovieCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
@@ -182,7 +180,7 @@ extension MovieCollectionViewController {
                 using: headerRegistration, for: index)
         }
         
-        currentSnapshot = NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.Movie>()
+        currentSnapshot = NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.MovieItem>()
         print("in currentSnapshot: \(movieCollections.collections.count)")
         movieCollections.collections.forEach {
             let collection = $0
@@ -216,10 +214,12 @@ extension MovieCollectionViewController: UICollectionViewDelegate {
         print("item \(indexPath.section), \(indexPath.row) selected")
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
             collectionView.deselectItem(at: indexPath, animated: true)
+            print("collectionView deselect")
             return
         }
         print("go to detailView")
         let detailViewController = MovieDetailViewController(with: movie)
-        self.navigationController?.pushViewController(detailViewController, animated: true)
+        self.tabBarController?.selectedViewController?.present(detailViewController, animated: true)
+//        self.navigationController?.pushViewController(detailViewController, animated: true)
     }
 }

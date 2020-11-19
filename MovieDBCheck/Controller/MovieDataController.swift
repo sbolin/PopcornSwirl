@@ -19,8 +19,8 @@ class MovieDataController {
     private let apiKey = "a042fdafc76ac6243a7d5c85b930f1f6"
     private let baseImageURL = URL(string: "https://image.tmdb.org/t/p")!
     
-    var movieItem = Movie(id: 0, title: "", overview: "", genreID: [0], releaseDate: Date(), voteAverage: 0, voteCount: 0, adult: false, video: false, popularity: 0, posterPath: "", backdropPath: "")
-    var movieList = [Movie]()
+    var movieItem = MovieItem(id: 0, title: "", overview: "", genreID: [0], releaseDate: Date(), voteAverage: 0, voteCount: 0, adult: false, video: false, popularity: 0, posterPath: "", backdropPath: "")
+    var movieList = [MovieItem]()
     
     var castItem = CastData(movieID: 0, actor: [""], director: "")
     var castList = Set<CastData>()
@@ -35,6 +35,15 @@ class MovieDataController {
     var collections: [MovieCollection] {
         return _collections
     }
+    
+    private let jsonDecoder: JSONDecoder = {
+        let jsonDecoder = JSONDecoder()
+        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-mm-dd"
+        jsonDecoder.dateDecodingStrategy = .formatted(dateFormatter)
+        return jsonDecoder
+    }()
     
     let genresByName: [MovieCollection.Sections : Int] = [
         .Adventure   : 12,
@@ -54,7 +63,7 @@ class MovieDataController {
 //        compileMovieData()
     }
     
-    struct Movie: Hashable, Identifiable { // Domain model used in App
+    struct MovieItem: Hashable, Identifiable { // Domain model used in App
         
         var id: Int
         var title: String
@@ -92,7 +101,7 @@ class MovieDataController {
     struct MovieCollection: Hashable {
         let identifier = UUID()
         let genreID: Int
-        var movies: [Movie]
+        var movies: [MovieItem]
         var genreName: String {
             return getGenreName(genreID: genreID)
         }
@@ -222,7 +231,6 @@ extension MovieDataController {
     func getMovieImage(imageURL: URL, completion: @escaping (Bool, UIImage?) -> Void) {
         let session = URLSession(configuration: .default)
         let imageKey = "\(imageURL)" as NSString
-        
         if let imageCache = cache.object(forKey: imageKey) {
             completion(true, imageCache)
         } else {
@@ -241,6 +249,69 @@ extension MovieDataController {
         }
     }
     
+    func getMovieCast(castURL: URL, completion: @escaping (Bool, CastData?) -> Void) {
+        let session = URLSession(configuration: .default)
+        let task = session.dataTask(with: castURL) { (data, response, error) in
+            if let data = data, error == nil,
+               let response = response as? HTTPURLResponse,
+               response.statusCode == 200 {
+                do {
+                    let values = try self.jsonDecoder.decode(CastResponse.self, from: data)
+                    let cast = CastDTOMapper.map(dto: values)
+                    completion(true, cast)
+                } catch  {
+                    completion(false, nil)
+                }
+            }
+            else {
+                completion(false, nil)
+            }
+        }
+        task.resume()
+    } // getMovieCast
+    
+    
+    func getMovieCompany(companyURL: URL, completion: @escaping (Bool, CompanyData?) -> Void) {
+        let session = URLSession(configuration: .default)
+        let task = session.dataTask(with: companyURL) { (data, response, error) in
+            if let data = data, error == nil,
+            let response = response as? HTTPURLResponse,
+            response.statusCode == 200 {
+                do {
+                    let values = try self.jsonDecoder.decode(CompanyResponse.self, from: data)
+                    let company = CompanyDTOMapper.map(dto: values)
+                    completion(true, company)
+                } catch {
+                    completion(false, nil)
+                }
+            }
+            else {
+                completion(false, nil)
+            }
+        }
+        task.resume()
+    }
+    
+    // xx
+    func populateCompanyData(companyURL: URL, group: DispatchGroup) {
+        print("populateCompanyData")
+        MovieAPI.shared.getCompany(with: companyURL, group: group) { [weak self] (result: Result<CompanyResponse, Error>) in
+            guard let self = self else { return }
+            group.enter()
+            switch result {
+                case .success(let response):
+                    let company = CompanyDTOMapper.map(dto: response)
+                    self.companyList.insert(company)
+                    print("company added: \(company)")
+                case .failure(let error):
+                    print(error.localizedDescription)
+            } // switch
+            group.leave()
+        } // getCompany
+    } // populateCompanyData
+    
+    
+    // xx
     func populateMovieImages(movieID: Int, url: URL, group: DispatchGroup, imageType: Int) {
         let imageKey = "\(url)" as NSString
         
@@ -266,6 +337,8 @@ extension MovieDataController {
         } // else
     } // retrieveMovieImages
     
+    
+    // xx
     func populateCastData(castURL: URL, group: DispatchGroup) {
         print("populateCastData")
         MovieAPI.shared.getCast(with: castURL, group: group) { [weak self] (result: Result<CastResponse, Error>) in
@@ -282,23 +355,9 @@ extension MovieDataController {
             group.leave()
         } // getCast
     } // populateCastData
-        
-    func populateCompanyData(companyURL: URL, group: DispatchGroup) {
-        print("populateCompanyData")
-        MovieAPI.shared.getCompany(with: companyURL, group: group) { [weak self] (result: Result<CompanyResponse, Error>) in
-            guard let self = self else { return }
-            group.enter()
-            switch result {
-                case .success(let response):
-                    let company = CompanyDTOMapper.map(dto: response)
-                    self.companyList.insert(company)
-                    print("company added: \(company)")
-                case .failure(let error):
-                    print(error.localizedDescription)
-            } // switch
-            group.leave()
-        } // getCompany
-    } // populateCompanyData
+    
+    
+
 
     
     // images

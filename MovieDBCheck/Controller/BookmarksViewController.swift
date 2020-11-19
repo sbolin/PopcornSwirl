@@ -12,9 +12,9 @@ class BookmarksViewController: UIViewController {
     // MARK: - Properties
     private var movieCollections = MovieDataController()
     private var collectionView: UICollectionView! = nil
-    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataController.Movie>! = nil
+    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataController.MovieItem>! = nil
 //    private var currentSnapshot: NSDiffableDataSourceSnapshot<Section, MovieDataController.Movie>! = nil
-    private var movies = [MovieDataController.Movie]()
+    private var movies = [MovieDataController.MovieItem]()
 
     private let formatter = DateFormatter()
     
@@ -47,7 +47,7 @@ extension BookmarksViewController {
     
     private func configureDataSource() {
         print("in configureDataSource()")
-        let cellRegistration = UICollectionView.CellRegistration<ListViewCell, MovieDataController.Movie> {
+        let cellRegistration = UICollectionView.CellRegistration<ListViewCell, MovieDataController.MovieItem> {
             (cell, indexPath, movie) in
             // Populate the cell with our item description.
             print("configureDataSource, cellRegistration")
@@ -60,12 +60,12 @@ extension BookmarksViewController {
 //            }
         }
 
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataController.Movie>(collectionView: collectionView) { // data source changed
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.Movie) -> ListViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataController.MovieItem>(collectionView: collectionView) { // data source changed
+            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> ListViewCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
-        var currentSnapshot = NSDiffableDataSourceSnapshot<Section, MovieDataController.Movie>()
+        var currentSnapshot = NSDiffableDataSourceSnapshot<Section, MovieDataController.MovieItem>()
         currentSnapshot.appendSections([.main])
         currentSnapshot.appendItems(movies)
         dataSource.apply(currentSnapshot, animatingDifferences: true)

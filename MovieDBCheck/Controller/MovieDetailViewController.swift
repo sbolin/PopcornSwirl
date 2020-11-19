@@ -17,6 +17,7 @@ class MovieDetailViewController: UIViewController {
     @IBOutlet weak var movieOverview: UILabel!
     @IBOutlet weak var movieActor: UILabel!
     @IBOutlet weak var movieDirector: UILabel!
+    @IBOutlet weak var movieCompany: UILabel!
     
     @IBOutlet weak var movieRating: UILabel!
     @IBOutlet weak var movieAverageScore: UILabel!
@@ -31,11 +32,12 @@ class MovieDetailViewController: UIViewController {
     
     @IBOutlet weak var relatedCollectionView: UICollectionView!
     
-    
     //MARK: - Properties
-    let movie: MovieDataController.Movie
+    var movieCollections = MovieDataController()
+    var movie: MovieDataController.MovieItem
+    let formatter = DateFormatter()
     
-    init(with movie: MovieDataController.Movie) {
+    init(with movie: MovieDataController.MovieItem) {
         self.movie = movie
         super.init(nibName: nil, bundle: nil)
     }
@@ -46,21 +48,65 @@ class MovieDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy"
-        
         self.view.backgroundColor = .systemBackground
         
-        heroImage.image = movie.backdropImage
-        movieTitle.text = movie.title
-        movieYear.text = formatter.string(from: movie.releaseDate)
-        movieOverview.text = movie.overview
-        movieActor.text = movie.actor[0]
-        movieDirector.text = movie.director
-        movieRating.text = String(movie.popularity)
-        movieAverageScore.text = String(movie.voteAverage)
-        movieVoteCount.text = String(movie.voteCount)
+        // get actor and image for movie
+        let posterURL = movieCollections.getImageURL(imageSize: "w780", endPoint: movie.posterPath)
+        movieCollections.getMovieImage(imageURL: posterURL) { (success, image) in
+            if success, let image = image {
+                DispatchQueue.main.async {
+                    self.heroImage.image = image
+                } // DispatchQueue
+            } // success
+        } // getMovieImage
+        
+        let actorURL = movieCollections.getCastURL(movieID: movie.id)
+        movieCollections.getMovieCast(castURL: actorURL) { (success, cast) in
+            if success, let cast = cast {
+                DispatchQueue.main.async {
+                    self.movie.actor = cast.actor
+                    self.movie.director = cast.director
+                    self.movieActor.text = cast.actor.joined(separator: ", ")
+                    self.movieDirector.text = cast.director
+                } // DispatchQueue
+            } // success
+        } // getMovieCast
+        
+        let companyURL = movieCollections.getCompanyURL(movieID: movie.id)
+        movieCollections.getMovieCompany(companyURL: companyURL) { (success, company) in
+            if success, let company = company {
+                DispatchQueue.main.async {
+                    self.movie.company = company.company
+                    self.movieCompany.text = company.company.joined(separator: ", ")
+                } // DispatchQueue
+            } // success
+        } // getMovieCompany
+
+
+        formatter.dateFormat = "yyyy"
+        print("in moviedetailviewcontroller")
+        print("movie passed in: \(movie)")
+        print("movie title: \(movie.title)")
+        print("backcrop image: \(movie.backdropImage)")
+        print("poster image: \(movie.posterImage)")
+        let releaseDate = formatter.string(from: movie.releaseDate)
+        print("release data: \(releaseDate)")
+        print("overview: \(movie.overview)")
+        print("actors: \(movie.actor)")
+        print("director: \(movie.director)")
+        print("popularity: \(movie.popularity)")
+        print("vote average: \(movie.voteAverage)")
+        print("vote count: \(movie.voteCount)")
+        
+//        heroImage.image = self.movie.backdropImage
+//        movieTitle.text = movie.title
+//        movieYear.text = formatter.string(from: movie.releaseDate)
+//        movieOverview.text = self.movie.overview
+//        movieActor.text = self.movie.actor[0]
+//        movieDirector.text = self.movie.director
+//        movieRating.text = String(self.movie.popularity)
+//        movieAverageScore.text = String(self.movie.voteAverage)
+//        movieVoteCount.text = String(self.movie.voteCount)
     }
     
     //MARK: - Actions
