@@ -219,7 +219,9 @@ extension MovieCollectionViewController: UICollectionViewDelegate {
         }
         print("go to detailView")
         let detailViewController = MovieDetailViewController(with: movie)
-        self.tabBarController?.selectedViewController?.present(detailViewController, animated: true)
+        let navController = UINavigationController(rootViewController: detailViewController)
+        self.present(navController, animated: true, completion: nil)
+//        self.tabBarController?.selectedViewController?.present(detailViewController, animated: true)
 //        self.navigationController?.pushViewController(detailViewController, animated: true)
     }
 }
