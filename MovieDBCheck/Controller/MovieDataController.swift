@@ -9,16 +9,21 @@ import UIKit
 
 class MovieDataController {
     
+    //MARK: - Properties
+    
     typealias MovieAPI = PopcornSwirl.MovieServiceAPI
     
+    // Dispatch
     let group = DispatchGroup()
     let queue = DispatchQueue.global(qos: .userInteractive)
     let cache = NSCache<NSString, UIImage>()
     
+    // API
     private let baseURL = URL(string: "https://api.themoviedb.org/3")! // 4 does not work
     private let apiKey = "a042fdafc76ac6243a7d5c85b930f1f6"
     private let baseImageURL = URL(string: "https://image.tmdb.org/t/p")!
     
+    // Instantiate MovieItem
     var movieItem = MovieItem(id: 0, title: "", overview: "", genreID: [0], releaseDate: Date(), voteAverage: 0, voteCount: 0, adult: false, video: false, popularity: 0, posterPath: "", backdropPath: "")
     var movieList = [MovieItem]()
     
@@ -30,12 +35,16 @@ class MovieDataController {
     
     var imageItem = ImageData(movieID: 0, imagePath: URL(string: "https://image.tmdb.org/t/p")!, image: UIImage(), imageType: 0)
     var imageList = Set<ImageData>()
-        
+     
+    // temporary collection
     fileprivate var _collections = [MovieCollection]()
+    
+    // calculated collection, updates with changes to _collections (used in diffabledatasource)
     var collections: [MovieCollection] {
         return _collections
     }
     
+    // jsondecoder
     private let jsonDecoder: JSONDecoder = {
         let jsonDecoder = JSONDecoder()
         jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -45,6 +54,7 @@ class MovieDataController {
         return jsonDecoder
     }()
     
+    // genres/sections
     let genresByName: [MovieCollection.Sections : Int] = [
         .Adventure   : 12,
         .Animation   : 16,
@@ -57,14 +67,10 @@ class MovieDataController {
         .Upcoming    : 99999
     ]
     
-    init() {
-//        populateMovieData()
-//        populateSupplementaryMovieData()
-//        compileMovieData()
-    }
+    init() {}
     
+    // MovieItem struct
     struct MovieItem: Hashable, Identifiable { // Domain model used in App
-        
         var id: Int
         var title: String
         var overview: String
@@ -98,6 +104,7 @@ class MovieDataController {
         }
     }
     
+    // collection of movies
     struct MovieCollection: Hashable {
         let identifier = UUID()
         let genreID: Int
@@ -141,10 +148,11 @@ extension MovieDataController {
         
         for section in MovieCollection.Sections.allCases {
             let genreID = genresByName[section]! // force unwrap dictionary, ok as genres is clearly defined above
-            group.enter()
-            MovieAPI.shared.getMovies(from: genreID, page: page, group: group) { [weak self] (result: Result<MoviesResponse, Error>) in
+//            group.enter()
+//            MovieAPI.shared.getMovies(from: genreID, page: page, group: group) { [weak self] (result: Result<MoviesResponse, Error>) in
+            MovieAPI.shared.getMovies(from: genreID, page: page) { [weak self] (result: Result<MoviesResponse, Error>) in
                 guard let strongSelf = self else {
-                    self?.group.leave()
+//                    self?.group.leave()
                     return }
                 switch result {
                     case .success(let response):
@@ -155,77 +163,81 @@ extension MovieDataController {
                     case .failure(let error):
                         print(error.localizedDescription)
                 } // switch result
-                strongSelf.group.leave()
+//                strongSelf.group.leave()
             } // getMovies
 //            group.leave()
         } // section
     } // func
     
-    func populateSupplementaryMovieData() {
-        print("populateSupplementaryMovieData")
-        print("movieList.count = \(movieList.count)")
-        for movie in movieList {
-  //          movieItem = movie
-            
-            let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
-            populateMovieImages(movieID: movie.id, url: posterURL, group: group, imageType: 0)
-            print("posterURL: \(posterURL)")
-            
-            let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
-            populateMovieImages(movieID: movie.id, url: backdropURL, group: group, imageType: 1)
-            print("backdropURL: \(backdropURL)")
-            
-            let castURL = getCastURL(movieID: movie.id)
-            populateCastData(castURL: castURL, group: group)
-            print("castURL: \(castURL)")
-
-            let companyURL = getCompanyURL(movieID: movie.id)
-            populateCompanyData(companyURL: companyURL, group: group)
-            print("companyURL: \(companyURL)")
-
-        } // movie in movieList
-    } // func
+//    func populateSupplementaryMovieData() {
+//        print("populateSupplementaryMovieData")
+//        print("movieList.count = \(movieList.count)")
+//        for movie in movieList {
+//
+//            let posterURL = getImageURL(imageSize: "w780", endPoint: movie.posterPath)
+//            populateMovieImages(movieID: movie.id, url: posterURL, group: group, imageType: 0)
+//            print("posterURL: \(posterURL)")
+//
+//            let backdropURL = getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
+//            populateMovieImages(movieID: movie.id, url: backdropURL, group: group, imageType: 1)
+//            print("backdropURL: \(backdropURL)")
+//
+//            let castURL = getCastURL(movieID: movie.id)
+//            populateCastData(castURL: castURL, group: group)
+//            print("castURL: \(castURL)")
+//
+//            let companyURL = getCompanyURL(movieID: movie.id)
+//            populateCompanyData(companyURL: companyURL, group: group)
+//            print("companyURL: \(companyURL)")
+//
+//        } // movie in movieList
+//    } // func
     
-    func compileMovieData() {
-        print("in compileMovieData")
-        print("_collections: \(_collections)")
-        group.notify(queue: queue) {
-            self._collections = self._collections.map { item in
-                print("_collections.map {item}: \(item)")
-                var actors = [""]
-                var director = ""
-                var item = item
-                item.movies = item.movies.map { movie in
-                    print("item.movies.map {movie}: \(movie)")
-                    var movie = movie
-                    let id = movie.id
-                    let cast = self.castList.filter( {$0.movieID == id})
-                    cast.forEach { castData in
-                        actors = castData.actor
-                        director = castData.director
-                    }
-                    let companies = self.companyList.filter( {$0.movieID == id}).flatMap( {return $0.company})
-                    let posterImage = self.imageList.filter( {$0.movieID == id && $0.imageType == 0}).map({return $0.image})
-                    let backdropImage = self.imageList.filter( {$0.movieID == id && $0.imageType == 1}).map({return $0.image})
-                    
-                    movie.actor = actors
-                    movie.director = director
-                    movie.company = companies
-                    
-                    
-                    print("actors = \(actors)")
-                    print("director = \(director)")
-                    print("companies = \(companies)")
-                    print("posterImages: \(posterImage.count)")
-                    print("backdropImages: \(backdropImage.count)")
-
-//                    movie.posterImage = posterImage[0]
-//                    movie.backdropImage = backdropImage[0]
-                    return movie
-                }
-                return item
-            }
-        }
+//    func compileMovieData() {
+//        print("in compileMovieData")
+//        print("_collections: \(_collections)")
+// //       group.notify(queue: queue) {
+//            self._collections = self._collections.map { item in
+//                print("_collections.map {item}: \(item)")
+//                var actors = [""]
+//                var director = ""
+//                var item = item
+//                item.movies = item.movies.map { movie in
+//                    print("item.movies.map {movie}: \(movie)")
+//                    var movie = movie
+//                    let id = movie.id
+//                    let cast = self.castList.filter( {$0.movieID == id})
+//                    cast.forEach { castData in
+//                        actors = castData.actor
+//                        director = castData.director
+//                    }
+//                    let companies = self.companyList.filter( {$0.movieID == id}).flatMap( {return $0.company})
+//                    let posterImage = self.imageList.filter( {$0.movieID == id && $0.imageType == 0}).map({return $0.image})
+//                    let backdropImage = self.imageList.filter( {$0.movieID == id && $0.imageType == 1}).map({return $0.image})
+//
+//                    movie.actor = actors
+//                    movie.director = director
+//                    movie.company = companies
+//
+//
+//                    print("actors = \(actors)")
+//                    print("director = \(director)")
+//                    print("companies = \(companies)")
+//                    print("posterImages: \(posterImage.count)")
+//                    print("backdropImages: \(backdropImage.count)")
+//
+////                    movie.posterImage = posterImage[0]
+////                    movie.backdropImage = backdropImage[0]
+//                    return movie
+//                } // item.movies.map
+//                return item
+//            } // _collections
+////        } // group notify
+//    }
+    
+    // images
+    func getImageURL(imageSize: String, endPoint: String) -> URL {
+        return baseImageURL.appendingPathComponent(imageSize).appendingPathComponent(endPoint)
     }
     
     func getMovieImage(imageURL: URL, completion: @escaping (Bool, UIImage?) -> Void) {
@@ -249,6 +261,17 @@ extension MovieDataController {
         }
     }
     
+    //DANGER NOTE! urlComponents is unwrapped, possibly causing crash. Ask Peter about this
+    // https://api.themoviedb.org/3/movie/###/credits?api_key=a042fdafc76ac6243a7d5c85b930f1f6
+    // cast data
+    func getCastURL(movieID: Int) -> URL {
+        let castURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
+        var urlComponents = URLComponents(url: castURL, resolvingAgainstBaseURL: true)! // <---!!
+        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+        urlComponents.queryItems = [apiQuery]
+        return urlComponents.url! // <---!!
+    }
+    
     func getMovieCast(castURL: URL, completion: @escaping (Bool, CastData?) -> Void) {
         let session = URLSession(configuration: .default)
         let task = session.dataTask(with: castURL) { (data, response, error) in
@@ -270,6 +293,14 @@ extension MovieDataController {
         task.resume()
     } // getMovieCast
     
+    // company data
+    func getCompanyURL(movieID: Int) -> URL {
+        let compURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
+        var urlComponents = URLComponents(url: compURL, resolvingAgainstBaseURL: true)! // <---!!
+        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+        urlComponents.queryItems = [apiQuery]
+        return urlComponents.url! // <---!!
+    }
     
     func getMovieCompany(companyURL: URL, completion: @escaping (Bool, CompanyData?) -> Void) {
         let session = URLSession(configuration: .default)
@@ -290,99 +321,6 @@ extension MovieDataController {
             }
         }
         task.resume()
-    }
-    
-    // xx
-    func populateCompanyData(companyURL: URL, group: DispatchGroup) {
-        print("populateCompanyData")
-        MovieAPI.shared.getCompany(with: companyURL, group: group) { [weak self] (result: Result<CompanyResponse, Error>) in
-            guard let self = self else { return }
-            group.enter()
-            switch result {
-                case .success(let response):
-                    let company = CompanyDTOMapper.map(dto: response)
-                    self.companyList.insert(company)
-                    print("company added: \(company)")
-                case .failure(let error):
-                    print(error.localizedDescription)
-            } // switch
-            group.leave()
-        } // getCompany
-    } // populateCompanyData
-    
-    
-    // xx
-    func populateMovieImages(movieID: Int, url: URL, group: DispatchGroup, imageType: Int) {
-        let imageKey = "\(url)" as NSString
-        
-        if let imageCache = cache.object(forKey: imageKey) {
-            // use the cached version if available
-            print("use cached image")
-            let imageData = ImageData(movieID: movieID, imagePath: url, image: imageCache, imageType: imageType)
-            imageList.insert(imageData)
-        } else {
-            // fetch then store in the cache if not
-            group.enter()
-            MovieAPI.shared.getImage(with: url, group: group) { [weak self] (data, response, error) in
-                guard let self = self else { return }
-                if error == nil, let data = data, let image = UIImage(data: data) {
-                    print("fetch image, save to cache for later use")
-                    self.cache.setObject(image, forKey: imageKey)
-                    let imageData = ImageData(movieID: movieID, imagePath: url, image: image, imageType: imageType)
-                    self.imageList.insert(imageData)
-                    print("imageList length: \(self.imageList.count)")
-                } // error
-            } // getImage
-            group.leave()
-        } // else
-    } // retrieveMovieImages
-    
-    
-    // xx
-    func populateCastData(castURL: URL, group: DispatchGroup) {
-        print("populateCastData")
-        MovieAPI.shared.getCast(with: castURL, group: group) { [weak self] (result: Result<CastResponse, Error>) in
-            guard let self = self else { return }
-            group.enter()
-            switch result {
-                case .success(let response):
-                    let cast = CastDTOMapper.map(dto: response)
-                    self.castList.insert(cast)
-                    print("cast added: \(cast)")
-                case .failure(let error):
-                    print(error.localizedDescription)
-            } // switch
-            group.leave()
-        } // getCast
-    } // populateCastData
-    
-    
-
-
-    
-    // images
-    func getImageURL(imageSize: String, endPoint: String) -> URL {
-        return baseImageURL.appendingPathComponent(imageSize).appendingPathComponent(endPoint)
-    }
-    
-    //DANGER NOTE! urlComponents is unwrapped, possibly causing crash. Ask Peter about this
-    // https://api.themoviedb.org/3/movie/###/credits?api_key=a042fdafc76ac6243a7d5c85b930f1f6
-    // cast data
-    func getCastURL(movieID: Int) -> URL {
-        let castURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID)).appendingPathComponent("credits")
-        var urlComponents = URLComponents(url: castURL, resolvingAgainstBaseURL: true)! // <---!!
-        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-        urlComponents.queryItems = [apiQuery]
-        return urlComponents.url! // <---!!
-    }
-    
-    // company data
-    func getCompanyURL(movieID: Int) -> URL {
-        let compURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
-        var urlComponents = URLComponents(url: compURL, resolvingAgainstBaseURL: true)! // <---!!
-        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-        urlComponents.queryItems = [apiQuery]
-        return urlComponents.url! // <---!!
     }
 }
 

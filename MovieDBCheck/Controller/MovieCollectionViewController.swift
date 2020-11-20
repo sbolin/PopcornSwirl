@@ -58,19 +58,19 @@ class MovieCollectionViewController: UIViewController {
         
         configureDataSource()
         
-        if let indexPath = self.collectionView.indexPathsForSelectedItems?.first {
-            if let coordinator = self.transitionCoordinator {
-                coordinator.animate(alongsideTransition: { context in
-                    self.collectionView.deselectItem(at: indexPath, animated: true)
-                }) { (context) in
-                    if context.isCancelled {
-                        self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
-                    }
-                }
-            } else {
-                self.collectionView.deselectItem(at: indexPath, animated: animated)
-            }
-        }
+//        if let indexPath = self.collectionView.indexPathsForSelectedItems?.first {
+//            if let coordinator = self.transitionCoordinator {
+//                coordinator.animate(alongsideTransition: { context in
+//                    self.collectionView.deselectItem(at: indexPath, animated: true)
+//                }) { (context) in
+//                    if context.isCancelled {
+//                        self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
+//                    }
+//                }
+//            } else {
+//                self.collectionView.deselectItem(at: indexPath, animated: animated)
+//            }
+//        }
     }
 }
 
@@ -82,19 +82,11 @@ extension MovieCollectionViewController {
     }
     
     func configureCollectionView() {
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout()) // frame: .zero
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
- //       collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemGroupedBackground
         collectionView.delegate = self
         view.addSubview(collectionView)
-//        NSLayoutConstraint.activate([
-//            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-//            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-//        ])
     }
     
     func createLayout() -> UICollectionViewLayout {
@@ -218,10 +210,12 @@ extension MovieCollectionViewController: UICollectionViewDelegate {
             return
         }
         print("go to detailView")
-        let detailViewController = MovieDetailViewController(with: movie)
+//        let detailViewController = MovieDetailViewController(with: movie)
+        let detailViewController = MovieDetailViewController()
+        detailViewController.setup(movie: movie)
         let navController = UINavigationController(rootViewController: detailViewController)
         self.present(navController, animated: true, completion: nil)
 //        self.tabBarController?.selectedViewController?.present(detailViewController, animated: true)
-//        self.navigationController?.pushViewController(detailViewController, animated: true)
+ //       self.navigationController?.pushViewController(detailViewController, animated: true) // doesn't work....
     }
 }

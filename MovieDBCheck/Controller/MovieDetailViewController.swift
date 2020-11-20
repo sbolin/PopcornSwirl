@@ -34,10 +34,10 @@ class MovieDetailViewController: UIViewController {
     
     //MARK: - Properties
     let group = DispatchGroup()
-    let queue = DispatchQueue.global(qos: .userInteractive)
+    let queue = DispatchQueue.global()
     
     var movieCollections = MovieDataController()
-    var movie: MovieDataController.MovieItem
+//    var movie: MovieDataController.MovieItem
     let formatter = DateFormatter()
     
     var actors: [String] = []
@@ -45,77 +45,83 @@ class MovieDetailViewController: UIViewController {
     var companies: [String] = []
     var mainImage = UIImage()
     
-    init(with movie: MovieDataController.MovieItem) {
-        self.movie = movie
-        super.init(nibName: nil, bundle: nil)
-    }
+//    init(with movie: MovieDataController.MovieItem) {
+//        self.movie = movie
+//        super.init(nibName: nil, bundle: nil)
+//    }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func viewWillLayoutSubviews() {
-        // prevent user from dismissing view
-        isModalInPresentation = true
-    }
+//    required init?(coder: NSCoder) {
+//        fatalError("init(coder:) has not been implemented")
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "\(movie.title)"
+        navigationItem.title = "Movies"//"\(movie.title)"
         view.backgroundColor = .systemBackground
-        
+ //       setup(movie: movie)
+    }
+    func setup(movie: MovieDataController.MovieItem) {
         // get actor and image for movie
         let posterURL = movieCollections.getImageURL(imageSize: "w780", endPoint: movie.posterPath)
-        movieCollections.getMovieImage(imageURL: posterURL) { [self] (success, image) in
+//        self.group.enter()
+        movieCollections.getMovieImage(imageURL: posterURL) { (success, image) in
+
             if success, let image = image {
-                mainImage = image
+                self.mainImage = image
             } // success
+//            self.group.leave()
         } // getMovieImage
         
         let actorURL = movieCollections.getCastURL(movieID: movie.id)
-        movieCollections.getMovieCast(castURL: actorURL) { [self] (success, cast) in
+//        self.group.enter()
+        movieCollections.getMovieCast(castURL: actorURL) { (success, cast) in
+
             if success, let cast = cast {
-                actors = cast.actor
-                director = cast.director
+                self.actors = cast.actor
+                self.director = cast.director
             } // success
+//            self.group.leave()
         } // getMovieCast
         
         let companyURL = movieCollections.getCompanyURL(movieID: movie.id)
-        movieCollections.getMovieCompany(companyURL: companyURL) { [self] (success, company) in
+//        self.group.enter()
+        movieCollections.getMovieCompany(companyURL: companyURL) { (success, company) in
+
             if success, let company = company {
-                companies = company.company
+                self.companies = company.company
             } // success
+//            self.group.leave()
         } // getMovieCompany
         
         formatter.dateFormat = "yyyy"
-        group.notify(queue: queue) {
-            self.heroImage.image = self.mainImage
-            self.movieTitle.text = self.movie.title
-            self.movieYear.text = self.formatter.string(from: self.movie.releaseDate)
-            self.movieOverview.text = self.movie.overview
-            self.movieActor.text = self.actors.joined(separator: ", ")
-            self.movieDirector.text = self.director
-            self.movieCompany.text = self.companies.joined(separator: ", ")
-            self.movieRating.text = String(self.movie.popularity)
-            self.movieAverageScore.text = String(self.movie.voteAverage)
-            self.movieVoteCount.text = String(self.movie.voteCount)
+//        group.notify(queue: queue) { [self] in
+        DispatchQueue.main.async { [self] in
             /*
-             print("in moviedetailviewcontroller")
-             print("movie passed in: \(movie)")
-             print("movie title: \(movie.title)")
-             print("backcrop image: \(movie.backdropImage)")
-             print("poster image: \(movie.posterImage)")
-             let releaseDate = formatter.string(from: movie.releaseDate)
-             print("release data: \(releaseDate)")
-             print("overview: \(movie.overview)")
-             print("actors: \(movie.actor)")
-             print("director: \(movie.director)")
-             print("popularity: \(movie.popularity)")
-             print("vote average: \(movie.voteAverage)")
-             print("vote count: \(movie.voteCount)")
+             self.heroImage.image = self.mainImage
+             self.movieTitle.text = self.movie.title
+             self.movieYear.text = self.formatter.string(from: self.movie.releaseDate)
+             self.movieOverview.text = self.movie.overview
+             self.movieActor.text = self.actors.joined(separator: ", ")
+             self.movieDirector.text = self.director
+             self.movieCompany.text = self.companies.joined(separator: ", ")
+             self.movieRating.text = String(self.movie.popularity)
+             self.movieAverageScore.text = String(self.movie.voteAverage)
+             self.movieVoteCount.text = String(self.movie.voteCount)
              */
+            print("in moviedetailviewcontroller")
+            print("movie passed in: \(movie)")
+            print("movie title: \(movie.title)")
+            print("backcrop image: \(movie.backdropImage)")
+            print("poster image: \(movie.posterImage)")
+            let releaseDate = formatter.string(from: movie.releaseDate)
+            print("release data: \(releaseDate)")
+            print("overview: \(movie.overview)")
+            print("actors: \(movie.actor)")
+            print("director: \(movie.director)")
+            print("popularity: \(movie.popularity)")
+            print("vote average: \(movie.voteAverage)")
+            print("vote count: \(movie.voteCount)")
         }
-        
     }
     
     //MARK: - Actions
