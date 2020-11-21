@@ -13,6 +13,7 @@ class MovieCollectionViewController: UIViewController {
     // MARK: - Properties
     var movieCollections = MovieDataController()
     var collectionView: UICollectionView! = nil
+//    private lazy var dataSource = makeDataSource()
     var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.MovieItem>! = nil
     var currentSnapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.MovieItem>! = nil
     
@@ -62,22 +63,7 @@ class MovieCollectionViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
         configureDataSource()
-        
-//        if let indexPath = self.collectionView.indexPathsForSelectedItems?.first {
-//            if let coordinator = self.transitionCoordinator {
-//                coordinator.animate(alongsideTransition: { context in
-//                    self.collectionView.deselectItem(at: indexPath, animated: true)
-//                }) { (context) in
-//                    if context.isCancelled {
-//                        self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: [])
-//                    }
-//                }
-//            } else {
-//                self.collectionView.deselectItem(at: indexPath, animated: animated)
-//            }
-//        }
     }
 }
 
@@ -135,6 +121,35 @@ extension MovieCollectionViewController {
 }
 
 extension MovieCollectionViewController {
+    // currently working on cleaning up the dataSource methods, in particular snapshots...
+    
+    /*
+    
+    func makeDataSource() -> DataSource {
+        
+        let dataSource = DataSource(collectionView: collectionView, cellProvider: { (collectionView, indexPath, movie) -> MovieCell? in
+            let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.MovieItem> { (cell, indexPath, movie) in
+                var setMovie = movie
+                // Populate the cell with our item description.
+                cell.titleLabel.text = movie.title
+                cell.descriptionLabel.text = movie.overview
+                cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
+                cell.activityIndicator.startAnimating()
+                // load image...
+                let backdropURL = self.movieCollections.getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
+                self.movieCollections.getMovieImage(imageURL: backdropURL) { (success, image) in
+                    if success, let image = image {
+                        DispatchQueue.main.async {
+                            cell.imageView.image = image
+                            setMovie.backdropImage = image
+                            cell.activityIndicator.stopAnimating()
+                        } // Dispatch
+                    } // success
+                } // getMovieImage
+            } // cellRegistration
+        }
+    }
+    */
     
     func configureDataSource() {
         
