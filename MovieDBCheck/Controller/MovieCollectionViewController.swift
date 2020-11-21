@@ -21,6 +21,13 @@ class MovieCollectionViewController: UIViewController {
     var boughtMovie = Set<Movie>()
     var watchedMovie = Set<Movie>()
     
+    
+    // MARK: - Value Types
+    typealias Section  = MovieDataController.MovieCollection
+    typealias Movie = MovieDataController.MovieItem
+    typealias DataSource = UICollectionViewDiffableDataSource<Section, Movie>
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Movie>
+    
     let formatter = DateFormatter()
     
     static let sectionHeaderElementKind = "section-header-element-kind"
@@ -134,6 +141,7 @@ extension MovieCollectionViewController {
         print("in configureDataSource()")
         formatter.dateFormat = "yyyy"
         let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.MovieItem> { (cell, indexPath, movie) in
+            var setMovie = movie
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
@@ -145,11 +153,13 @@ extension MovieCollectionViewController {
                 if success, let image = image {
                     DispatchQueue.main.async {
                         cell.imageView.image = image
+                        setMovie.backdropImage = image
                         cell.activityIndicator.stopAnimating()
                     } // Dispatch
                 } // success
             } // getMovieImage
         } // cellRegistration
+        
         
         dataSource = UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.MovieItem>(collectionView: collectionView) { // data source changed
             (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> MovieCell? in
@@ -180,24 +190,7 @@ extension MovieCollectionViewController {
             currentSnapshot.appendItems(collection.movies)
         }
         dataSource.apply(currentSnapshot, animatingDifferences: true)
-        
-        
-/*        // badges
-         let supplementaryRegistration = UICollectionView.SupplementaryRegistration
-         <BadgeSupplementaryView>(elementKind: BadgeSupplementaryView.reuseIdentifier) {
-         (badgeView, string, indexPath) in
-         guard let model = self.dataSource.itemIdentifier(for: indexPath) else { return }
-         let hasBadgeCount =  model.favorite  // model.fav > 0
-         // Set the badge count as its label (and hide the view if the badge count is zero).
-         badgeView.label.text =  "1" // "\(model.badgeCount)"
-         badgeView.isHidden = !hasBadgeCount
-         }
-         */
-        /*        // badges
-         dataSource.supplementaryViewProvider = {
-         return self.collectionView.dequeueConfiguredReusableSupplementary(using: supplementaryRegistration, for: $2)
-         }
-         */
+
     }
 }
 
@@ -212,10 +205,9 @@ extension MovieCollectionViewController: UICollectionViewDelegate {
         print("go to detailView")
 //        let detailViewController = MovieDetailViewController(with: movie)
         let detailViewController = MovieDetailViewController()
+        // setup view data state prior to present view
         detailViewController.setup(movie: movie)
         let navController = UINavigationController(rootViewController: detailViewController)
         self.present(navController, animated: true, completion: nil)
-//        self.tabBarController?.selectedViewController?.present(detailViewController, animated: true)
- //       self.navigationController?.pushViewController(detailViewController, animated: true) // doesn't work....
     }
 }

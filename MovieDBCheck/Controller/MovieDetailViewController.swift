@@ -58,8 +58,9 @@ class MovieDetailViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.title = "Movies"//"\(movie.title)"
         view.backgroundColor = .systemBackground
- //       setup(movie: movie)
+//        setup(movie: movie)
     }
+    // called from MovieCollectionViewController prior to segue
     func setup(movie: MovieDataController.MovieItem) {
         // get actor and image for movie
         let posterURL = movieCollections.getImageURL(imageSize: "w780", endPoint: movie.posterPath)

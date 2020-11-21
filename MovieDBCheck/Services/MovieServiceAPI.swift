@@ -56,8 +56,6 @@ class MovieServiceAPI {
  //   public func getMovies<MovieResponse: Decodable>(from genre: Int, page: Int, group: DispatchGroup, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
     public func getMovies<MovieResponse: Decodable>(from genre: Int, page: Int, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
         let url = getMoviesURL(from: genre, for: page)
- //       group.enter()
-//        urlSession.dataTask(with: url, group: group) { result in
         urlSession.dataTask(with: url) { result in
             switch result {
                 case .success(let (response, data)):
@@ -76,7 +74,38 @@ class MovieServiceAPI {
                     print("error: \(error.localizedDescription)")
             }
         }.resume()
-//        group.leave()
+    }
+    
+    // get URL for movies from Genre
+    //DANGER NOTE! urlComponents is unwrapped, possibly causing crash. Ask Peter about this
+    func getMoviesURL(from genre: Int, for page: Int) -> URL {
+        var movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
+        if genre == 99999 {
+            movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent("upcoming")
+        }
+        
+        var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true)! // <---!!
+        
+        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
+        let languageQuery = URLQueryItem(name: "language", value: language)
+        let origLanguageQuery = URLQueryItem(name: "with_original_language", value: origLanguage)
+        let voteAverage = URLQueryItem(name: "vote_average.gte", value: "\(voteAverageGTE)")
+        let voteCount = URLQueryItem(name: "vote_count.gte", value: "\(voteCountGTE)")
+        let sort = URLQueryItem(name: "sort_by", value: sortBy)
+        let adult = URLQueryItem(name: "include_adult", value: "false")
+        let video = URLQueryItem(name: "include_video", value: "false")
+        let page = URLQueryItem(name: "page", value: "\(page)")
+        let primaryReleaseDataGTE = URLQueryItem(name: "primary_release_date.gte", value: releaseDateGTE)
+        let primaryReleaseDataLTE = URLQueryItem(name: "primary_release_date.lte", value: releaseDateLTE)
+        let release = URLQueryItem(name: "with_release_type", value: "\(releaseType)")
+        let genreID = URLQueryItem(name: "with_genres", value: "\(genre)")
+        
+        var queryItems = [apiQuery, languageQuery, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, voteCount, voteAverage, genreID, origLanguageQuery]
+        if genre == 99999 {
+            queryItems = [apiQuery]
+        }
+        urlComponents.queryItems = queryItems
+        return urlComponents.url! // <---!!
     }
     
     // fetch single movie by movie id
@@ -211,37 +240,6 @@ class MovieServiceAPI {
         }.resume()
     }
  */
-    // get URL for movies from Genre
-    //DANGER NOTE! urlComponents is unwrapped, possibly causing crash. Ask Peter about this
-    func getMoviesURL(from genre: Int, for page: Int) -> URL {
-        var movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
-        if genre == 99999 {
-            movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent("upcoming")
-        }
-        
-        var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true)! // <---!!
-
-        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-        let languageQuery = URLQueryItem(name: "language", value: language)
-        let origLanguageQuery = URLQueryItem(name: "with_original_language", value: origLanguage)
-        let voteAverage = URLQueryItem(name: "vote_average.gte", value: "\(voteAverageGTE)")
-        let voteCount = URLQueryItem(name: "vote_count.gte", value: "\(voteCountGTE)")
-        let sort = URLQueryItem(name: "sort_by", value: sortBy)
-        let adult = URLQueryItem(name: "include_adult", value: "false")
-        let video = URLQueryItem(name: "include_video", value: "false")
-        let page = URLQueryItem(name: "page", value: "\(page)")
-        let primaryReleaseDataGTE = URLQueryItem(name: "primary_release_date.gte", value: releaseDateGTE)
-        let primaryReleaseDataLTE = URLQueryItem(name: "primary_release_date.lte", value: releaseDateLTE)
-        let release = URLQueryItem(name: "with_release_type", value: "\(releaseType)")
-        let genreID = URLQueryItem(name: "with_genres", value: "\(genre)")
-        
-        var queryItems = [apiQuery, languageQuery, sort, adult, video, page, primaryReleaseDataGTE, primaryReleaseDataLTE, release, voteCount, voteAverage, genreID, origLanguageQuery]
-        if genre == 99999 {
-            queryItems = [apiQuery]
-        }
-        urlComponents.queryItems = queryItems
-        return urlComponents.url! // <---!!
-    }
 }
 
 extension URLSession {
