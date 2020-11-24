@@ -37,7 +37,7 @@ class MovieDetailViewController: UIViewController {
     let queue = DispatchQueue.global()
     
     var movieCollections = MovieDataController()
-//    var movie: MovieDataController.MovieItem
+    var movie: MovieDataController.MovieItem?
     let formatter = DateFormatter()
     
     var actors: [String] = []
@@ -49,7 +49,7 @@ class MovieDetailViewController: UIViewController {
 //        self.movie = movie
 //        super.init(nibName: nil, bundle: nil)
 //    }
-    
+//
 //    required init?(coder: NSCoder) {
 //        fatalError("init(coder:) has not been implemented")
 //    }
@@ -58,70 +58,75 @@ class MovieDetailViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.title = "Movies"//"\(movie.title)"
         view.backgroundColor = .systemBackground
-//        setup(movie: movie)
+//        setup(movie: movie!)
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setup(movie: movie!)
+    }
+    
     // called from MovieCollectionViewController prior to segue
     func setup(movie: MovieDataController.MovieItem) {
         // get actor and image for movie
         let posterURL = movieCollections.getImageURL(imageSize: "w780", endPoint: movie.posterPath)
-//        self.group.enter()
+        self.group.enter()
         movieCollections.getMovieImage(imageURL: posterURL) { (success, image) in
-
             if success, let image = image {
                 self.mainImage = image
             } // success
-//            self.group.leave()
+            self.group.leave()
         } // getMovieImage
         
         let actorURL = movieCollections.getCastURL(movieID: movie.id)
-//        self.group.enter()
+        self.group.enter()
         movieCollections.getMovieCast(castURL: actorURL) { (success, cast) in
-
             if success, let cast = cast {
                 self.actors = cast.actor
                 self.director = cast.director
             } // success
-//            self.group.leave()
+            self.group.leave()
         } // getMovieCast
         
         let companyURL = movieCollections.getCompanyURL(movieID: movie.id)
-//        self.group.enter()
+        self.group.enter()
         movieCollections.getMovieCompany(companyURL: companyURL) { (success, company) in
-
             if success, let company = company {
                 self.companies = company.company
             } // success
-//            self.group.leave()
+            self.group.leave()
         } // getMovieCompany
         
         formatter.dateFormat = "yyyy"
-//        group.notify(queue: queue) { [self] in
-        DispatchQueue.main.async { [self] in
-            /*
-             self.heroImage.image = self.mainImage
-             self.movieTitle.text = self.movie.title
-             self.movieYear.text = self.formatter.string(from: self.movie.releaseDate)
-             self.movieOverview.text = self.movie.overview
-             self.movieActor.text = self.actors.joined(separator: ", ")
-             self.movieDirector.text = self.director
-             self.movieCompany.text = self.companies.joined(separator: ", ")
-             self.movieRating.text = String(self.movie.popularity)
-             self.movieAverageScore.text = String(self.movie.voteAverage)
-             self.movieVoteCount.text = String(self.movie.voteCount)
-             */
-            print("in moviedetailviewcontroller")
-            print("movie passed in: \(movie)")
-            print("movie title: \(movie.title)")
-            print("backcrop image: \(movie.backdropImage)")
-            print("poster image: \(movie.posterImage)")
-            let releaseDate = formatter.string(from: movie.releaseDate)
-            print("release data: \(releaseDate)")
-            print("overview: \(movie.overview)")
-            print("actors: \(movie.actor)")
-            print("director: \(movie.director)")
-            print("popularity: \(movie.popularity)")
-            print("vote average: \(movie.voteAverage)")
-            print("vote count: \(movie.voteCount)")
+        group.notify(queue: queue) { [self] in
+            DispatchQueue.main.async { [self] in
+                
+                self.heroImage.image = self.mainImage
+                self.movieTitle.text = movie.title
+                self.movieYear.text = self.formatter.string(from: movie.releaseDate)
+                self.movieOverview.text = movie.overview
+                self.movieActor.text = self.actors.joined(separator: ", ")
+                self.movieDirector.text = self.director
+                self.movieCompany.text = self.companies.joined(separator: ", ")
+                
+                self.movieRating.text = String(movie.popularity)
+                self.movieAverageScore.text = String(movie.voteAverage)
+                self.movieVoteCount.text = String(movie.voteCount)
+
+                print("in moviedetailviewcontroller")
+                print("movie passed in: \(movie)")
+                print("movie title: \(movie.title)")
+                print("backcrop image: \(movie.backdropImage)")
+                print("poster image: \(movie.posterImage)")
+                let releaseDate = formatter.string(from: movie.releaseDate)
+                print("release data: \(releaseDate)")
+                print("overview: \(movie.overview)")
+                print("actors: \(movie.actor)")
+                print("director: \(movie.director)")
+                print("popularity: \(movie.popularity)")
+                print("vote average: \(movie.voteAverage)")
+                print("vote count: \(movie.voteCount)")
+            }
         }
     }
     

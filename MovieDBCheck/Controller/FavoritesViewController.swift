@@ -25,6 +25,7 @@ class FavoritesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Bookmarked Movies"
+        view.backgroundColor = .systemBackground
         configureView()
         configureDataSource()
     }

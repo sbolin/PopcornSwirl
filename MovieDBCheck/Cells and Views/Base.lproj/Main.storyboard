@@ -81,7 +81,7 @@
         <!--Detail-->
         <scene sceneID="IG7-vM-ndu">
             <objects>
-                <viewController id="1Ib-8f-X9W" customClass="MovieDetailViewController" customModule="PopcornSwirl" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="movieDetail" id="1Ib-8f-X9W" customClass="MovieDetailViewController" customModule="PopcornSwirl" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="c4U-Qk-Ujq">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -323,6 +323,7 @@ Overview</string>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="Detail" image="square.and.pencil" catalog="system" selectedImage="square.and.pencil" id="DAW-PT-JdO"/>
+                    <navigationItem key="navigationItem" id="kHJ-BN-CSu"/>
                     <nil key="simulatedTopBarMetrics"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>

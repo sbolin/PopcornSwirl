@@ -25,6 +25,7 @@ class WatchedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Bookmarked Movies"
+        view.backgroundColor = .systemBackground
         configureHierarchy()
         configureDataSource()
     }
