@@ -50,14 +50,11 @@ class MovieCollectionViewController: UIViewController {
     override func loadView() {
         super.loadView()
         movieCollections.populateMovieData()
-//        movieCollections.populateSupplementaryMovieData()
-//        movieCollections.compileMovieData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        configureTabItem()
+//        configureTabItem()
         configureCollectionView() 
     }
     
@@ -219,19 +216,8 @@ extension MovieCollectionViewController: UICollectionViewDelegate {
         }
         print("go to detailView")
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        
-//        let detailViewController = MovieDetailViewController(with: movie)
-//        let detailViewController = MovieDetailViewController()
         detailViewController.movie = movie
-//        navigationController?.pushViewController(detailViewController, animated: true)
-//        tabBarController?.present(detailViewController, animated: true, completion: nil)
         tabBarController?.show(detailViewController, sender: self)
-        
-// setup view data state prior to present view
-//       detailViewController.setup(movie: movie)
-//        let navController = UINavigationController(rootViewController: detailViewController)
-//        self.navigationController?.present(detailViewController, animated: true)
-//        self.present(navController, animated: true, completion: nil)
+
     }
 }
-// 1. segue

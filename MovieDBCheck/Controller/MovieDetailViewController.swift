@@ -135,23 +135,32 @@ class MovieDetailViewController: UIViewController {
     @IBAction func buyTapped(_ sender: UIButton) {
         print("buyTapped")
         buyButton.isSelected.toggle()
-        
+        changeAlpha(sender: sender)
     }
     
     @IBAction func watchTapped(_ sender: UIButton) {
         print("watchTapped")
         watchedButton.isSelected.toggle()
+        changeAlpha(sender: sender)
     }
     
     @IBAction func bookmarkTapped(_ sender: UIButton) {
         print("bookmarkTapped")
         bookmarkButton.isSelected.toggle()
+        changeAlpha(sender: sender)
     }
     
     @IBAction func favoriteTapped(_ sender: UIButton) {
         print("favoriteTapped")
         favoriteButton.isSelected.toggle()
+        changeAlpha(sender: sender)
     }
     
-    
+    func changeAlpha(sender: UIButton) {
+        if sender.isSelected {
+            sender.alpha = 1.0
+        } else {
+            sender.alpha = 0.25
+        }
+    }
 }
