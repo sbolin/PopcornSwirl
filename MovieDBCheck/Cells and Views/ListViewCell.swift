@@ -14,6 +14,9 @@ class ListViewCell: UICollectionViewCell {
     let titleLabel = UILabel()
     let descriptionLabel = UILabel()
     let yearLabel = UILabel()
+    let activityIndicator = UIActivityIndicatorView()
+
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -30,11 +33,13 @@ extension ListViewCell {
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
         yearLabel.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         
         contentView.addSubview(imageView)
         contentView.addSubview(titleLabel)
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(yearLabel)
+        contentView.addSubview(activityIndicator)
         
         titleLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
         titleLabel.adjustsFontForContentSizeCategory = true
@@ -48,10 +53,15 @@ extension ListViewCell {
         yearLabel.adjustsFontForContentSizeCategory = true
         yearLabel.textColor = .secondaryLabel
         
-        imageView.layer.borderColor = UIColor.systemIndigo.cgColor
-        imageView.layer.borderWidth = 1
+        imageView.layer.borderColor = UIColor.systemGray5.cgColor
+        imageView.layer.borderWidth = 0
         imageView.layer.cornerRadius = 4
         imageView.backgroundColor = UIColor.systemIndigo.withAlphaComponent(0.5)
+        imageView.image = UIImage(systemName: "film")
+        
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.style = .medium
+        activityIndicator.color = .white
         
         NSLayoutConstraint.activate([
             imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
@@ -73,6 +83,9 @@ extension ListViewCell {
             descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             descriptionLabel.topAnchor.constraint(equalTo: yearLabel.bottomAnchor, constant: 6),
             descriptionLabel.heightAnchor.constraint(equalToConstant: 30),
+            
+            activityIndicator.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
+            activityIndicator.heightAnchor.constraint(equalTo: imageView.heightAnchor)
         ])
         
     }

@@ -45,20 +45,10 @@ class MovieDetailViewController: UIViewController {
     var companies: [String] = []
     var mainImage = UIImage()
     
-//    init(with movie: MovieDataController.MovieItem) {
-//        self.movie = movie
-//        super.init(nibName: nil, bundle: nil)
-//    }
-//
-//    required init?(coder: NSCoder) {
-//        fatalError("init(coder:) has not been implemented")
-//    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Movies"//"\(movie.title)"
         view.backgroundColor = .systemBackground
-//        setup(movie: movie!)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -109,9 +99,9 @@ class MovieDetailViewController: UIViewController {
                 self.movieDirector.text = self.director
                 self.movieCompany.text = self.companies.joined(separator: ", ")
                 
-                self.movieRating.text = String(movie.popularity)
-                self.movieAverageScore.text = String(movie.voteAverage)
-                self.movieVoteCount.text = String(movie.voteCount)
+                self.movieRating.text = "Rating: " + String(movie.popularity)
+                self.movieAverageScore.text = "Score: " + String(movie.voteAverage)
+                self.movieVoteCount.text = "Count: " + String(movie.voteCount)
 
                 print("in moviedetailviewcontroller")
                 print("movie passed in: \(movie)")

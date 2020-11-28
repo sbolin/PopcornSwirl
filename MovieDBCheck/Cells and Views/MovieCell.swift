@@ -84,7 +84,6 @@ extension MovieCell {
             yearLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             yearLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
-//            activityIndicator.topAnchor.constraint(equalTo: imageView.topAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
             activityIndicator.heightAnchor.constraint(equalTo: imageView.heightAnchor),
             activityIndicator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),

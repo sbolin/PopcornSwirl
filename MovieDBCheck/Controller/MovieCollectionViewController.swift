@@ -47,15 +47,16 @@ class MovieCollectionViewController: UIViewController {
         .Family          : 10751
     ]
     
-    override func loadView() {
-        super.loadView()
-        movieCollections.populateMovieData()
-    }
+//    override func loadView() {
+//        super.loadView()
+// //       movieCollections.populateMovieData()
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        configureTabItem()
-        configureCollectionView() 
+        movieCollections.populateMovieData()
+        configureCollectionView()
+//        configureDataSource()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -65,12 +66,6 @@ class MovieCollectionViewController: UIViewController {
 }
 
 extension MovieCollectionViewController {
-    
-    func configureTabItem() {
-        navigationItem.title = "Movie List"
-        navigationItem.largeTitleDisplayMode = .always
-    }
-    
     func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -149,11 +144,10 @@ extension MovieCollectionViewController {
     */
     
     func configureDataSource() {
-        
         print("in configureDataSource()")
         formatter.dateFormat = "yyyy"
         let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.MovieItem> { (cell, indexPath, movie) in
-            var setMovie = movie
+ //           var setMovie = movie
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
@@ -165,7 +159,7 @@ extension MovieCollectionViewController {
                 if success, let image = image {
                     DispatchQueue.main.async {
                         cell.imageView.image = image
-                        setMovie.backdropImage = image
+//                        setMovie.backdropImage = image
                         cell.activityIndicator.stopAnimating()
                     } // Dispatch
                 } // success
@@ -173,7 +167,7 @@ extension MovieCollectionViewController {
         } // cellRegistration
         
         
-        dataSource = UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.MovieItem>(collectionView: collectionView) { // data source changed
+        dataSource = UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.MovieItem>(collectionView: collectionView) {
             (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> MovieCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
@@ -195,7 +189,7 @@ extension MovieCollectionViewController {
         }
         
         currentSnapshot = NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.MovieItem>()
-        print("in currentSnapshot: \(movieCollections.collections.count)")
+        print("in movieController currentSnapshot: \(movieCollections.collections.count)")
         movieCollections.collections.forEach {
             let collection = $0
             currentSnapshot.appendSections([collection])
@@ -218,6 +212,5 @@ extension MovieCollectionViewController: UICollectionViewDelegate {
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.movie = movie
         tabBarController?.show(detailViewController, sender: self)
-
     }
 }
