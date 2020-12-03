@@ -12,7 +12,7 @@ import UIKit
 // MARK: - NSFetchedResultsControllerDelegate Delegate methods
 extension MovieCollectionViewController: NSFetchedResultsControllerDelegate {
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
-        guard let dataSource = collectionView?.dataSource as? UICollectionViewDiffableDataSource<Int, NSManagedObjectID> else {
+        guard let dataSource = collectionView.dataSource as? UICollectionViewDiffableDataSource<Int, NSManagedObjectID> else {
             assertionFailure("The data source has not implemented snapshot support while it should")
             return
         }
@@ -28,7 +28,7 @@ extension MovieCollectionViewController: NSFetchedResultsControllerDelegate {
         }
         snapshot.reloadItems(reloadIdentifiers)
 
-        let shouldAnimate = collectionView?.numberOfSections != 0
+        let shouldAnimate = collectionView.numberOfSections != 0
         dataSource.apply(snapshot as NSDiffableDataSourceSnapshot<Int, NSManagedObjectID>, animatingDifferences: shouldAnimate)
     }
 }

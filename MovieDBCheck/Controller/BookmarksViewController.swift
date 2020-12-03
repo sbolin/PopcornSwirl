@@ -25,7 +25,6 @@ class BookmarksViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         movieCollections.populateMovieData()
-        collectionView.backgroundColor = .systemBackground
         configureCollectionView()
     }
     
@@ -60,7 +59,7 @@ extension BookmarksViewController {
             cell.activityIndicator.startAnimating()
             // load image
             let backdropURL = self.movieCollections.getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
-            self.movieCollections.getMovieImage(imageURL: backdropURL) { (success, image) in
+            MovieServiceAPI.shared.getMovieImage(imageURL: backdropURL) { (success, image) in
                 if success, let image = image {
                     DispatchQueue.main.async {
                         cell.imageView.image = image

@@ -11,11 +11,10 @@ import UIKit
 class MovieCollectionViewController: UIViewController {
     
     // MARK: - Properties
-    var movieCollections = MovieDataController()
-    var collectionView: UICollectionView! = nil
-//    private lazy var dataSource = makeDataSource()
-    var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.MovieItem>! = nil
-    var currentSnapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.MovieItem>! = nil
+    let movieCollections = MovieDataController()
+    var collectionView: UICollectionView!
+    var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection.Sections, MovieDataController.MovieItem>!
+    var snapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection.Sections, MovieDataController.MovieItem>!
     
     var bookmarkedMovie = Set<Movie>()
     var favoritedMovie = Set<Movie>()
@@ -24,7 +23,7 @@ class MovieCollectionViewController: UIViewController {
     
     
     // MARK: - Value Types
-    typealias Section  = MovieDataController.MovieCollection
+    typealias Section  = MovieDataController.MovieCollection.Sections
     typealias Movie = MovieDataController.MovieItem
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Movie>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Movie>
@@ -32,36 +31,19 @@ class MovieCollectionViewController: UIViewController {
     let formatter = DateFormatter()
     
     static let sectionHeaderElementKind = "section-header-element-kind"
-    static let sectionFooterElementKind = "section-footer-element-kind"
-    
-    // get genre id (int) from Section
-    let genres: [MovieCollection.Sections : Int] = [
-        .Adventure       : 12,
-        .Animation       : 16,
-        .Drama           : 18,
-        .Action          : 28,
-        .Comedy          : 35,
-        .Thriller        : 53,
-        .Documentary     : 99,
-        .Mystery         : 9648,
-        .Family          : 10751
-    ]
-    
-//    override func loadView() {
-//        super.loadView()
-// //       movieCollections.populateMovieData()
-//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         movieCollections.populateMovieData()
         configureCollectionView()
-//        configureDataSource()
+        // try new scheme, based on Apple Modern Collection Views app
+        configureDataSource()
+        applyInitialSnapshots()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureDataSource()
+        //        configureDataSource() // note, this works
     }
 }
 
@@ -75,12 +57,9 @@ extension MovieCollectionViewController {
     }
     
     func createLayout() -> UICollectionViewLayout {
-        
         let cellHeight:CGFloat = 220
-        
         let config = UICollectionViewCompositionalLayoutConfiguration()
         config.interSectionSpacing = 8
-        
         let sectionProvider = { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
             let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                   heightDimension: .fractionalHeight(1.0))
@@ -113,102 +92,75 @@ extension MovieCollectionViewController {
 }
 
 extension MovieCollectionViewController {
-    // currently working on cleaning up the dataSource methods, in particular snapshots...
-    
-    /*
-    
-    func makeDataSource() -> DataSource {
-        
-        let dataSource = DataSource(collectionView: collectionView, cellProvider: { (collectionView, indexPath, movie) -> MovieCell? in
-            let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.MovieItem> { (cell, indexPath, movie) in
-                var setMovie = movie
-                // Populate the cell with our item description.
-                cell.titleLabel.text = movie.title
-                cell.descriptionLabel.text = movie.overview
-                cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
-                cell.activityIndicator.startAnimating()
-                // load image...
-                let backdropURL = self.movieCollections.getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
-                self.movieCollections.getMovieImage(imageURL: backdropURL) { (success, image) in
-                    if success, let image = image {
-                        DispatchQueue.main.async {
-                            cell.imageView.image = image
-                            setMovie.backdropImage = image
-                            cell.activityIndicator.stopAnimating()
-                        } // Dispatch
-                    } // success
-                } // getMovieImage
-            } // cellRegistration
+    //MARK: - Datasource setup
+    func configureDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, Movie>(collectionView: collectionView) {
+            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> MovieCell? in
+            // Return the cell.
+            return collectionView.dequeueConfiguredReusableCell(using: self.configureMovieCell(), for: indexPath, item: movie)
+        }
+        // section header
+        dataSource.supplementaryViewProvider = { (view, kind, index) in
+            return self.collectionView.dequeueConfiguredReusableSupplementary(using: self.configureHeader(), for: index)
         }
     }
-    */
     
-    func configureDataSource() {
-        print("in configureDataSource()")
-        formatter.dateFormat = "yyyy"
-        let cellRegistration = UICollectionView.CellRegistration<MovieCell, MovieDataController.MovieItem> { (cell, indexPath, movie) in
- //           var setMovie = movie
-            // Populate the cell with our item description.
+    func applyInitialSnapshots() {
+        // set the order of the sections
+        let sections = Section.allCases
+        var recentSnapshot = NSDiffableDataSourceSnapshot<Section, Movie>()
+        recentSnapshot.appendSections(sections)
+        dataSource.apply(recentSnapshot, animatingDifferences: false)
+        
+        // list of all
+        var allSnapshot = NSDiffableDataSourceSectionSnapshot<Movie>()
+        for genre in Section.allCases {
+            let allSnapshotItems = movieCollections.movieList
+            allSnapshot.append(allSnapshotItems)
+            dataSource.apply(allSnapshot, to: genre, animatingDifferences: false)
+        } // allCases
+    } // applyInitialSnapshots
+
+    func configureMovieCell() -> UICollectionView.CellRegistration<MovieCell, Movie> {
+        return UICollectionView.CellRegistration<MovieCell, Movie> { [weak self] (cell, indexPath, movie) in
+            guard let self = self else { return }
+            self.formatter.dateFormat = "yyyy"
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
             cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
             cell.activityIndicator.startAnimating()
             // load image...
             let backdropURL = self.movieCollections.getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
-            self.movieCollections.getMovieImage(imageURL: backdropURL) { (success, image) in
+            MovieServiceAPI.shared.getMovieImage(imageURL: backdropURL) { (success, image) in
                 if success, let image = image {
                     DispatchQueue.main.async {
                         cell.imageView.image = image
-//                        setMovie.backdropImage = image
                         cell.activityIndicator.stopAnimating()
                     } // Dispatch
                 } // success
             } // getMovieImage
-        } // cellRegistration
-        
-        
-        dataSource = UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.MovieItem>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> MovieCell? in
-            // Return the cell.
-            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
-        }
-
+        } // CellRegistration
+    } // configureMovieCell
+    
+    func configureHeader() -> UICollectionView.SupplementaryRegistration<TitleSupplementaryView> {
         // section header
-        let headerRegistration = UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") {
+        return UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") {
             (supplementaryView, string, indexPath) in
-            if let snapshot = self.currentSnapshot {
+            if let snapshot = self.snapshot {
                 let movieCollection = snapshot.sectionIdentifiers[indexPath.section]
-                supplementaryView.label.text = movieCollection.genreName
-            }
-        }
-        
-        // section header
-        dataSource.supplementaryViewProvider = { (view, kind, index) in
-            return self.collectionView.dequeueConfiguredReusableSupplementary(
-                using: headerRegistration, for: index)
-        }
-        
-        currentSnapshot = NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.MovieItem>()
-        print("in movieController currentSnapshot: \(movieCollections.collections.count)")
-        movieCollections.collections.forEach {
-            let collection = $0
-            currentSnapshot.appendSections([collection])
-            currentSnapshot.appendItems(collection.movies)
-        }
-        dataSource.apply(currentSnapshot, animatingDifferences: true)
+                supplementaryView.label.text = movieCollection.rawValue
+            } // snapshot
 
+        } // SupplementaryRegistration
     }
 }
 
 extension MovieCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("item \(indexPath.section), \(indexPath.row) selected")
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
             collectionView.deselectItem(at: indexPath, animated: true)
-            print("collectionView deselect")
             return
         }
-        print("go to detailView")
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.movie = movie
         tabBarController?.show(detailViewController, sender: self)

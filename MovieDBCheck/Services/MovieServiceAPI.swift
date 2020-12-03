@@ -11,7 +11,7 @@ class MovieServiceAPI {
     
     public static let shared = MovieServiceAPI()
     private init() {}
-    private let urlSession = URLSession.shared
+    private let urlSession = URLSession(configuration: .default) // URLSession.shared
     
     private let baseURL = URL(string: "https://api.themoviedb.org/3")! // 4 does not work
     private let apiKey = "a042fdafc76ac6243a7d5c85b930f1f6"
@@ -38,22 +38,11 @@ class MovieServiceAPI {
         return jsonDecoder
     }()
     
-    // Enum Endpoint
-    enum Endpoint: String, CaseIterable {
-        case nowPlaying = "now_playing"
-        case upcoming = "upcoming"
-        case popular = "popular"
-        case topRated = "top_rated"
-    }
-    public enum APIServiceError: Error {
-        case apiError
-        case invalidEndpoint
-        case invalidResponse
-        case noData
-        case decodeError
-    }
-    // new get movies method given Genre
- //   public func getMovies<MovieResponse: Decodable>(from genre: Int, page: Int, group: DispatchGroup, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
+    let cache = NSCache<NSString, UIImage>()
+
+    
+
+// get movies method given Genre
     public func getMovies<MovieResponse: Decodable>(from genre: Int, page: Int, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
         let url = getMoviesURL(from: genre, for: page)
         urlSession.dataTask(with: url) { result in
@@ -82,6 +71,7 @@ class MovieServiceAPI {
         var movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
         if genre == 99999 {
             movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent("upcoming")
+            print("upcoming url: \n\(movieURL)")
         }
         
         var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true)! // <---!!
@@ -108,138 +98,73 @@ class MovieServiceAPI {
         return urlComponents.url! // <---!!
     }
     
-    // fetch single movie by movie id
-//    //https://api.themoviedb.org/3/movie/###?api_key=a042fdafc76ac6243a7d5c85b930f1f6&language=en-US
-//    public func getMovie<MovieResponse: Decodable>(with movieID: Int, group: DispatchGroup, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
-//
-//        let movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent(String(movieID))
-//        guard var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true) else {
-//            print("invalid endpoint")
-//            return
-//        }
-//        let apiQuery = URLQueryItem(name: "api_key", value: apiKey)
-//        let languageQuery = URLQueryItem(name: "language", value: language)
-//        let regionQuery = URLQueryItem(name: "region", value: region)
-//        let queryItems = [apiQuery, languageQuery, regionQuery]
-//        urlComponents.queryItems = queryItems
-//        guard let url = urlComponents.url else {
-//            print("invalid endpoint")
-//            return
-//        }
-////        group.enter()
-////        urlSession.dataTask(with: url, group: group) { result in
-//        urlSession.dataTask(with: url) { result in
-//            switch result {
-//                case .success(let (response, data)):
-//                    guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-//                        print("response error")
-//                        return
-//                    }
-//                    do {
-//                        print("getMovie urlSession success")
-//                        let values = try self.jsonDecoder.decode(MovieResponse.self, from: data)
-//                        completion(.success(values))
-//                    } catch {
-//                        print("decode error")
-//                    }
-//                case .failure(let error):
-//                    print("error: \(error.localizedDescription)")
-//            }
-//        }.resume()
-////        group.leave()
-//    }
-    
-    // new function to get Cast data
-//    public func getCast<CastResponse: Decodable>(with url: URL, group: DispatchGroup, completion: @escaping (Result<CastResponse, Error>) -> Void) {
-////        group.enter()
-////        urlSession.dataTask(with: url, group: group) { result in
-//        urlSession.dataTask(with: url) { result in
-//            switch result {
-//                case .success(let (response, data)):
-//                    guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-//                        print("response error")
-//                        return
-//                    }
-//                    do {
-//                        print("getCast urlSession success")
-//                        let values = try self.jsonDecoder.decode(CastResponse.self, from: data)
-//                        completion(.success(values))
-//                    } catch {
-//                        print("decode error")
-//                    }
-//                case .failure(let error):
-//                    print("error: \(error.localizedDescription)")
-//            }
-//        }.resume()
-////        group.leave()
-//    }
-    
-   // new function to get Commpany data
-//    public func getCompany<CompanyResponse: Decodable>(with url: URL, group: DispatchGroup, completion: @escaping (Result<CompanyResponse, Error>) -> Void) {
-// //       group.enter()
-// //       urlSession.dataTask(with: url, group: group) { result in
-//        urlSession.dataTask(with: url) { result in
-//            switch result {
-//                case .success(let (response, data)):
-//                    guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-//                        print("response error")
-//                        return
-//                    }
-//                    do {
-//                        print("getCompany urlSession success")
-//                        let values = try self.jsonDecoder.decode(CompanyResponse.self, from: data)
-//                        completion(.success(values))
-//                    } catch {
-//                        print("decode error")
-//                    }
-//                case .failure(let error):
-//                    print("error: \(error.localizedDescription)")
-//            }
-//        }.resume()
-// //       group.leave()
-//    }
-    
-    
-    
-    // new image function
-//    public func getImage(with url: URL, group: DispatchGroup, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
-//    public func getImage(with url: URL, group: DispatchGroup, completion: @escaping (Data?, URLResponse?, Error?) -> Void) {
-// //       group.enter()
-//        urlSession.dataTask(with: url) { data, response, error in // urlSession.dataTask
-//            completion(data, response, error)
-//        }.resume()
-////        group.leave()
-//    }
-
-    // try not to use...
-/*
-// revised fetchResouces = url passed in is final url, no need to use urlComponents
-    private func fetchResources<T: Decodable>(url: URL, group: DispatchGroup, completion: @escaping (Result<T, APIServiceError>) -> Void) {
-        print("   fetchResources url: \(url)")
-// uses URLSession Extension
-//        group.enter()
-        urlSession.dataTask(with: url, group: group) { result in
- //           defer { group.leave() }
-            switch result {
-                case .success(let (response, data)):
-                    guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-                        completion(.failure(.invalidResponse))
+    func getMovieImage(imageURL: URL, completion: @escaping (Bool, UIImage?) -> Void) {
+ //       let session = URLSession(configuration: .default)
+        let imageKey = "\(imageURL)" as NSString
+        if let imageCache = cache.object(forKey: imageKey) {
+            print("fetched image from cache")
+            completion(true, imageCache)
+        } else {
+            let task = urlSession.dataTask(with: imageURL) { (data, response, error) in
+                if let data = data, error == nil,
+                   let response = response as? HTTPURLResponse,
+                   response.statusCode == 200 {
+                    guard let image = UIImage(data: data) else {
+                        completion(false, nil)
                         return
                     }
-                    do {
-                        print("fetchResources urlSession success")
-                        let values = try self.jsonDecoder.decode(T.self, from: data)
-                        completion(.success(values))
-                    } catch {
-                        completion(.failure(.decodeError))
-                    }
-                case .failure(let error):
-                    print("error: \(error.localizedDescription)")
-                    completion(.failure(.apiError))
+                    self.cache.setObject(image, forKey: imageKey)
+                    completion(true, image)
+                }
+                else {
+                    completion(false, nil)
+                }
             }
-        }.resume()
+            task.resume()
+        }
     }
- */
+    
+    func getMovieCast(castURL: URL, completion: @escaping (Bool, CastData?) -> Void) {
+//        let session = URLSession(configuration: .default)
+        let task = urlSession.dataTask(with: castURL) { (data, response, error) in
+            if let data = data, error == nil,
+               let response = response as? HTTPURLResponse,
+               response.statusCode == 200 {
+                do {
+                    let values = try self.jsonDecoder.decode(CastResponse.self, from: data)
+                    let cast = CastDTOMapper.map(dto: values)
+                    completion(true, cast)
+                } catch  {
+                    completion(false, nil)
+                }
+            }
+            else {
+                completion(false, nil)
+            }
+        }
+        task.resume()
+    } // getMovieCast
+    
+    func getMovieCompany(companyURL: URL, completion: @escaping (Bool, CompanyData?) -> Void) {
+//        let session = URLSession(configuration: .default)
+        let task = urlSession.dataTask(with: companyURL) { (data, response, error) in
+            if let data = data, error == nil,
+               let response = response as? HTTPURLResponse,
+               response.statusCode == 200 {
+                do {
+                    let values = try self.jsonDecoder.decode(CompanyResponse.self, from: data)
+                    let company = CompanyDTOMapper.map(dto: values)
+                    completion(true, company)
+                } catch {
+                    completion(false, nil)
+                }
+            }
+            else {
+                completion(false, nil)
+            }
+        }
+        task.resume()
+    }
 }
 
 extension URLSession {

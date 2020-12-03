@@ -221,8 +221,8 @@ Overview</string>
                                             <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="66w-zH-fup">
-                                                    <rect key="frame" x="0.0" y="0.0" width="80" height="80"/>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="film" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="66w-zH-fup">
+                                                    <rect key="frame" x="0.0" y="1" width="80" height="77.5"/>
                                                 </imageView>
                                             </subviews>
                                             <constraints>

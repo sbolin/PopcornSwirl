@@ -61,7 +61,7 @@ class MovieDetailViewController: UIViewController {
         // get actor and image for movie
         let posterURL = movieCollections.getImageURL(imageSize: "w780", endPoint: movie.posterPath)
         self.group.enter()
-        movieCollections.getMovieImage(imageURL: posterURL) { (success, image) in
+        MovieServiceAPI.shared.getMovieImage(imageURL: posterURL) { (success, image) in
             if success, let image = image {
                 self.mainImage = image
             } // success
@@ -70,7 +70,7 @@ class MovieDetailViewController: UIViewController {
         
         let actorURL = movieCollections.getCastURL(movieID: movie.id)
         self.group.enter()
-        movieCollections.getMovieCast(castURL: actorURL) { (success, cast) in
+        MovieServiceAPI.shared.getMovieCast(castURL: actorURL) { (success, cast) in
             if success, let cast = cast {
                 self.actors = cast.actor
                 self.director = cast.director
@@ -80,7 +80,7 @@ class MovieDetailViewController: UIViewController {
         
         let companyURL = movieCollections.getCompanyURL(movieID: movie.id)
         self.group.enter()
-        movieCollections.getMovieCompany(companyURL: companyURL) { (success, company) in
+        MovieServiceAPI.shared.getMovieCompany(companyURL: companyURL) { (success, company) in
             if success, let company = company {
                 self.companies = company.company
             } // success
