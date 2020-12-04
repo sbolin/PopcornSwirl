@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		150DD150255ED9D90068A1B8 /* ListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 150DD14F255ED9D90068A1B8 /* ListViewCell.swift */; };
 		1585D78E254367C8006A9433 /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1585D78D254367C8006A9433 /* CoreDataController.swift */; };
-		1597CAF32559518A001FBA8F /* xxxBadgeSupplementaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1597CAF22559518A001FBA8F /* xxxBadgeSupplementaryView.swift */; };
 		1597CB2F255C5619001FBA8F /* ImageData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1597CB2E255C5619001FBA8F /* ImageData.swift */; };
 		15A4B5FA2548595600534EFE /* Actor+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B5F82548595600534EFE /* Actor+CoreDataClass.swift */; };
 		15A4B5FB2548595600534EFE /* Actor+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B5F92548595600534EFE /* Actor+CoreDataProperties.swift */; };
@@ -23,14 +22,11 @@
 		15C29880255668210064B074 /* BookmarksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C2987F255668210064B074 /* BookmarksViewController.swift */; };
 		15C29883255668430064B074 /* WatchedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C29882255668430064B074 /* WatchedViewController.swift */; };
 		15C29887255668550064B074 /* FavoritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C29886255668550064B074 /* FavoritesViewController.swift */; };
-		15CF927F2542EF1200CCBBF9 /* MovieListDataXXX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF927E2542EF1200CCBBF9 /* MovieListDataXXX.swift */; };
-		15CF92822542EFFA00CCBBF9 /* MovieCollectionXXX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF92812542EFFA00CCBBF9 /* MovieCollectionXXX.swift */; };
 		15CF92902542F51F00CCBBF9 /* CastData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF928E2542F51F00CCBBF9 /* CastData.swift */; };
 		15CF92912542F51F00CCBBF9 /* CastDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF928F2542F51F00CCBBF9 /* CastDTOMapper.swift */; };
 		15CF92972542F55500CCBBF9 /* CompanyDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF92962542F55500CCBBF9 /* CompanyDTOMapper.swift */; };
 		15CF929A2542F58A00CCBBF9 /* CompanyData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF92992542F58A00CCBBF9 /* CompanyData.swift */; };
 		15CF929F2542F6C000CCBBF9 /* MovieDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF929E2542F6C000CCBBF9 /* MovieDTOMapper.swift */; };
-		15CF92A22542F92000CCBBF9 /* MovieDetailDataXXX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF92A12542F92000CCBBF9 /* MovieDetailDataXXX.swift */; };
 		15CF92A82543409C00CCBBF9 /* MovieModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 15CF92A62543409C00CCBBF9 /* MovieModel.xcdatamodeld */; };
 		15CF92B225434CC200CCBBF9 /* Movie+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF92AC25434CC100CCBBF9 /* Movie+CoreDataClass.swift */; };
 		15CF92B325434CC200CCBBF9 /* Movie+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15CF92AD25434CC200CCBBF9 /* Movie+CoreDataProperties.swift */; };
@@ -53,7 +49,6 @@
 /* Begin PBXFileReference section */
 		150DD14F255ED9D90068A1B8 /* ListViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewCell.swift; sourceTree = "<group>"; };
 		1585D78D254367C8006A9433 /* CoreDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataController.swift; sourceTree = "<group>"; };
-		1597CAF22559518A001FBA8F /* xxxBadgeSupplementaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = xxxBadgeSupplementaryView.swift; sourceTree = "<group>"; };
 		1597CB2E255C5619001FBA8F /* ImageData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageData.swift; sourceTree = "<group>"; };
 		15A4B5F82548595600534EFE /* Actor+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Actor+CoreDataClass.swift"; sourceTree = "<group>"; };
 		15A4B5F92548595600534EFE /* Actor+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Actor+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -67,14 +62,11 @@
 		15C2987F255668210064B074 /* BookmarksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksViewController.swift; sourceTree = "<group>"; };
 		15C29882255668430064B074 /* WatchedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchedViewController.swift; sourceTree = "<group>"; };
 		15C29886255668550064B074 /* FavoritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewController.swift; sourceTree = "<group>"; };
-		15CF927E2542EF1200CCBBF9 /* MovieListDataXXX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListDataXXX.swift; sourceTree = "<group>"; };
-		15CF92812542EFFA00CCBBF9 /* MovieCollectionXXX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCollectionXXX.swift; sourceTree = "<group>"; };
 		15CF928E2542F51F00CCBBF9 /* CastData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CastData.swift; sourceTree = "<group>"; };
 		15CF928F2542F51F00CCBBF9 /* CastDTOMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CastDTOMapper.swift; sourceTree = "<group>"; };
 		15CF92962542F55500CCBBF9 /* CompanyDTOMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyDTOMapper.swift; sourceTree = "<group>"; };
 		15CF92992542F58A00CCBBF9 /* CompanyData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyData.swift; sourceTree = "<group>"; };
 		15CF929E2542F6C000CCBBF9 /* MovieDTOMapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieDTOMapper.swift; sourceTree = "<group>"; };
-		15CF92A12542F92000CCBBF9 /* MovieDetailDataXXX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieDetailDataXXX.swift; sourceTree = "<group>"; };
 		15CF92A72543409C00CCBBF9 /* MovieModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MovieModel.xcdatamodel; sourceTree = "<group>"; };
 		15CF92AC25434CC100CCBBF9 /* Movie+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Movie+CoreDataClass.swift"; sourceTree = "<group>"; };
 		15CF92AD25434CC200CCBBF9 /* Movie+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Movie+CoreDataProperties.swift"; sourceTree = "<group>"; };
@@ -110,9 +102,7 @@
 		15CF92892542F4C200CCBBF9 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				15CF92812542EFFA00CCBBF9 /* MovieCollectionXXX.swift */,
-				15CF927E2542EF1200CCBBF9 /* MovieListDataXXX.swift */,
-				15CF92A12542F92000CCBBF9 /* MovieDetailDataXXX.swift */,
+				15A4B60D2549D8AC00534EFE /* MovieDataController.swift */,
 				15E7EA11254098A700D459FA /* MoviesResponse.swift */,
 				15CF929E2542F6C000CCBBF9 /* MovieDTOMapper.swift */,
 				15CF928E2542F51F00CCBBF9 /* CastData.swift */,
@@ -132,7 +122,6 @@
 			children = (
 				15A4B607254944C900534EFE /* MovieCell.swift */,
 				150DD14F255ED9D90068A1B8 /* ListViewCell.swift */,
-				1597CAF22559518A001FBA8F /* xxxBadgeSupplementaryView.swift */,
 				15A4B60A2549455800534EFE /* TitleSupplementaryView.swift */,
 				15E7EA022540987D00D459FA /* Main.storyboard */,
 				15E7EA072540987F00D459FA /* LaunchScreen.storyboard */,
@@ -143,7 +132,6 @@
 		15CF928C2542F4E700CCBBF9 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				15A4B60D2549D8AC00534EFE /* MovieDataController.swift */,
 				15E7EA002540987D00D459FA /* MovieCollectionViewController.swift */,
 				15A4B60125493DCF00534EFE /* MovieCollectionViewController+Extensions.swift */,
 				15C29878255663090064B074 /* MovieDetailViewController.swift */,
@@ -288,7 +276,6 @@
 				15CF92A82543409C00CCBBF9 /* MovieModel.xcdatamodeld in Sources */,
 				1585D78E254367C8006A9433 /* CoreDataController.swift in Sources */,
 				15A4B608254944C900534EFE /* MovieCell.swift in Sources */,
-				15CF92822542EFFA00CCBBF9 /* MovieCollectionXXX.swift in Sources */,
 				15E7EA012540987D00D459FA /* MovieCollectionViewController.swift in Sources */,
 				15E7EA15254098D200D459FA /* MovieServiceAPI.swift in Sources */,
 				15C29887255668550064B074 /* FavoritesViewController.swift in Sources */,
@@ -304,19 +291,16 @@
 				15A4B60E2549D8AC00534EFE /* MovieDataController.swift in Sources */,
 				15CF92B725434CC200CCBBF9 /* Company+CoreDataProperties.swift in Sources */,
 				15C29879255663090064B074 /* MovieDetailViewController.swift in Sources */,
-				15CF927F2542EF1200CCBBF9 /* MovieListDataXXX.swift in Sources */,
 				15E7EA1F2542039B00D459FA /* CastResponse.swift in Sources */,
 				15A4B60B2549455800534EFE /* TitleSupplementaryView.swift in Sources */,
 				1597CB2F255C5619001FBA8F /* ImageData.swift in Sources */,
 				15CF929A2542F58A00CCBBF9 /* CompanyData.swift in Sources */,
-				1597CAF32559518A001FBA8F /* xxxBadgeSupplementaryView.swift in Sources */,
 				15E7E9FD2540987D00D459FA /* AppDelegate.swift in Sources */,
 				15CF92B225434CC200CCBBF9 /* Movie+CoreDataClass.swift in Sources */,
 				15A4B5FA2548595600534EFE /* Actor+CoreDataClass.swift in Sources */,
 				15CF92912542F51F00CCBBF9 /* CastDTOMapper.swift in Sources */,
 				15CF92B425434CC200CCBBF9 /* Collection+CoreDataClass.swift in Sources */,
 				15CF929F2542F6C000CCBBF9 /* MovieDTOMapper.swift in Sources */,
-				15CF92A22542F92000CCBBF9 /* MovieDetailDataXXX.swift in Sources */,
 				15C2987D2556640D0064B074 /* MainTabBarController.swift in Sources */,
 				15CF92B625434CC200CCBBF9 /* Company+CoreDataClass.swift in Sources */,
 				15E7E9FF2540987D00D459FA /* SceneDelegate.swift in Sources */,

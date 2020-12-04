@@ -12,18 +12,12 @@ class MovieCollectionViewController: UIViewController {
     
     // MARK: - Properties
     let movieCollections = MovieDataController()
-    var collectionView: UICollectionView!
-    var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection.Sections, MovieDataController.MovieItem>!
-    var snapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection.Sections, MovieDataController.MovieItem>!
-    
-    var bookmarkedMovie = Set<Movie>()
-    var favoritedMovie = Set<Movie>()
-    var boughtMovie = Set<Movie>()
-    var watchedMovie = Set<Movie>()
-    
+    var collectionView: UICollectionView! = nil
+    var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection.Genres, MovieDataController.MovieItem>! = nil
+    var snapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection.Genres, MovieDataController.MovieItem>! = nil
     
     // MARK: - Value Types
-    typealias Section  = MovieDataController.MovieCollection.Sections
+    typealias Section  = MovieDataController.MovieCollection.Genres
     typealias Movie = MovieDataController.MovieItem
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Movie>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Movie>
@@ -36,22 +30,19 @@ class MovieCollectionViewController: UIViewController {
         super.viewDidLoad()
         movieCollections.populateMovieData()
         configureCollectionView()
-        // try new scheme, based on Apple Modern Collection Views app
         configureDataSource()
-        applyInitialSnapshots()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        //        configureDataSource() // note, this works
+        applyInitialSnapshot()
     }
 }
 
 extension MovieCollectionViewController {
+    //MARK: - Set up Collectionview
     func configureCollectionView() {
+
+        // was working....
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        collectionView.backgroundColor = .systemGroupedBackground
+        collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
         view.addSubview(collectionView)
     }
@@ -75,6 +66,7 @@ extension MovieCollectionViewController {
             let section = NSCollectionLayoutSection(group: group)
             section.orthogonalScrollingBehavior = .groupPagingCentered // originally .continuous
             section.interGroupSpacing = 8
+//           section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
             
             let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
             let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
@@ -91,39 +83,29 @@ extension MovieCollectionViewController {
     }
 }
 
+//MARK: - Datasource setup
 extension MovieCollectionViewController {
-    //MARK: - Datasource setup
+    // configure datasource
     func configureDataSource() {
+        print("in configureDataSource")
         dataSource = UICollectionViewDiffableDataSource<Section, Movie>(collectionView: collectionView) {
             (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> MovieCell? in
             // Return the cell.
-            return collectionView.dequeueConfiguredReusableCell(using: self.configureMovieCell(), for: indexPath, item: movie)
+           return collectionView.dequeueConfiguredReusableCell(using: self.configureMovieCell(), for: indexPath, item: movie)
         }
+
         // section header
         dataSource.supplementaryViewProvider = { (view, kind, index) in
             return self.collectionView.dequeueConfiguredReusableSupplementary(using: self.configureHeader(), for: index)
         }
     }
     
-    func applyInitialSnapshots() {
-        // set the order of the sections
-        let sections = Section.allCases
-        var recentSnapshot = NSDiffableDataSourceSnapshot<Section, Movie>()
-        recentSnapshot.appendSections(sections)
-        dataSource.apply(recentSnapshot, animatingDifferences: false)
-        
-        // list of all
-        var allSnapshot = NSDiffableDataSourceSectionSnapshot<Movie>()
-        for genre in Section.allCases {
-            let allSnapshotItems = movieCollections.movieList
-            allSnapshot.append(allSnapshotItems)
-            dataSource.apply(allSnapshot, to: genre, animatingDifferences: false)
-        } // allCases
-    } // applyInitialSnapshots
 
-    func configureMovieCell() -> UICollectionView.CellRegistration<MovieCell, Movie> {
+    //MARK: Configure Collectionview Movie Cell
+    func configureMovieCell() -> UICollectionView.CellRegistration<MovieCell, MovieDataController.MovieItem> {
         return UICollectionView.CellRegistration<MovieCell, Movie> { [weak self] (cell, indexPath, movie) in
             guard let self = self else { return }
+            
             self.formatter.dateFormat = "yyyy"
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
@@ -142,6 +124,7 @@ extension MovieCollectionViewController {
         } // CellRegistration
     } // configureMovieCell
     
+    //MARK: Configure Collectionview Header
     func configureHeader() -> UICollectionView.SupplementaryRegistration<TitleSupplementaryView> {
         // section header
         return UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") {
@@ -150,11 +133,30 @@ extension MovieCollectionViewController {
                 let movieCollection = snapshot.sectionIdentifiers[indexPath.section]
                 supplementaryView.label.text = movieCollection.rawValue
             } // snapshot
-
         } // SupplementaryRegistration
-    }
+    } // configureHeader
+
+    //MARK: Setup Snapshot data in proper order
+    func applyInitialSnapshot() {
+        // set the order of the sections
+        print("applyInitialSnapshot")
+        let sections = Section.allCases
+        
+        var recentSnapshot = Snapshot()
+        recentSnapshot.appendSections(sections)
+        dataSource.apply(recentSnapshot, animatingDifferences: false)
+        
+        // list of all
+        var allSnapshot = NSDiffableDataSourceSectionSnapshot<Movie>()
+        for genre in Section.allCases {
+            let allSnapshotItems = movieCollections.movieList
+            allSnapshot.append(allSnapshotItems)
+            dataSource.apply(allSnapshot, to: genre, animatingDifferences: false)
+        } // allCases
+    } // applyInitialSnapshots
 }
 
+//MARK: - UICollectionViewDelegate
 extension MovieCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {

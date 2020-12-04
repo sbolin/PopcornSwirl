@@ -53,7 +53,7 @@ class MovieDataController {
     }()
     
     // genres/sections
-    let genresByName: [MovieCollection.Sections : Int] = [
+    let genresByName: [MovieCollection.Genres : Int] = [
         .Adventure   : 12,
         .Animation   : 16,
         .Drama       : 18,
@@ -98,28 +98,27 @@ class MovieDataController {
         var favorite: Bool = false
         var note: String = ""
         
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(id)
-        }
+//        func hash(into hasher: inout Hasher) {
+//            hasher.combine(id)
+//        }
     }
     
     // collection of movies
-    struct MovieCollection: Hashable {
-        
-        let identifier = UUID()
+struct MovieCollection: Hashable, Identifiable {
+        let id = UUID()
         let genreID: Int
         var movies: [MovieItem]
         var genreName: String {
             return getGenreName(genreID: genreID)
         }
         
-        enum Sections: String, Hashable, CaseIterable {
+        enum Genres: String, Hashable, CaseIterable {
             case Action, Adventure, Drama, Comedy, Animation, Family, Mystery, Thriller, Upcoming
         }
         
         func getGenreName(genreID: Int) -> String {
             
-            let genresByID: [Int : Sections] = [
+            let genresByID: [Int : Genres] = [
                 12:    .Adventure,
                 16:    .Animation,
                 18:    .Drama,
@@ -133,19 +132,18 @@ class MovieDataController {
             return genresByID[genreID]!.rawValue
         }
         
-        func hash(into hasher: inout Hasher) {
-            hasher.combine(identifier)
-        }
+//        func hash(into hasher: inout Hasher) {
+//            hasher.combine(identifier)
+//        }
     }
 }
 
 extension MovieDataController {
     func populateMovieData() {
-        print("in populateMovieData")
         let page = 1
-        
-        for section in MovieCollection.Sections.allCases {
-            let genreID = genresByName[section]! // force unwrap dictionary, ok as genres is clearly defined above
+
+        for genre in MovieCollection.Genres.allCases {
+            let genreID = genresByName[genre]! // force unwrap dictionary, ok as genres is clearly defined above
             MovieAPI.shared.getMovies(from: genreID, page: page) { [weak self] (result: Result<MoviesResponse, Error>) in
                 guard let strongSelf = self else { return }
                 switch result {

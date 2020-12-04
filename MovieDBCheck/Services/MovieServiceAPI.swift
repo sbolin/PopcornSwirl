@@ -16,7 +16,7 @@ class MovieServiceAPI {
     private let baseURL = URL(string: "https://api.themoviedb.org/3")! // 4 does not work
     private let apiKey = "a042fdafc76ac6243a7d5c85b930f1f6"
     private let baseImageURL = URL(string: "https://image.tmdb.org/t/p")!
-
+    
     
     //Movie parameters
     private let language = "en-US"
@@ -39,10 +39,8 @@ class MovieServiceAPI {
     }()
     
     let cache = NSCache<NSString, UIImage>()
-
     
-
-// get movies method given Genre
+    // get movies method given Genre
     public func getMovies<MovieResponse: Decodable>(from genre: Int, page: Int, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
         let url = getMoviesURL(from: genre, for: page)
         urlSession.dataTask(with: url) { result in
@@ -53,7 +51,6 @@ class MovieServiceAPI {
                         return
                     }
                     do {
-                        print("getMovies urlSession success")
                         let values = try self.jsonDecoder.decode(MovieResponse.self, from: data)
                         completion(.success(values))
                     } catch {
@@ -71,7 +68,6 @@ class MovieServiceAPI {
         var movieURL = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
         if genre == 99999 {
             movieURL = baseURL.appendingPathComponent("movie").appendingPathComponent("upcoming")
-            print("upcoming url: \n\(movieURL)")
         }
         
         var urlComponents = URLComponents(url: movieURL, resolvingAgainstBaseURL: true)! // <---!!
@@ -99,13 +95,12 @@ class MovieServiceAPI {
     }
     
     func getMovieImage(imageURL: URL, completion: @escaping (Bool, UIImage?) -> Void) {
- //       let session = URLSession(configuration: .default)
+        //       let session = URLSession(configuration: .default)
         let imageKey = "\(imageURL)" as NSString
         if let imageCache = cache.object(forKey: imageKey) {
-            print("fetched image from cache")
             completion(true, imageCache)
         } else {
-            let task = urlSession.dataTask(with: imageURL) { (data, response, error) in
+            urlSession.dataTask(with: imageURL) { (data, response, error) in
                 if let data = data, error == nil,
                    let response = response as? HTTPURLResponse,
                    response.statusCode == 200 {
@@ -119,14 +114,13 @@ class MovieServiceAPI {
                 else {
                     completion(false, nil)
                 }
-            }
-            task.resume()
+            }.resume()
         }
     }
     
     func getMovieCast(castURL: URL, completion: @escaping (Bool, CastData?) -> Void) {
-//        let session = URLSession(configuration: .default)
-        let task = urlSession.dataTask(with: castURL) { (data, response, error) in
+        //        let session = URLSession(configuration: .default)
+        urlSession.dataTask(with: castURL) { (data, response, error) in
             if let data = data, error == nil,
                let response = response as? HTTPURLResponse,
                response.statusCode == 200 {
@@ -141,12 +135,11 @@ class MovieServiceAPI {
             else {
                 completion(false, nil)
             }
-        }
-        task.resume()
+        }.resume()
     } // getMovieCast
     
     func getMovieCompany(companyURL: URL, completion: @escaping (Bool, CompanyData?) -> Void) {
-//        let session = URLSession(configuration: .default)
+        //        let session = URLSession(configuration: .default)
         let task = urlSession.dataTask(with: companyURL) { (data, response, error) in
             if let data = data, error == nil,
                let response = response as? HTTPURLResponse,
@@ -168,9 +161,8 @@ class MovieServiceAPI {
 }
 
 extension URLSession {
-//    func dataTask(with url: URL, group: DispatchGroup, result: @escaping (Result<(URLResponse, Data), Error>) -> Void) -> URLSessionDataTask {
     func dataTask(with url: URL, result: @escaping (Result<(URLResponse, Data), Error>) -> Void) -> URLSessionDataTask {
-
+        
         return dataTask(with: url) { (data, response, error) in
             if let error = error {
                 result(.failure(error))
@@ -181,7 +173,9 @@ extension URLSession {
                 result(.failure(error))
                 return
             }
-            result(.success((response, data)))
+            DispatchQueue.main.async { // added
+                result(.success((response, data)))
+            } // added
         }
     }
 }
