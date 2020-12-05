@@ -30,13 +30,13 @@ class MovieCollectionViewController: UIViewController {
         super.viewDidLoad()
         movieCollections.populateMovieData()
         configureCollectionView()
-//        configureDataSource()
+        configureDataSource()
 //        applyInitialSnapshot()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        configureDataSource()
+//        configureDataSource()
         applyInitialSnapshot()
     }
 }
@@ -70,8 +70,6 @@ extension MovieCollectionViewController {
             let section = NSCollectionLayoutSection(group: group)
             section.orthogonalScrollingBehavior = .groupPagingCentered // originally .continuous
             section.interGroupSpacing = 8
-//           section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
-            
             let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
             let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
                 layoutSize: headerSize,

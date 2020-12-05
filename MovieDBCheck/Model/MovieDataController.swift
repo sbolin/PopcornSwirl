@@ -31,8 +31,8 @@ class MovieDataController {
     var companyItem = CompanyData(movieID: 0, company: [""])
     var companyList = Set<CompanyData>()
     
-    var imageItem = ImageData(movieID: 0, imagePath: URL(string: "https://image.tmdb.org/t/p")!, image: UIImage(), imageType: 0)
-    var imageList = Set<ImageData>()
+//    var imageItem = ImageData(movieID: 0, imagePath: URL(string: "https://image.tmdb.org/t/p")!, image: UIImage(), imageType: 0)
+//    var imageList = Set<ImageData>()
      
     // temporary collection
     fileprivate var _collections = [MovieCollection]()

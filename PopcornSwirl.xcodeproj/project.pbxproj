@@ -154,6 +154,7 @@
 		15CF92AB25434C9A00CCBBF9 /* Core Data */ = {
 			isa = PBXGroup;
 			children = (
+				1585D78D254367C8006A9433 /* CoreDataController.swift */,
 				15A4B5F82548595600534EFE /* Actor+CoreDataClass.swift */,
 				15A4B5F92548595600534EFE /* Actor+CoreDataProperties.swift */,
 				15CF92AE25434CC200CCBBF9 /* Collection+CoreDataClass.swift */,
@@ -162,7 +163,6 @@
 				15CF92AD25434CC200CCBBF9 /* Movie+CoreDataProperties.swift */,
 				15CF92B025434CC200CCBBF9 /* Company+CoreDataClass.swift */,
 				15CF92B125434CC200CCBBF9 /* Company+CoreDataProperties.swift */,
-				1585D78D254367C8006A9433 /* CoreDataController.swift */,
 				15CF92A62543409C00CCBBF9 /* MovieModel.xcdatamodeld */,
 			);
 			path = "Core Data";

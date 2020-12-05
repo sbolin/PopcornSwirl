@@ -43,6 +43,37 @@ class CoreDataController {
         return context
     }()
     
+    lazy var bookmarkPredicate: NSPredicate = {
+        return NSPredicate(format: "%K = %@", #keyPath(Movie.bookmarked), true)
+    }()
+
+    lazy var favoritePredicate: NSPredicate = {
+        return NSPredicate(format: "%K = %@", #keyPath(Movie.favorite), true)
+    }()
+
+    lazy var watchedPredicate: NSPredicate = {
+        return NSPredicate(format: "%K = %@", #keyPath(Movie.watched), true)
+    }()
+    
+    lazy var boughtPredicate: NSPredicate = {
+        return NSPredicate(format: "%K = %@", #keyPath(Movie.bought), true)
+    }()
+    
+    lazy var movieResultsController: NSFetchedResultsController<Movie> = {
+        let request = Movie.movieFetchRequest()
+        let genreSort = NSSortDescriptor(keyPath: \Movie.genre, ascending: true)
+        let nameSort = NSSortDescriptor(keyPath: \Movie.title, ascending: true)
+        request.sortDescriptors = [genreSort, nameSort]// [todoIDSort]
+        
+        let fetchedResultsController = NSFetchedResultsController(
+            fetchRequest: request,
+            managedObjectContext: managedContext,
+            sectionNameKeyPath: #keyPath(Movie.collection.genreName),
+            cacheName: nil)
+        
+        return fetchedResultsController
+    }()
+    
     //MARK: - SaveContext
     func saveContext(managedContext: NSManagedObjectContext) {
         guard managedContext.hasChanges else { return }
