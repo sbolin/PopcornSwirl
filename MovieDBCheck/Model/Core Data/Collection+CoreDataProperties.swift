@@ -19,7 +19,7 @@ extension Collection {
     @NSManaged public var genreID: Int32
     @NSManaged public var genreName: String
     @NSManaged public var id: UUID
-    @NSManaged public var movies: Set<Movie>
+    @NSManaged public var movies: Set<MovieEntity>
 
 }
 
@@ -27,16 +27,16 @@ extension Collection {
 extension Collection {
 
     @objc(addMoviesObject:)
-    @NSManaged public func addToMovies(_ value: Movie)
+    @NSManaged public func addToMovies(_ value: MovieEntity)
 
     @objc(removeMoviesObject:)
-    @NSManaged public func removeFromMovies(_ value: Movie)
+    @NSManaged public func removeFromMovies(_ value: MovieEntity)
 
     @objc(addMovies:)
-    @NSManaged public func addToMovies(_ values: Set<Movie>)
+    @NSManaged public func addToMovies(_ values: Set<MovieEntity>)
 
     @objc(removeMovies:)
-    @NSManaged public func removeFromMovies(_ values: Set<Movie>)
+    @NSManaged public func removeFromMovies(_ values: Set<MovieEntity>)
 
 }
 

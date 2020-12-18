@@ -8,23 +8,23 @@
 import Foundation
 
 struct MovieDTOMapper { // data transfer object
-    static func map(_ dto: MoviesResponse) -> [MovieDataController.MovieItem] {  // call when change to MovieController
+    static func map(_ dto: MovieResponse) -> [MovieDataController.MovieItem] {  // call when change to MovieController
         var movieData = [MovieDataController.MovieItem]()
-        for result in dto.results {
-            let movie = MovieDataController.MovieItem(
-                id: result.id,
-                title: result.title,
-                overview: result.overview,
-                genreID: result.genreIds,
-                releaseDate: result.releaseDate,
-                voteAverage: result.voteAverage,
-                voteCount: result.voteCount,
-                adult: result.adult,
-                video: result.video,
-                popularity: result.popularity,
-                posterPath: result.posterPath,
-                backdropPath: result.backdropPath)
-            movieData.append(movie)
+        for movie in dto.movies {
+            let movieItem = MovieDataController.MovieItem(
+                id: movie.id,
+                title: movie.title,
+                overview: movie.overview,
+                genreID: movie.genreIds,
+                releaseDate: movie.releaseDate,
+                voteAverage: movie.voteAverage,
+                voteCount: movie.voteCount,
+                adult: movie.adult,
+                video: movie.video,
+                popularity: movie.popularity,
+                posterPath: movie.posterPath,
+                backdropPath: movie.backdropPath)
+            movieData.append(movieItem)
 
         }
         return movieData

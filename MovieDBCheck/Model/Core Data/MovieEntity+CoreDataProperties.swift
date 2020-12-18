@@ -1,8 +1,8 @@
 //
-//  MovieCD+CoreDataProperties.swift
+//  MovieEntity+CoreDataProperties.swift
 //  PopcornSwirl
 //
-//  Created by Scott Bolin on 12/5/20.
+//  Created by Scott Bolin on 12/19/20.
 //
 //
 
@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 
 
-extension MovieCD {
+extension MovieEntity {
 
     @nonobjc public class func movieFetchRequest() -> NSFetchRequest<MovieEntity> {
         return NSFetchRequest<MovieEntity>(entityName: "MovieEntity")
@@ -26,12 +26,15 @@ extension MovieCD {
     @NSManaged public var adult: Bool
     @NSManaged public var video: Bool
     @NSManaged public var popularity: Double
-
-    @NSManaged public var backdropPath: String?
-    @NSManaged public var backdropImage: Data?
-    @NSManaged public var posterPath: String?
-    @NSManaged public var posterImage: Data?
     
+    // path to images
+    @NSManaged public var backdropPath: String?
+    @NSManaged public var posterPath: String?
+    
+    // derived stored image data
+    @NSManaged public var backdropImage: Data?
+    @NSManaged public var posterImage: Data?
+
     // relationship to Collection Object
     @NSManaged public var collection: Collection
 
@@ -41,31 +44,30 @@ extension MovieCD {
     @NSManaged public var watched: Bool
     @NSManaged public var bought: Bool
     @NSManaged public var note: String? // may or may not have note
-
-
-    // secondary movie data, requires separate fetches for actor/director and company
+    
+    // secondary movie data
     @NSManaged public var actor: String
     @NSManaged public var director: String
     @NSManaged public var companies: Set<Company>
     @NSManaged public var actors: Set<Actor>
+
 }
 
-/*
 // MARK: Generated accessors for actors
 extension MovieEntity {
-    
+
     @objc(addActorsObject:)
     @NSManaged public func addToActors(_ value: Actor)
-    
+
     @objc(removeActorsObject:)
     @NSManaged public func removeFromActors(_ value: Actor)
-    
+
     @objc(addActors:)
     @NSManaged public func addToActors(_ values: Set<Actor>)
-    
+
     @objc(removeActors:)
     @NSManaged public func removeFromActors(_ values: Set<Actor>)
-    
+
 }
 
 // MARK: Generated accessors for companies
@@ -73,13 +75,13 @@ extension MovieEntity {
 
     @objc(addCompaniesObject:)
     @NSManaged public func addToCompanies(_ value: Company)
-    
+
     @objc(removeCompaniesObject:)
     @NSManaged public func removeFromCompanies(_ value: Company)
-    
+
     @objc(addCompanies:)
     @NSManaged public func addToCompanies(_ values: Set<Company>)
-    
+
     @objc(removeCompanies:)
     @NSManaged public func removeFromCompanies(_ values: Set<Company>)
 
@@ -88,4 +90,3 @@ extension MovieEntity {
 extension MovieEntity : Identifiable {
 
 }
-*/

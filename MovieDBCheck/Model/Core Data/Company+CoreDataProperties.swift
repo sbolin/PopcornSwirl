@@ -18,7 +18,7 @@ extension Company {
 
     @NSManaged public var id: Int32
     @NSManaged public var name: String
-    @NSManaged public var movie: Movie
+    @NSManaged public var movie: MovieEntity
 
 }
 

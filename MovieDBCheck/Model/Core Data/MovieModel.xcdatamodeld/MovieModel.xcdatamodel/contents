@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="20B29" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20C69" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Actor" representedClassName="Actor" syncable="YES">
         <attribute name="id" attributeType="Integer 32" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
-        <relationship name="movie" maxCount="1" deletionRule="Nullify" destinationEntity="Movie" inverseName="actors" inverseEntity="Movie"/>
+        <relationship name="movie" maxCount="1" deletionRule="Nullify" destinationEntity="MovieEntity" inverseName="actors" inverseEntity="MovieEntity"/>
     </entity>
     <entity name="Collection" representedClassName="Collection" syncable="YES">
         <attribute name="genreID" attributeType="Integer 32" usesScalarValueType="YES"/>
         <attribute name="genreName" attributeType="String"/>
         <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="movies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Movie" inverseName="collection" inverseEntity="Movie"/>
+        <relationship name="movies" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MovieEntity" inverseName="collection" inverseEntity="MovieEntity"/>
     </entity>
     <entity name="Company" representedClassName="Company" syncable="YES">
         <attribute name="id" attributeType="Integer 32" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
-        <relationship name="movie" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Movie" inverseName="companies" inverseEntity="Movie"/>
+        <relationship name="movie" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MovieEntity" inverseName="companies" inverseEntity="MovieEntity"/>
     </entity>
-    <entity name="Movie" representedClassName="Movie" syncable="YES">
+    <entity name="MovieEntity" representedClassName="MovieEntity" syncable="YES">
         <attribute name="actor" attributeType="String"/>
         <attribute name="adult" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="backdropImage" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
@@ -25,8 +25,8 @@
         <attribute name="bought" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="director" attributeType="String"/>
         <attribute name="favorite" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="genre" attributeType="Integer 32" usesScalarValueType="YES"/>
-        <attribute name="id" attributeType="Integer 32" usesScalarValueType="YES"/>
+        <attribute name="genre" attributeType="Integer 16" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="Integer 16" usesScalarValueType="YES"/>
         <attribute name="note" optional="YES" attributeType="String"/>
         <attribute name="overview" attributeType="String"/>
         <attribute name="popularity" attributeType="Double" usesScalarValueType="YES"/>
@@ -36,7 +36,7 @@
         <attribute name="title" attributeType="String"/>
         <attribute name="video" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="voteAverage" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
-        <attribute name="voteCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="voteCount" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="watched" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <relationship name="actors" toMany="YES" deletionRule="Nullify" destinationEntity="Actor" inverseName="movie" inverseEntity="Actor"/>
         <relationship name="collection" maxCount="1" deletionRule="Nullify" destinationEntity="Collection" inverseName="movies" inverseEntity="Collection"/>
@@ -46,6 +46,6 @@
         <element name="Actor" positionX="311.15625" positionY="47.3125" width="128" height="88"/>
         <element name="Collection" positionX="-112.5625" positionY="120.6015625" width="128" height="103"/>
         <element name="Company" positionX="313.21875" positionY="149.51953125" width="128" height="88"/>
-        <element name="Movie" positionX="106.35546875" positionY="-150.4375" width="128" height="389"/>
+        <element name="MovieEntity" positionX="106.35546875" positionY="-150.4375" width="128" height="389"/>
     </elements>
 </model>

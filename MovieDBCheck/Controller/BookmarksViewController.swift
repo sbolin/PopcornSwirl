@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class BookmarksViewController: UIViewController {
     
@@ -100,5 +101,11 @@ extension BookmarksViewController: UICollectionViewDelegate {
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.movie = movie
         tabBarController?.show(detailViewController, sender: self)
+    }
+}
+
+extension BookmarksViewController: NSFetchedResultsControllerDelegate {
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
+        dataSource.apply(snapshot as NSDiffableDataSourceSnapshot<Section, MovieDataController.MovieItem>, animatingDifferences: true)
     }
 }

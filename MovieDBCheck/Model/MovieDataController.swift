@@ -43,14 +43,7 @@ class MovieDataController {
     }
     
     // jsondecoder
-    private let jsonDecoder: JSONDecoder = {
-        let jsonDecoder = JSONDecoder()
-        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-mm-dd"
-        jsonDecoder.dateDecodingStrategy = .formatted(dateFormatter)
-        return jsonDecoder
-    }()
+    private let jsonDecoder = Utils.jsonDecoder
     
     // genres/sections
     let genresByName: [MovieCollection.Genres : Int] = [
@@ -66,6 +59,40 @@ class MovieDataController {
     ]
     
     init() {}
+    
+    // collection of movies
+    struct MovieCollection: Hashable, Identifiable {
+        let id = UUID()
+        let genreID: Int
+        var movies: [MovieItem]
+        var genreName: String {
+            return getGenreName(genreID: genreID)
+        }
+        
+        enum Genres: String, Hashable, CaseIterable {
+            case Action, Adventure, Drama, Comedy, Animation, Family, Mystery, Thriller, Upcoming
+        }
+        
+        func getGenreName(genreID: Int) -> String {
+            
+            let genresByID: [Int : Genres] = [
+                12:    .Adventure,
+                16:    .Animation,
+                18:    .Drama,
+                28:    .Action,
+                35:    .Comedy,
+                53:    .Thriller,
+                9648:  .Mystery,
+                10751: .Family,
+                99999: .Upcoming
+            ]
+            return genresByID[genreID]!.rawValue
+        }
+        
+        //        func hash(into hasher: inout Hasher) {
+        //            hasher.combine(identifier)
+        //        }
+    }
     
     // MovieItem struct
     struct MovieItem: Hashable, Identifiable {
@@ -102,40 +129,6 @@ class MovieDataController {
 //            hasher.combine(id)
 //        }
     }
-    
-    // collection of movies
-struct MovieCollection: Hashable, Identifiable {
-        let id = UUID()
-        let genreID: Int
-        var movies: [MovieItem]
-        var genreName: String {
-            return getGenreName(genreID: genreID)
-        }
-        
-        enum Genres: String, Hashable, CaseIterable {
-            case Action, Adventure, Drama, Comedy, Animation, Family, Mystery, Thriller, Upcoming
-        }
-        
-        func getGenreName(genreID: Int) -> String {
-            
-            let genresByID: [Int : Genres] = [
-                12:    .Adventure,
-                16:    .Animation,
-                18:    .Drama,
-                28:    .Action,
-                35:    .Comedy,
-                53:    .Thriller,
-                9648:  .Mystery,
-                10751: .Family,
-                99999: .Upcoming
-            ]
-            return genresByID[genreID]!.rawValue
-        }
-        
-//        func hash(into hasher: inout Hasher) {
-//            hasher.combine(identifier)
-//        }
-    }
 }
 
 extension MovieDataController {
@@ -144,7 +137,7 @@ extension MovieDataController {
 
         for genre in MovieCollection.Genres.allCases {
             let genreID = genresByName[genre]! // force unwrap dictionary, ok as genres is clearly defined above
-            MovieAPI.shared.getMovies(from: genreID, page: page) { [weak self] (result: Result<MoviesResponse, Error>) in
+            MovieAPI.shared.getMovies(from: genreID, page: page) { [weak self] (result: Result<MovieResponse, Error>) in
                 guard let strongSelf = self else { return }
                 switch result {
                     case .success(let response):

@@ -29,16 +29,9 @@ class MovieServiceAPI {
     private let voteAverageGTE = 7.0
     private let region = "us"
     
-    private let jsonDecoder: JSONDecoder = {
-        let jsonDecoder = JSONDecoder()
-        jsonDecoder.keyDecodingStrategy = .convertFromSnakeCase
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-mm-dd"
-        jsonDecoder.dateDecodingStrategy = .formatted(dateFormatter)
-        return jsonDecoder
-    }()
+    private let jsonDecoder = Utils.jsonDecoder
     
-    let cache = NSCache<NSString, UIImage>()
+    private let imageCache = NSCache<NSString, UIImage>()
     
     // get movies method given Genre
     public func getMovies<MovieResponse: Decodable>(from genre: Int, page: Int, completion: @escaping (Result<MovieResponse, Error>) -> Void) {
@@ -95,9 +88,8 @@ class MovieServiceAPI {
     }
     
     func getMovieImage(imageURL: URL, completion: @escaping (Bool, UIImage?) -> Void) {
-        //       let session = URLSession(configuration: .default)
         let imageKey = "\(imageURL)" as NSString
-        if let imageCache = cache.object(forKey: imageKey) {
+        if let imageCache = imageCache.object(forKey: imageKey) {
             completion(true, imageCache)
         } else {
             urlSession.dataTask(with: imageURL) { (data, response, error) in
@@ -108,7 +100,7 @@ class MovieServiceAPI {
                         completion(false, nil)
                         return
                     }
-                    self.cache.setObject(image, forKey: imageKey)
+                    self.imageCache.setObject(image, forKey: imageKey)
                     completion(true, image)
                 }
                 else {
@@ -119,7 +111,6 @@ class MovieServiceAPI {
     }
     
     func getMovieCast(castURL: URL, completion: @escaping (Bool, CastData?) -> Void) {
-        //        let session = URLSession(configuration: .default)
         urlSession.dataTask(with: castURL) { (data, response, error) in
             if let data = data, error == nil,
                let response = response as? HTTPURLResponse,
