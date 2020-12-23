@@ -7,11 +7,13 @@
 
 import Foundation
 
-struct Movies: Decodable {
+struct MovieResp: Decodable {
+    let movies: [Movie]
     
-    let results: [Movie]
+    private enum CodingKeys: String, CodingKey {
+        case movies = "results"
+    }
 }
-
 
 struct Movie: Decodable, Identifiable, Hashable {
     static func == (lhs: Movie, rhs: Movie) -> Bool {
@@ -29,32 +31,17 @@ struct Movie: Decodable, Identifiable, Hashable {
     let overview: String
     let voteAverage: Double
     let voteCount: Int
+    
+    let popularity: Double
+    let adult: Bool
+    let video: Bool
+    
     let runtime: Int?
-    let releaseDate: String? // Date?
+    let releaseDate: String?
     
     let genres: [MovieGenre]?
     let credits: MovieCredit?
     let videos: MovieVideoResponse?
-    
-    // user added data
-    var bookmarked: Bool = false
-    var watched: Bool = false
-    var favorite: Bool = false
-    var note: String = ""
-    
-    static private let yearFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy"
-        return formatter
-    }()
-    
-    static private let durationFormatter: DateComponentsFormatter = {
-        let formatter = DateComponentsFormatter()
-        formatter.unitsStyle = .full
-        formatter.allowedUnits = [.hour, .minute]
-        return formatter
-    }()
-    
     
     var backdropURL: URL {
         return URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath ?? "")")!
@@ -87,14 +74,21 @@ struct Movie: Decodable, Identifiable, Hashable {
         guard let releaseDate = self.releaseDate, let date = Utils.dateFormatter.date(from: releaseDate) else {
             return "n/a"
         }
-        return Movie.yearFormatter.string(from: date)
+        return Utils.yearFormatter.string(from: date)
+    }
+    
+    var formattedDate: Date {
+        guard let releaseDate = self.releaseDate, let date = Utils.dateFormatter.date(from: releaseDate) else {
+            return Date()
+        }
+        return date
     }
     
     var durationText: String {
         guard let runtime = self.runtime, runtime > 0 else {
             return "n/a"
         }
-        return Movie.durationFormatter.string(from: TimeInterval(runtime) * 60) ?? "n/a"
+        return Utils.durationFormatter.string(from: TimeInterval(runtime) * 60) ?? "n/a"
     }
     
     var cast: [MovieCast]? {
@@ -123,7 +117,6 @@ struct Movie: Decodable, Identifiable, Hashable {
 }
 
 struct MovieGenre: Decodable {
-    
     let name: String
 }
 

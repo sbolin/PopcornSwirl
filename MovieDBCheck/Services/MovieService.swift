@@ -9,10 +9,10 @@ import UIKit
 
 protocol MovieService {
     
-    func fetchMovies(from endpoint: MovieListEndpoint, completion: @escaping (Result<MovieResponse, MovieError>) -> ())
-    func fetchMovie(id: Int, completion: @escaping (Result<MovieData, MovieError>) -> ())
+    func fetchMovies(from endpoint: MovieListEndpoint, completion: @escaping (Result<MovieResp, MovieError>) -> ()) // MovieResponse -> MovieResp
+    func fetchMovie(id: Int, completion: @escaping (Result<Movie, MovieError>) -> ()) // MovieDate -> Movie
     func fetchImage(imageURL: URL, completion: @escaping (Bool, UIImage?) -> ())
-    func searchMovie(query: String, completion: @escaping (Result<MovieResponse, MovieError>) -> ())
+    func searchMovie(query: String, completion: @escaping (Result<MovieResp, MovieError>) -> ()) // MovieResponse -> MovieResp
 }
 
 enum MovieListEndpoint: String, CaseIterable, Identifiable {

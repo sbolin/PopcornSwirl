@@ -72,38 +72,35 @@ class CoreDataController {
         let fetchedResultsController = NSFetchedResultsController(
             fetchRequest: request,
             managedObjectContext: managedContext,
-            sectionNameKeyPath: #keyPath(MovieEntity.collection.genreName),
+            sectionNameKeyPath: #keyPath(MovieEntity.genre),
             cacheName: nil)
         
         return fetchedResultsController
     }()
-    //MARK: - Load Data into Core Data Context
-    private func loadMovies(_ movieCollection: MovieDataController.MovieCollection) {
-        
-    }
     
     //MARK: - SaveContext
-    func saveMovies(movies: [MovieData]) {
+    func saveMovies(movies: [Movie]) { //[MovieData] -> [Movie]
         persistentContainer.performBackgroundTask { [weak self] (context) in
             guard let self = self else { return }
             self.saveDataToCoreData(movies: movies, context: context)
         }
     }
     
-    private func saveDataToCoreData(movies: [MovieData], context: NSManagedObjectContext) {
+    private func saveDataToCoreData(movies: [Movie], context: NSManagedObjectContext) { //[MovieData] -> [Movie]
         context.perform {
             for movie in movies {
                 let movieEntity = MovieEntity(context: context)
                 movieEntity.title = movie.title
-                movieEntity.releaseDate = movie.releaseDate
+                movieEntity.releaseDate = movie.formattedDate
+                movieEntity.runtime = movie.durationText
                 movieEntity.voteAverage = movie.voteAverage
                 movieEntity.posterPath = movie.posterPath
                 movieEntity.backdropPath = movie.backdropPath
                 movieEntity.overview = movie.overview
                 
-                movieEntity.id = Int16(movie.id)
-                movieEntity.genre = Int16(movie.genreIds[0])
-                movieEntity.voteCount = Int16(movie.voteCount)
+                movieEntity.id = Int32(movie.id)
+                movieEntity.genre = movie.genreText
+                movieEntity.voteCount = Int32(movie.voteCount)
                 movieEntity.adult = movie.adult
                 movieEntity.video = movie.video
                 movieEntity.popularity = movie.popularity
@@ -121,7 +118,6 @@ class CoreDataController {
 //                movieEntity.actors
                 
             }
-            
             do {
                 try context.save()
             } catch {

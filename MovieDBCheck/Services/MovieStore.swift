@@ -20,7 +20,7 @@ class MovieStore: MovieService {
     private let imageCache = NSCache<NSString, UIImage>()
     
     // fetch movies at given endpoint
-    func fetchMovies(from endpoint: MovieListEndpoint, completion: @escaping (Result<MovieResponse, MovieError>) -> ()) {
+    func fetchMovies(from endpoint: MovieListEndpoint, completion: @escaping (Result<MovieResp, MovieError>) -> ()) { // MovieResponse -> MovieResp
         guard let url = URL(string: "\(baseURL)/movie/\(endpoint.rawValue)") else {
             completion(.failure(.invalidEndpoint))
             return
@@ -29,7 +29,7 @@ class MovieStore: MovieService {
     }
     
     // fetch individual movie for detail view
-    func fetchMovie(id: Int, completion: @escaping (Result<MovieData, MovieError>) -> ()) {
+    func fetchMovie(id: Int, completion: @escaping (Result<Movie, MovieError>) -> ()) {
         guard let url = URL(string: "\(baseURL)/movie/\(id)") else {
             completion(.failure(.invalidEndpoint))
             return
@@ -41,7 +41,7 @@ class MovieStore: MovieService {
     }
     
     // search for movie using keyword
-    func searchMovie(query: String, completion: @escaping (Result<MovieResponse, MovieError>) -> ()) {
+    func searchMovie(query: String, completion: @escaping (Result<MovieResp, MovieError>) -> ()) { // MovieResponse -> MovieResp
         guard let url = URL(string: "\(baseURL)/search/movie") else {
             completion(.failure(.invalidEndpoint))
             return
@@ -81,7 +81,7 @@ class MovieStore: MovieService {
         }
     }
     
-    private func loadURLAndDecode<D: Decodable>(url: URL, params: [String: String]? = nil, completion: @escaping (Result<D, MovieError>) -> ()) {
+    private func loadURLAndDecode<T: Decodable>(url: URL, params: [String: String]? = nil, completion: @escaping (Result<T, MovieError>) -> ()) {
         guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
             completion(.failure(.invalidEndpoint))
             return
@@ -117,9 +117,13 @@ class MovieStore: MovieService {
             }
             
             do {
-                let decodedResponse = try self.jsonDecoder.decode(D.self, from: data)
+                //
+                print("data to decode: \(data)")
+                //
+                let decodedResponse = try self.jsonDecoder.decode(T.self, from: data)
                 self.executeCompletionHandlerInMainThread(with: .success(decodedResponse), completion: completion)
             } catch {
+                print("Decode error \(error)")
                 self.executeCompletionHandlerInMainThread(with: .failure(.decodeError), completion: completion)
             }
         }.resume()

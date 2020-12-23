@@ -16,13 +16,14 @@ extension MovieEntity {
         return NSFetchRequest<MovieEntity>(entityName: "MovieEntity")
     }
     // main movie data
-    @NSManaged public var id: Int16
+    @NSManaged public var id: Int32
     @NSManaged public var title: String
-    @NSManaged public var genre: Int16
+    @NSManaged public var genre: String
     @NSManaged public var overview: String
     @NSManaged public var releaseDate: Date
+    @NSManaged public var runtime: String
     @NSManaged public var voteAverage: Double
-    @NSManaged public var voteCount: Int16
+    @NSManaged public var voteCount: Int32
     @NSManaged public var adult: Bool
     @NSManaged public var video: Bool
     @NSManaged public var popularity: Double
@@ -34,10 +35,8 @@ extension MovieEntity {
     // derived stored image data
     @NSManaged public var backdropImage: Data?
     @NSManaged public var posterImage: Data?
-
-    // relationship to Collection Object
-    @NSManaged public var collection: Collection
-
+    
+    
     // user generated data - bookmark a movie, mark as watched, mark as favorite
     @NSManaged public var bookmarked: Bool
     @NSManaged public var favorite: Bool
@@ -48,42 +47,6 @@ extension MovieEntity {
     // secondary movie data
     @NSManaged public var actor: String
     @NSManaged public var director: String
-    @NSManaged public var companies: Set<Company>
-    @NSManaged public var actors: Set<Actor>
-
-}
-
-// MARK: Generated accessors for actors
-extension MovieEntity {
-
-    @objc(addActorsObject:)
-    @NSManaged public func addToActors(_ value: Actor)
-
-    @objc(removeActorsObject:)
-    @NSManaged public func removeFromActors(_ value: Actor)
-
-    @objc(addActors:)
-    @NSManaged public func addToActors(_ values: Set<Actor>)
-
-    @objc(removeActors:)
-    @NSManaged public func removeFromActors(_ values: Set<Actor>)
-
-}
-
-// MARK: Generated accessors for companies
-extension MovieEntity {
-
-    @objc(addCompaniesObject:)
-    @NSManaged public func addToCompanies(_ value: Company)
-
-    @objc(removeCompaniesObject:)
-    @NSManaged public func removeFromCompanies(_ value: Company)
-
-    @objc(addCompanies:)
-    @NSManaged public func addToCompanies(_ values: Set<Company>)
-
-    @objc(removeCompanies:)
-    @NSManaged public func removeFromCompanies(_ values: Set<Company>)
 
 }
 

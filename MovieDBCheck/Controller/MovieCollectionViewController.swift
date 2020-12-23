@@ -92,9 +92,14 @@ extension MovieCollectionViewController {
         print("in configureDataSource")
         dataSource = UICollectionViewDiffableDataSource<Section, Movie>(collectionView: collectionView) {
             (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> MovieCell? in
+ //           guard let object = try? managedObjectContext.existingObject(with: movie) else {
+ //               fatalError("Managed object must be available")
+ //           }
             // Return the cell.
-           return collectionView.dequeueConfiguredReusableCell(using: self.configureMovieCell(), for: indexPath, item: movie)
+           let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureMovieCell(), for: indexPath, item: movie)
+            return cell
         }
+        
 
         // section header
         dataSource.supplementaryViewProvider = { (view, kind, index) in
@@ -102,7 +107,6 @@ extension MovieCollectionViewController {
         }
     }
     
-
     //MARK: Configure Collectionview Movie Cell
     func configureMovieCell() -> UICollectionView.CellRegistration<MovieCell, MovieDataController.MovieItem> {
         return UICollectionView.CellRegistration<MovieCell, Movie> { [weak self] (cell, indexPath, movie) in
