@@ -38,6 +38,7 @@ class MovieDetailViewController: UIViewController {
     
     var movieCollections = MovieDataController()
     var movie: MovieDataController.MovieItem?
+//    var movie: Movie?
     let formatter = DateFormatter()
     
     var actors: [String] = []
@@ -58,9 +59,13 @@ class MovieDetailViewController: UIViewController {
     
     // called from MovieCollectionViewController prior to segue
     func setup(movie: MovieDataController.MovieItem) {
+//        func setup(movie: Movie) {
+
         // get actor and image for movie
         let posterURL = movieCollections.getImageURL(imageSize: "w780", endPoint: movie.posterPath)
+//        let posterURL = movie.posterURL
         self.group.enter()
+            //FIXME: MovieServiceAPI
         MovieServiceAPI.shared.getMovieImage(imageURL: posterURL) { (success, image) in
             if success, let image = image {
                 self.mainImage = image
@@ -70,6 +75,7 @@ class MovieDetailViewController: UIViewController {
         
         let actorURL = movieCollections.getCastURL(movieID: movie.id)
         self.group.enter()
+            //FIXME: MovieServiceAPI
         MovieServiceAPI.shared.getMovieCast(castURL: actorURL) { (success, cast) in
             if success, let cast = cast {
                 self.actors = cast.actor
@@ -80,6 +86,7 @@ class MovieDetailViewController: UIViewController {
         
         let companyURL = movieCollections.getCompanyURL(movieID: movie.id)
         self.group.enter()
+            //FIXME: MovieServiceAPI
         MovieServiceAPI.shared.getMovieCompany(companyURL: companyURL) { (success, company) in
             if success, let company = company {
                 self.companies = company.company

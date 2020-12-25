@@ -13,10 +13,6 @@ class MovieDataController {
     
     typealias MovieAPI = PopcornSwirl.MovieServiceAPI
     
-    // Dispatch
-    let group = DispatchGroup()
-    let queue = DispatchQueue.global(qos: .userInteractive)
-    
     // API
     private let baseURL = URL(string: "https://api.themoviedb.org/3")! // 4 does not work
     private let apiKey = "a042fdafc76ac6243a7d5c85b930f1f6"
@@ -30,9 +26,6 @@ class MovieDataController {
     
     var companyItem = CompanyData(movieID: 0, company: [""])
     var companyList = Set<CompanyData>()
-    
-//    var imageItem = ImageData(movieID: 0, imagePath: URL(string: "https://image.tmdb.org/t/p")!, image: UIImage(), imageType: 0)
-//    var imageList = Set<ImageData>()
      
     // temporary collection
     fileprivate var _collections = [MovieCollection]()
@@ -138,12 +131,12 @@ extension MovieDataController {
         for genre in MovieCollection.Genres.allCases {
             let genreID = genresByName[genre]! // force unwrap dictionary, ok as genres is clearly defined above
             MovieAPI.shared.getMovies(from: genreID, page: page) { [weak self] (result: Result<MovieResponse, Error>) in
-                guard let strongSelf = self else { return }
+                guard let self = self else { return }
                 switch result {
                     case .success(let response):
-                        strongSelf.movieList = MovieDTOMapper.map(response)
-                        let collectionItem = MovieCollection(genreID: genreID, movies: strongSelf.movieList)
-                        strongSelf._collections.append(collectionItem)
+                        self.movieList = MovieDTOMapper.map(response)
+                        let collectionItem = MovieCollection(genreID: genreID, movies: self.movieList)
+                        self._collections.append(collectionItem)
                         
                     case .failure(let error):
                         print(error.localizedDescription)

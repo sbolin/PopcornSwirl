@@ -13,10 +13,11 @@ class MovieCollectionViewController: UIViewController {
     // MARK: - Properties
     let movieCollections = MovieDataController()
     var collectionView: UICollectionView! = nil
-    var dataSource: UICollectionViewDiffableDataSource<MovieDataController.MovieCollection, MovieDataController.MovieItem>! = nil
-    var snapshot: NSDiffableDataSourceSnapshot<MovieDataController.MovieCollection, MovieDataController.MovieItem>! = nil
+    var dataSource: UICollectionViewDiffableDataSource<Section, Movie>! = nil
+    var snapshot: NSDiffableDataSourceSnapshot<Section, Movie>! = nil
     
     // MARK: - Value Types
+//    typealias Section  = MovieListEndpoint
     typealias Section  = MovieDataController.MovieCollection
     typealias Movie = MovieDataController.MovieItem
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Movie>
@@ -28,7 +29,8 @@ class MovieCollectionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        movieCollections.populateMovieData()
+        // FIXME: populate data from core data store
+//        movieCollections.populateMovieData()
         configureCollectionView()
         configureDataSource()
 //        applyInitialSnapshot()
@@ -91,10 +93,8 @@ extension MovieCollectionViewController {
     func configureDataSource() {
         print("in configureDataSource")
         dataSource = UICollectionViewDiffableDataSource<Section, Movie>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> MovieCell? in
- //           guard let object = try? managedObjectContext.existingObject(with: movie) else {
- //               fatalError("Managed object must be available")
- //           }
+            (collectionView: UICollectionView, indexPath: IndexPath, movie: Movie) -> MovieCell? in
+
             // Return the cell.
            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureMovieCell(), for: indexPath, item: movie)
             return cell
@@ -108,7 +108,7 @@ extension MovieCollectionViewController {
     }
     
     //MARK: Configure Collectionview Movie Cell
-    func configureMovieCell() -> UICollectionView.CellRegistration<MovieCell, MovieDataController.MovieItem> {
+    func configureMovieCell() -> UICollectionView.CellRegistration<MovieCell, Movie> {
         return UICollectionView.CellRegistration<MovieCell, Movie> { [weak self] (cell, indexPath, movie) in
             guard let self = self else { return }
             print("in configureMovieCell()")
@@ -119,6 +119,8 @@ extension MovieCollectionViewController {
             cell.activityIndicator.startAnimating()
             // load image...
             let backdropURL = self.movieCollections.getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
+//            let backdropURL = movie.backdropURL
+            //FIXME: MovieServiceAPI
             MovieServiceAPI.shared.getMovieImage(imageURL: backdropURL) { (success, image) in
                 if success, let image = image {
                     DispatchQueue.main.async {

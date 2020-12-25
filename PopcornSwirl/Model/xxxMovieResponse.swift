@@ -13,11 +13,9 @@ struct MovieResponse: Decodable {
     private enum CodingKeys: String, CodingKey {
         case movies = "results"
     }
-    
-    
 }
+
 struct MovieData: Decodable, Identifiable, Hashable {
-    
     static func == (lhs: MovieData, rhs: MovieData) -> Bool {
         lhs.id == rhs.id
     }
@@ -25,7 +23,6 @@ struct MovieData: Decodable, Identifiable, Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-    
     
     let id: Int
     let title: String

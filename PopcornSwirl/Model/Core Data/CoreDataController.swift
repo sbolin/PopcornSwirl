@@ -91,8 +91,8 @@ class CoreDataController {
             for movie in movies {
                 let movieEntity = MovieEntity(context: context)
                 movieEntity.title = movie.title
-                movieEntity.releaseDate = movie.formattedDate
-                movieEntity.runtime = movie.durationText
+                movieEntity.releaseDate = movie.releaseDate
+                movieEntity.runtime = Int32(movie.runtime)
                 movieEntity.voteAverage = movie.voteAverage
                 movieEntity.posterPath = movie.posterPath
                 movieEntity.backdropPath = movie.backdropPath

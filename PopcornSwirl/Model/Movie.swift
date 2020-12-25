@@ -1,5 +1,5 @@
 //
-//  Movie.swift
+//  MovieResp.swift
 //  PopcornSwirl
 //
 //  Created by Scott Bolin on 12/18/20.
@@ -26,8 +26,8 @@ struct Movie: Decodable, Identifiable, Hashable {
     
     let id: Int
     let title: String
-    let backdropPath: String?
-    let posterPath: String?
+    let backdropPath: String
+    let posterPath: String
     let overview: String
     let voteAverage: Double
     let voteCount: Int
@@ -36,19 +36,20 @@ struct Movie: Decodable, Identifiable, Hashable {
     let adult: Bool
     let video: Bool
     
-    let runtime: Int?
-    let releaseDate: String?
+    let runtime: Int
+    let releaseDate: Date
     
     let genres: [MovieGenre]?
     let credits: MovieCredit?
     let videos: MovieVideoResponse?
+    let productionCompanies: [ProductionCompany]
     
     var backdropURL: URL {
-        return URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath ?? "")")!
+        return URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath )")!
     }
     
     var posterURL: URL {
-        return URL(string: "https://image.tmdb.org/t/p/w780\(posterPath ?? "")")!
+        return URL(string: "https://image.tmdb.org/t/p/w780\(posterPath )")!
     }
     
     var genreText: String {
@@ -71,43 +72,38 @@ struct Movie: Decodable, Identifiable, Hashable {
     }
     
     var yearText: String {
-        guard let releaseDate = self.releaseDate, let date = Utils.dateFormatter.date(from: releaseDate) else {
-            return "n/a"
-        }
-        return Utils.yearFormatter.string(from: date)
+        return Utils.yearFormatter.string(from: releaseDate)
     }
     
-    var formattedDate: Date {
-        guard let releaseDate = self.releaseDate, let date = Utils.dateFormatter.date(from: releaseDate) else {
-            return Date()
-        }
-        return date
+    var formattedDate: String {
+        return Utils.dateFormatter.string(from: releaseDate)
     }
     
     var durationText: String {
-        guard let runtime = self.runtime, runtime > 0 else {
+        if runtime == 0 {
             return "n/a"
+        } else {
+            return Utils.durationFormatter.string(from: TimeInterval(runtime) * 60) ?? "n/a"
         }
-        return Utils.durationFormatter.string(from: TimeInterval(runtime) * 60) ?? "n/a"
     }
     
-    var cast: [MovieCast]? {
+    var cast: [Cast]? {
         credits?.cast
     }
     
-    var crew: [MovieCrew]? {
+    var crew: [Crew]? {
         credits?.crew
     }
     
-    var directors: [MovieCrew]? {
+    var directors: [Crew]? {
         crew?.filter { $0.job.lowercased() == "director" }
     }
     
-    var producers: [MovieCrew]? {
+    var producers: [Crew]? {
         crew?.filter { $0.job.lowercased() == "producer" }
     }
     
-    var screenWriters: [MovieCrew]? {
+    var screenWriters: [Crew]? {
         crew?.filter { $0.job.lowercased() == "story" }
     }
     
@@ -120,18 +116,22 @@ struct MovieGenre: Decodable {
     let name: String
 }
 
-struct MovieCredit: Decodable {
-    let cast: [MovieCast]
-    let crew: [MovieCrew]
+struct ProductionCompany: Decodable {
+    let name: String
 }
 
-struct MovieCast: Decodable, Identifiable {
+struct MovieCredit: Decodable {
+    let cast: [Cast]
+    let crew: [Crew]
+}
+
+struct Cast: Decodable, Identifiable {
     let id: Int
     let character: String
     let name: String
 }
 
-struct MovieCrew: Decodable, Identifiable {
+struct Crew: Decodable, Identifiable {
     let id: Int
     let job: String
     let name: String
@@ -154,3 +154,4 @@ struct MovieVideo: Decodable, Identifiable {
         return URL(string: "https://youtube.com/watch?v=\(key)")
     }
 }
+

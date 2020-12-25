@@ -11,11 +11,12 @@ import CoreData
 class WatchedViewController: UIViewController {
 
     // MARK: - Properties
-    var movieCollections = MovieDataController()
     var collectionView: UICollectionView! = nil
-    var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataController.MovieItem>! = nil
-    var currentSnapshot: NSDiffableDataSourceSnapshot<Section, MovieDataController.MovieItem>! = nil
-    var movies = [MovieDataController.MovieItem]()
+    
+    // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
+    var dataSource: UICollectionViewDiffableDataSource<Section, Movie>! = nil
+    var currentSnapshot: NSDiffableDataSourceSnapshot<Section, Movie>! = nil
+    var movies = [Movie]()
 
     private let formatter = DateFormatter()
     
@@ -25,7 +26,7 @@ class WatchedViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        movieCollections.populateMovieData()
+        // FIXME: need to get movie data via nsfetchedresultscontroller
         configureCollectionView()
     }
     
@@ -51,15 +52,17 @@ extension WatchedViewController {
     
     private func configureDataSource() {
         print("in configureDataSource()")
+        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
         self.formatter.dateFormat = "yyyy"
-        let cellRegistration = UICollectionView.CellRegistration<ListViewCell, MovieDataController.MovieItem> { (cell, indexPath, movie) in
+        let cellRegistration = UICollectionView.CellRegistration<ListViewCell, Movie> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
-            cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
+            cell.yearLabel.text = movie.yearText
             cell.activityIndicator.startAnimating()
             // load image
-            let backdropURL = self.movieCollections.getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
+            let backdropURL = movie.backdropURL
+            //FIXME: MovieServiceAPI
             MovieServiceAPI.shared.getMovieImage(imageURL: backdropURL) { (success, image) in
                 if success, let image = image {
                     DispatchQueue.main.async {
@@ -68,17 +71,16 @@ extension WatchedViewController {
                     } // Dispatch
                 } // success
             } // getMovieImage
-            
-            
         } // cellRegistration
         
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataController.MovieItem>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataController.MovieItem) -> ListViewCell? in
+        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
+        dataSource = UICollectionViewDiffableDataSource<Section, Movie>(collectionView: collectionView) {
+            (collectionView: UICollectionView, indexPath: IndexPath, movie: Movie) -> ListViewCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
-        var currentSnapshot = NSDiffableDataSourceSnapshot<Section, MovieDataController.MovieItem>()
-        print("in bookmark currentSnapshot: \(movieCollections.collections.count)")
+        var currentSnapshot = NSDiffableDataSourceSnapshot<Section, Movie>()
+        print("in watched currentSnapshot: \(movies.count)")
         
         // should search over movies with bookmark == true, display those movies
         currentSnapshot.appendSections([.main])
@@ -105,8 +107,9 @@ extension WatchedViewController: UICollectionViewDelegate {
 }
 
 extension WatchedViewController: NSFetchedResultsControllerDelegate {
+    // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
     func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
-        dataSource.apply(snapshot as NSDiffableDataSourceSnapshot<Section, MovieDataController.MovieItem>, animatingDifferences: true)
+        dataSource.apply(snapshot as NSDiffableDataSourceSnapshot<Section, Movie>, animatingDifferences: true)
     }
 }
 

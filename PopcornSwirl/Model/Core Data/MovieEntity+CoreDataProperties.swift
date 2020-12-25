@@ -21,7 +21,7 @@ extension MovieEntity {
     @NSManaged public var genre: String
     @NSManaged public var overview: String
     @NSManaged public var releaseDate: Date
-    @NSManaged public var runtime: String
+    @NSManaged public var runtime: Int32
     @NSManaged public var voteAverage: Double
     @NSManaged public var voteCount: Int32
     @NSManaged public var adult: Bool

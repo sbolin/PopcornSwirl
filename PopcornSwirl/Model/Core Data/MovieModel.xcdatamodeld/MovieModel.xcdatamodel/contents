@@ -17,7 +17,7 @@
         <attribute name="posterImage" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <attribute name="posterPath" optional="YES" attributeType="String"/>
         <attribute name="releaseDate" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="runtime" optional="YES" attributeType="String"/>
+        <attribute name="runtime" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="title" attributeType="String"/>
         <attribute name="video" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="voteAverage" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
