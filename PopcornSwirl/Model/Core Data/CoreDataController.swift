@@ -82,10 +82,11 @@ class CoreDataController {
     func saveMovies(movies: [Movie]) { //[MovieData] -> [Movie]
         persistentContainer.performBackgroundTask { [weak self] (context) in
             guard let self = self else { return }
-            self.saveDataToCoreData(movies: movies, context: context)
+//            self.saveDataToCoreData(movies: movies, context: context)
         }
     }
     
+/*
     private func saveDataToCoreData(movies: [Movie], context: NSManagedObjectContext) { //[MovieData] -> [Movie]
         context.perform {
             for movie in movies {
@@ -125,4 +126,5 @@ class CoreDataController {
             }
         }
     }
+ */
 }

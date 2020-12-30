@@ -11,35 +11,35 @@ import UIKit
 class MovieCollectionViewController: UIViewController {
     
     // MARK: - Properties
-    let movieCollections = MovieDataController()
     var collectionView: UICollectionView! = nil
     var dataSource: UICollectionViewDiffableDataSource<Section, Movie>! = nil
     var snapshot: NSDiffableDataSourceSnapshot<Section, Movie>! = nil
     
     // MARK: - Value Types
-//    typealias Section  = MovieListEndpoint
-    typealias Section  = MovieDataController.MovieCollection
-    typealias Movie = MovieDataController.MovieItem
+    typealias Section  = MovieDataStore.MovieCollection.Genres
+    typealias Movie = MovieDataStore.MovieItem
     typealias DataSource = UICollectionViewDiffableDataSource<Section, Movie>
     typealias Snapshot = NSDiffableDataSourceSnapshot<Section, Movie>
     
-    let formatter = DateFormatter()
+    var movieCollections: [MovieDataStore.MovieCollection]?
     
     static let sectionHeaderElementKind = "section-header-element-kind"
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // FIXME: populate data from core data store
-//        movieCollections.populateMovieData()
-        configureCollectionView()
-        configureDataSource()
-//        applyInitialSnapshot()
-    }
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-//        configureDataSource()
-        applyInitialSnapshot()
+        MovieActions.shared.loadMovieData { [weak self] result in
+            guard let self = self else { return }
+            if let collection = result {
+                self.movieCollections = collection
+            }
+            self.setupSnapshot()
+        }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureCollectionView()
+        configureDataSource()
     }
 }
 
@@ -53,11 +53,11 @@ extension MovieCollectionViewController {
         view.addSubview(collectionView)
     }
     
-    func createLayout() -> UICollectionViewLayout {
-        let cellHeight:CGFloat = 220
+    private func createLayout() -> UICollectionViewLayout {
         let config = UICollectionViewCompositionalLayoutConfiguration()
         config.interSectionSpacing = 8
         let sectionProvider = { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
+            let cellHeight: CGFloat = (sectionIndex == 0) ? 300 : 220
             let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
                                                   heightDimension: .fractionalHeight(1.0))
             let item = NSCollectionLayoutItem(layoutSize: itemSize)
@@ -71,7 +71,7 @@ extension MovieCollectionViewController {
             
             let section = NSCollectionLayoutSection(group: group)
             section.orthogonalScrollingBehavior = .groupPagingCentered // originally .continuous
-            section.interGroupSpacing = 8
+            section.interGroupSpacing = 12
             let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
             let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
                 layoutSize: headerSize,
@@ -91,37 +91,29 @@ extension MovieCollectionViewController {
 extension MovieCollectionViewController {
     // configure datasource
     func configureDataSource() {
-        print("in configureDataSource")
         dataSource = UICollectionViewDiffableDataSource<Section, Movie>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: Movie) -> MovieCell? in
-
+            (collectionView, indexPath, movie) -> MovieCell? in
             // Return the cell.
-           let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureMovieCell(), for: indexPath, item: movie)
+            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureMovieCell(), for: indexPath, item: movie)
             return cell
         }
-        
-
         // section header
         dataSource.supplementaryViewProvider = { (view, kind, index) in
             return self.collectionView.dequeueConfiguredReusableSupplementary(using: self.configureHeader(), for: index)
         }
+        //       setupSnapshot()
     }
     
     //MARK: Configure Collectionview Movie Cell
+    // Section, Movie -> Section, MovieEntity
     func configureMovieCell() -> UICollectionView.CellRegistration<MovieCell, Movie> {
-        return UICollectionView.CellRegistration<MovieCell, Movie> { [weak self] (cell, indexPath, movie) in
-            guard let self = self else { return }
-            print("in configureMovieCell()")
-            self.formatter.dateFormat = "yyyy"
+        return UICollectionView.CellRegistration<MovieCell, Movie> { cell, indexPath, movie in
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
-            cell.yearLabel.text = self.formatter.string(from: movie.releaseDate)
+            cell.yearLabel.text = movie.yearText
             cell.activityIndicator.startAnimating()
             // load image...
-            let backdropURL = self.movieCollections.getImageURL(imageSize: "w780", endPoint: movie.backdropPath)
-//            let backdropURL = movie.backdropURL
-            //FIXME: MovieServiceAPI
-            MovieServiceAPI.shared.getMovieImage(imageURL: backdropURL) { (success, image) in
+            MovieActions.shared.fetchImage(imageURL: movie.backdropURL) { (success, image) in
                 if success, let image = image {
                     DispatchQueue.main.async {
                         cell.imageView.image = image
@@ -135,23 +127,29 @@ extension MovieCollectionViewController {
     //MARK: Configure Collectionview Header
     func configureHeader() -> UICollectionView.SupplementaryRegistration<TitleSupplementaryView> {
         // section header
-        print("in configureHeader()")
         return UICollectionView.SupplementaryRegistration<TitleSupplementaryView>(elementKind: "Header") {
             (supplementaryView, string, indexPath) in
             if let snapshot = self.snapshot {
-                let movieCollection = snapshot.sectionIdentifiers[indexPath.section]
-                supplementaryView.label.text = movieCollection.genreName
+                let section = snapshot.sectionIdentifiers[indexPath.section]
+                supplementaryView.label.text = section.description
             } // snapshot
         } // SupplementaryRegistration
     } // configureHeader
-
+    
     //MARK: Setup Snapshot data in proper order
-    func applyInitialSnapshot() {
-        snapshot = NSDiffableDataSourceSnapshot<Section, Movie>()
-        movieCollections.collections.forEach {
-            let collection = $0
-            snapshot.appendSections([collection])
-            snapshot.appendItems(collection.movies)
+    func setupSnapshot() {
+        snapshot = Snapshot()
+        snapshot.appendSections(Section.allCases)
+        Section.allCases.forEach { genre in
+            if let collections = movieCollections {
+                let collection = collections.filter {
+                    $0.genreID == genre.id
+                }
+                
+                for genreMovie in collection {
+                    snapshot.appendItems(genreMovie.movies, toSection: genre)
+                }
+            }
         }
         dataSource.apply(snapshot, animatingDifferences: true)
     } // applyInitialSnapshots
@@ -160,12 +158,13 @@ extension MovieCollectionViewController {
 //MARK: - UICollectionViewDelegate
 extension MovieCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
+        guard self.dataSource.itemIdentifier(for: indexPath) != nil else {
             collectionView.deselectItem(at: indexPath, animated: true)
             return
         }
+        guard let movie = self.dataSource.itemIdentifier(for: indexPath) else { return }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        detailViewController.movie = movie
+        detailViewController.passedMovie = movie
         tabBarController?.show(detailViewController, sender: self)
     }
 }

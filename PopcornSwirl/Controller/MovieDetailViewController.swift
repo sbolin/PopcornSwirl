@@ -36,15 +36,21 @@ class MovieDetailViewController: UIViewController {
     let group = DispatchGroup()
     let queue = DispatchQueue.global()
     
-    var movieCollections = MovieDataController()
-    var movie: MovieDataController.MovieItem?
-//    var movie: Movie?
-    let formatter = DateFormatter()
+    let movieAction = MovieActions.shared
+    var passedMovie: MovieDataStore.MovieItem?
+    var movie: [MovieDataStore.MovieItem]?
+    var error: MovieError?
     
     var actors: [String] = []
     var director: String = ""
     var companies: [String] = []
     var mainImage = UIImage()
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard let passedMovie = passedMovie else { return }
+        setup(movie: passedMovie)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,21 +58,23 @@ class MovieDetailViewController: UIViewController {
         view.backgroundColor = .systemBackground
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setup(movie: movie!)
-    }
-    
     // called from MovieCollectionViewController prior to segue
-    func setup(movie: MovieDataController.MovieItem) {
-//        func setup(movie: Movie) {
+    func setup(movie: MovieDataStore.MovieItem) {
 
+        movieAction.fetchMovie(id: movie.id) { (result) in
+            switch result {
+                case .success(let response):
+                    self.movie = SingleMovieDTOMapper.map(response)
+                case .failure(let error):
+                    self.error = error
+                    print("Error fetching movie: \(error.localizedDescription)")
+            }
+        }
         // get actor and image for movie
-        let posterURL = movieCollections.getImageURL(imageSize: "w780", endPoint: movie.posterPath)
-//        let posterURL = movie.posterURL
+        let posterURL = movie.posterURL
         self.group.enter()
             //FIXME: MovieServiceAPI
-        MovieServiceAPI.shared.getMovieImage(imageURL: posterURL) { (success, image) in
+        movieAction.fetchImage(imageURL: posterURL) { (success, image) in
             if success, let image = image {
                 self.mainImage = image
             } // success
@@ -94,13 +102,12 @@ class MovieDetailViewController: UIViewController {
             self.group.leave()
         } // getMovieCompany
         
-        formatter.dateFormat = "yyyy"
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
                 
                 self.heroImage.image = self.mainImage
                 self.movieTitle.text = movie.title
-                self.movieYear.text = self.formatter.string(from: movie.releaseDate)
+                self.movieYear.text = Utils.yearFormatter.string(from: movie.releaseDate)
                 self.movieOverview.text = movie.overview
                 self.movieActor.text = self.actors.joined(separator: ", ")
                 self.movieDirector.text = self.director
@@ -115,7 +122,7 @@ class MovieDetailViewController: UIViewController {
                 print("movie title: \(movie.title)")
                 print("backcrop image: \(movie.backdropImage)")
                 print("poster image: \(movie.posterImage)")
-                let releaseDate = formatter.string(from: movie.releaseDate)
+                let releaseDate = Utils.dateFormatter.string(from: movie.releaseDate)
                 print("release data: \(releaseDate)")
                 print("overview: \(movie.overview)")
                 print("actors: \(movie.actor)")
