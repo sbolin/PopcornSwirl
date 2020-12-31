@@ -49,7 +49,6 @@ extension FavoritesViewController {
     }
     
     private func configureDataSource() {
-        print("in configureDataSource()")
         // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
         let cellRegistration = UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
@@ -76,7 +75,6 @@ extension FavoritesViewController {
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
         }
         var currentSnapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
-        print("in favorites currentSnapshot: \(movies.count)")
         
         // should search over movies with bookmark == true, display those movies
         currentSnapshot.appendSections([.main])
@@ -89,13 +87,10 @@ extension FavoritesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         //        collectionView.deselectItem(at: indexPath, animated: true)
         
-        print("item \(indexPath.section), \(indexPath.row) selected")
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
             collectionView.deselectItem(at: indexPath, animated: true)
-            print("collectionView deselect")
             return
         }
-        print("go to detailView")
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.movie = movie
         tabBarController?.show(detailViewController, sender: self)

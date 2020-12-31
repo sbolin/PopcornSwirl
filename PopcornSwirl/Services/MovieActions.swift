@@ -79,7 +79,7 @@ class MovieActions {
     ///   - id: Movie id parameter (Int)
     ///   - completion: Result closure
     /// - Returns: Movie data for movie id
-    func fetchMovie(id: Int, completion: @escaping (Result<SingleMovie, MovieError>) -> ()) {
+    func fetchMovie(id: Int, completion: @escaping (Result<SingleMovieResponse, MovieError>) -> ()) {
         guard let url = URL(string: "\(baseURL)/movie/\(id)") else {
             completion(.failure(.invalidEndpoint))
             return
@@ -201,6 +201,7 @@ class MovieActions {
             completion(.failure(.invalidEndpoint))
             return
         }
+        print("URL used to fetch: \(finalURL)")
         urlSession.dataTask(with: finalURL) { [weak self] (data, response, error) in
             guard let self = self else { return }
             if error != nil {

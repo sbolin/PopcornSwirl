@@ -95,20 +95,6 @@ class MovieDetailViewController: UIViewController {
                 self.movieRating.text = "Rating: " + String(movie.popularity)
                 self.movieAverageScore.text = "Score: " + String(movie.voteAverage)
                 self.movieVoteCount.text = "Count: " + String(movie.voteCount)
-
-                print("in moviedetailviewcontroller")
-                print("movie passed in: \(movie)")
-                print("movie title: \(movie.title)")
-                print("backcrop image: \(movie.backdropImage)")
-                print("poster image: \(movie.posterImage)")
-                let releaseDate = Utils.dateFormatter.string(from: movie.releaseDate)
-                print("release data: \(releaseDate)")
-                print("overview: \(movie.overview)")
-                print("actors: \(movie.actor)")
-                print("director: \(movie.director)")
-                print("popularity: \(movie.popularity)")
-                print("vote average: \(movie.voteAverage)")
-                print("vote count: \(movie.voteCount)")
             }
         }
     }
@@ -116,25 +102,21 @@ class MovieDetailViewController: UIViewController {
     //MARK: - Actions
     
     @IBAction func buyTapped(_ sender: UIButton) {
-        print("buyTapped")
         buyButton.isSelected.toggle()
         changeAlpha(sender: sender)
     }
     
     @IBAction func watchTapped(_ sender: UIButton) {
-        print("watchTapped")
         watchedButton.isSelected.toggle()
         changeAlpha(sender: sender)
     }
     
     @IBAction func bookmarkTapped(_ sender: UIButton) {
-        print("bookmarkTapped")
         bookmarkButton.isSelected.toggle()
         changeAlpha(sender: sender)
     }
     
     @IBAction func favoriteTapped(_ sender: UIButton) {
-        print("favoriteTapped")
         favoriteButton.isSelected.toggle()
         changeAlpha(sender: sender)
     }

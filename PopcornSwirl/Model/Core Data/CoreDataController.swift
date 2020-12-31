@@ -23,7 +23,7 @@ class CoreDataController {
         let container = NSPersistentContainer(name: modelName, managedObjectModel: model)
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
-                print("Unresolved error \(error), \(error.userInfo)")
+                print("Error creating persistent container: \(error), \(error.userInfo)")
             }
         }
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy

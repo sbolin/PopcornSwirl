@@ -10,7 +10,7 @@ import Foundation
 struct SingleMovieDTOMapper { // data transfer object
 
     
-    static func map(_ dto: SingleMovie) -> MovieDataStore.MovieItem {
+    static func map(_ dto: SingleMovieResponse) -> MovieDataStore.MovieItem {
         var movieGenres: [String] = []
         var movieCast: [String] = []
         var directors: [String] = []

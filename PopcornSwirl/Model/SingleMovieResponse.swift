@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct SingleMovie: Decodable, Identifiable, Hashable {
+struct SingleMovieResponse: Decodable, Identifiable, Hashable {
     // Results when fetching by endpoint or genre
-    static func == (lhs: SingleMovie, rhs: SingleMovie) -> Bool {
+    static func == (lhs: SingleMovieResponse, rhs: SingleMovieResponse) -> Bool {
         lhs.id == rhs.id
     }
     
@@ -33,67 +33,66 @@ struct SingleMovie: Decodable, Identifiable, Hashable {
     
     // Results when fetching specific Movie (by id)
     let runtime: Int
-    let genres: [MovieGenre]
-    let credits: MovieCredit
-    let videos: MovieVideoResponse
-    let productionCompanies: [ProductionCompany]
+    let genres: [MovieGenre2]
+    let credits: MovieCredit2
+    let videos: MovieVideoResponse2
+    let productionCompanies: [ProductionCompany2]
     
-    
-    var cast: [MovieCast] {
+    var cast: [MovieCast2] {
         credits.cast
     }
     
-    var crew: [MovieCrew] {
+    var crew: [MovieCrew2] {
         credits.crew
     }
     
-    var directors: [MovieCrew] {
+    var directors: [MovieCrew2] {
         crew.filter { $0.job.lowercased() == "director" }
     }
     
-    var producers: [MovieCrew] {
+    var producers: [MovieCrew2] {
         crew.filter { $0.job.lowercased() == "producer" }
     }
     
-    var screenWriters: [MovieCrew] {
+    var screenWriters: [MovieCrew2] {
         crew.filter { $0.job.lowercased() == "story" }
     }
     
-    var youtubeTrailers: [MovieVideo]? {
+    var youtubeTrailers: [MovieVideo2]? {
         videos.results.filter { $0.youtubeURL != nil }
     }
 }
 
-struct MovieGenre: Decodable {
+struct MovieGenre2: Decodable {
     let name: String
 }
 
-struct ProductionCompany: Decodable {
+struct ProductionCompany2: Decodable {
     let name: String
 }
 
-struct MovieCredit: Decodable {
-    let cast: [MovieCast]
-    let crew: [MovieCrew]
+struct MovieCredit2: Decodable {
+    let cast: [MovieCast2]
+    let crew: [MovieCrew2]
 }
 
-struct MovieCast: Decodable, Identifiable {
+struct MovieCast2: Decodable, Identifiable {
     let id: Int
     let character: String
     let name: String
 }
 
-struct MovieCrew: Decodable, Identifiable {
+struct MovieCrew2: Decodable, Identifiable {
     let id: Int
     let job: String
     let name: String
 }
 
-struct MovieVideoResponse: Decodable {
-    let results: [MovieVideo]
+struct MovieVideoResponse2: Decodable {
+    let results: [MovieVideo2]
 }
 
-struct MovieVideo: Decodable, Identifiable {
+struct MovieVideo2: Decodable, Identifiable {
     let id: String
     let key: String
     let name: String
