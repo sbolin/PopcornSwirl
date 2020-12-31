@@ -38,7 +38,7 @@ class MovieDetailViewController: UIViewController {
     
     let movieAction = MovieActions.shared
     var passedMovie: MovieDataStore.MovieItem?
-    var movie: [MovieDataStore.MovieItem]?
+    var movie: MovieDataStore.MovieItem?
     var error: MovieError?
     
     var actors: [String] = []
@@ -80,27 +80,6 @@ class MovieDetailViewController: UIViewController {
             } // success
             self.group.leave()
         } // getMovieImage
-        
-        let actorURL = movieCollections.getCastURL(movieID: movie.id)
-        self.group.enter()
-            //FIXME: MovieServiceAPI
-        MovieServiceAPI.shared.getMovieCast(castURL: actorURL) { (success, cast) in
-            if success, let cast = cast {
-                self.actors = cast.actor
-                self.director = cast.director
-            } // success
-            self.group.leave()
-        } // getMovieCast
-        
-        let companyURL = movieCollections.getCompanyURL(movieID: movie.id)
-        self.group.enter()
-            //FIXME: MovieServiceAPI
-        MovieServiceAPI.shared.getMovieCompany(companyURL: companyURL) { (success, company) in
-            if success, let company = company {
-                self.companies = company.company
-            } // success
-            self.group.leave()
-        } // getMovieCompany
         
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in

@@ -15,6 +15,7 @@
 		151E71A4258D1FE10061D4B2 /* MovieEntity+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 151E71A2258D1FE10061D4B2 /* MovieEntity+CoreDataProperties.swift */; };
 		154F116C2595CAEF006E3392 /* MoviesDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154F116B2595CAEF006E3392 /* MoviesDTOMapper.swift */; };
 		155A08D0259D0867006054F6 /* SingleMovieDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155A08CF259D0867006054F6 /* SingleMovieDTOMapper.swift */; };
+		155A08D3259D6D66006054F6 /* SingleMovieResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155A08D2259D6D66006054F6 /* SingleMovieResponse.swift */; };
 		1585D78E254367C8006A9433 /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1585D78D254367C8006A9433 /* CoreDataController.swift */; };
 		15A4B5FF25493B0000534EFE /* ToDo.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 15A4B5FE25493B0000534EFE /* ToDo.rtf */; };
 		15A4B60225493DCF00534EFE /* MovieCollectionViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B60125493DCF00534EFE /* MovieCollectionViewController+Extensions.swift */; };
@@ -45,6 +46,7 @@
 		151E71A2258D1FE10061D4B2 /* MovieEntity+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MovieEntity+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		154F116B2595CAEF006E3392 /* MoviesDTOMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesDTOMapper.swift; sourceTree = "<group>"; };
 		155A08CF259D0867006054F6 /* SingleMovieDTOMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleMovieDTOMapper.swift; sourceTree = "<group>"; };
+		155A08D2259D6D66006054F6 /* SingleMovieResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleMovieResponse.swift; sourceTree = "<group>"; };
 		1585D78D254367C8006A9433 /* CoreDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataController.swift; sourceTree = "<group>"; };
 		15A4B5FE25493B0000534EFE /* ToDo.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = ToDo.rtf; sourceTree = "<group>"; };
 		15A4B60125493DCF00534EFE /* MovieCollectionViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MovieCollectionViewController+Extensions.swift"; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 			children = (
 				15A4B60D2549D8AC00534EFE /* MovieDataStore.swift */,
 				15E7EA11254098A700D459FA /* MovieResponse.swift */,
+				155A08D2259D6D66006054F6 /* SingleMovieResponse.swift */,
 				154F116B2595CAEF006E3392 /* MoviesDTOMapper.swift */,
 				155A08CF259D0867006054F6 /* SingleMovieDTOMapper.swift */,
 				15CF92AB25434C9A00CCBBF9 /* Core Data */,
@@ -254,6 +257,7 @@
 				15E7EA12254098A700D459FA /* MovieResponse.swift in Sources */,
 				150DD150255ED9D90068A1B8 /* ListViewCell.swift in Sources */,
 				15A4B60225493DCF00534EFE /* MovieCollectionViewController+Extensions.swift in Sources */,
+				155A08D3259D6D66006054F6 /* SingleMovieResponse.swift in Sources */,
 				154F116C2595CAEF006E3392 /* MoviesDTOMapper.swift in Sources */,
 				15A4B60E2549D8AC00534EFE /* MovieDataStore.swift in Sources */,
 				15C29879255663090064B074 /* MovieDetailViewController.swift in Sources */,

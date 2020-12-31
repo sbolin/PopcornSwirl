@@ -84,7 +84,7 @@ class MovieDataStore {
         
         // actor data
         var actor: [String] = []
-        var director: String = ""
+        var director: [String] = []
         
         // company data
         var company: [String] = []

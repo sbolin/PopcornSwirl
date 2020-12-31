@@ -18,13 +18,15 @@ class Utils {
     
     static let yearFormatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy"
+        formatter.setLocalizedDateFormatFromTemplate("yyyy")
+//        formatter.dateFormat = "yyyy"
         return formatter
     }()
     
     static let dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-mm-dd"
+        dateFormatter.setLocalizedDateFormatFromTemplate("yyyy-mm-dd")
+ //       dateFormatter.dateFormat = "yyyy-mm-dd"
         return dateFormatter
     }()
     

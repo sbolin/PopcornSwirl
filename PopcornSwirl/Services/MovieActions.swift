@@ -79,7 +79,7 @@ class MovieActions {
     ///   - id: Movie id parameter (Int)
     ///   - completion: Result closure
     /// - Returns: Movie data for movie id
-    func fetchMovie(id: Int, completion: @escaping (Result<MovieResponse, MovieError>) -> ()) {
+    func fetchMovie(id: Int, completion: @escaping (Result<SingleMovie, MovieError>) -> ()) {
         guard let url = URL(string: "\(baseURL)/movie/\(id)") else {
             completion(.failure(.invalidEndpoint))
             return

@@ -58,16 +58,15 @@ extension WatchedViewController {
             cell.yearLabel.text = Utils.dateFormatter.string(from: movie.releaseDate)
             cell.activityIndicator.startAnimating()
             // load image
-            let backdropURL = URL(string: movie.backdropPath)!
-            //FIXME: MovieServiceAPI
-            MovieServiceAPI.shared.getMovieImage(imageURL: backdropURL) { (success, image) in
+            let backdropURL = movie.backdropURL
+            MovieActions.shared.fetchImage(imageURL: backdropURL) { (success, image) in
                 if success, let image = image {
                     DispatchQueue.main.async {
                         cell.imageView.image = image
                         cell.activityIndicator.stopAnimating()
                     } // Dispatch
                 } // success
-            } // getMovieImage
+            } // fetchImage
         } // cellRegistration
         
         // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
