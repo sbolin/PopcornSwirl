@@ -201,7 +201,7 @@ class MovieActions {
             completion(.failure(.invalidEndpoint))
             return
         }
-        print("URL used to fetch: \(finalURL)")
+        print("loadURLAndDecode finalURL: \(finalURL)")
         urlSession.dataTask(with: finalURL) { [weak self] (data, response, error) in
             guard let self = self else { return }
             if error != nil {

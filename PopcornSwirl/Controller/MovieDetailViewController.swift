@@ -64,6 +64,7 @@ class MovieDetailViewController: UIViewController {
         movieAction.fetchMovie(id: movie.id) { (result) in
             switch result {
                 case .success(let response):
+                    print("fetchMovie success")
                     self.movie = SingleMovieDTOMapper.map(response)
                 case .failure(let error):
                     self.error = error
