@@ -65,14 +65,13 @@ class CoreDataController {
     
     lazy var movieResultsController: NSFetchedResultsController<MovieEntity> = {
         let request = MovieEntity.movieFetchRequest()
-        let genreSort = NSSortDescriptor(keyPath: \MovieEntity.genre, ascending: true)
         let nameSort = NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)
-        request.sortDescriptors = [genreSort, nameSort]// [todoIDSort]
+        request.sortDescriptors = [nameSort]// [todoIDSort]
         
         let fetchedResultsController = NSFetchedResultsController(
             fetchRequest: request,
             managedObjectContext: managedContext,
-            sectionNameKeyPath: #keyPath(MovieEntity.genre),
+            sectionNameKeyPath: nil,
             cacheName: nil)
         
         return fetchedResultsController

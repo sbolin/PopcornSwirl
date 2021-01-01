@@ -92,7 +92,7 @@ extension BookmarksViewController: UICollectionViewDelegate {
             return
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        detailViewController.movie = movie
+        detailViewController.movieResult = movie
         tabBarController?.show(detailViewController, sender: self)
     }
 }

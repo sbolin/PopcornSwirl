@@ -8,8 +8,6 @@
 import Foundation
 
 struct SingleMovieDTOMapper { // data transfer object
-
-    
     static func map(_ dto: SingleMovieResponse) -> MovieDataStore.MovieItem {
         var movieGenres: [String] = []
         var movieCast: [String] = []
@@ -36,24 +34,18 @@ struct SingleMovieDTOMapper { // data transfer object
             overview: dto.overview,
             posterPath: dto.posterPath,
             backdropPath: dto.backdropPath,
-            genreIds: dto.genreIds,
+            genreIds: [],
             releaseDate: dto.releaseDate,
             voteAverage: dto.voteAverage,
             voteCount: dto.voteCount,
             popularity: dto.popularity,
             adult: dto.adult,
             video: dto.video,
-//            backdropImage: UIImage(),
-//            posterImage: UIImage(),
             runtime: dto.runtime,
             genres: movieGenres,
             actor: movieCast,
             director: directors,
             company: companies)
-//            bookmarked: false,
-//            watched: false,
-//            favorite: false,
-//            note: "")
         return movieItem
     }
 }

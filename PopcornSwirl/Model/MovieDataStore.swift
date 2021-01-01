@@ -93,6 +93,7 @@ class MovieDataStore {
         var bookmarked: Bool = false
         var watched: Bool = false
         var favorite: Bool = false
+        var bought: Bool = false
         var note: String = ""
         
         var genreText: String {
