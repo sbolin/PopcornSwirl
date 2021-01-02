@@ -60,11 +60,12 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Movies"//"\(movie.title)"
-        view.backgroundColor = .systemBackground
+//        view.backgroundColor = .systemBackground
     }
     
     // called from MovieCollectionViewController prior to segue
     func setup(movie: MovieDataStore.MovieItem) {
+        self.group.enter()
         movieAction.fetchMovie(id: movie.id) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -75,6 +76,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                     self.error = error
                     print("Error fetching movie: \(error.localizedDescription)")
             }
+            self.group.leave()
         }
         // get actor and image for movie
         let posterURL = movie.posterURL
@@ -96,13 +98,14 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         // movie.bookmarked = result.bookmarked
         // movie.watched = result.watched
         // movie.bought = result.bought
+        // set needs display
         
         if movie.bookmarked {
             bookmarkButton.isSelected = true
             bookmarkButton.tintColor = .systemBlue
         } else {
             bookmarkButton.isSelected = false
-            bookmarkButton.tintColor = .systemGray6
+            bookmarkButton.tintColor = .placeholderText
         }
         
         if movie.favorite {
@@ -110,7 +113,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             favoriteButton.tintColor = .systemRed
         } else {
             favoriteButton.isSelected = false
-            favoriteButton.tintColor = .systemGray6
+            favoriteButton.tintColor = .placeholderText
         }
         
         if movie.watched {
@@ -118,7 +121,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             watchedButton.tintColor = .systemPurple
         } else {
             watchedButton.isSelected = false
-            watchedButton.tintColor = .systemGray6
+            watchedButton.tintColor = .placeholderText
         }
         
         if movie.bought {
@@ -126,7 +129,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             buyButton.tintColor = .systemGreen
         } else {
             buyButton.isSelected = false
-            buyButton.tintColor = .systemGray6
+            buyButton.tintColor = .placeholderText
         }
         
         group.notify(queue: queue) { [self] in
@@ -134,19 +137,31 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                 // from passed in movie
                 self.heroImage.image = self.mainImage
                 let genreTitle = movieResult?.genreText ?? "Genre"
-                self.movieTitle.text = genreTitle //movie.title
+                let movieTitle = movieResult?.title ?? "Title"
+                self.movieTitle.text = movieTitle + " / " + genreTitle
                 self.movieYear.text = Utils.yearFormatter.string(from: movie.releaseDate)
                 self.movieOverview.text = movie.overview
                 
                 // from API result
                 guard let result = movieResult else { return }
-                self.movieActor.text = result.actor.joined(separator: ", ")
-                self.movieDirector.text = result.director.joined(separator: ", ")
-                self.movieCompany.text = result.company.joined(separator: ", ")
+                var actorResult = [""]
+                var companyResult = [""]
+                
+                result.actor.prefix(5).forEach { actor in
+                    actorResult.append(actor)
+                }
+                result.company.prefix(3).forEach { company in
+                    companyResult.append(company)
+                }
+                self.movieActor.text = actorResult.joined(separator: "\n")
+                self.movieDirector.text = result.director[0]
+                self.movieCompany.text = result.company.joined(separator: "\n")
                 
                 self.movieRating.text = "Rating: " + result.ratingText
                 self.movieAverageScore.text = "Score: " + String(result.voteAverage)
                 self.movieVoteCount.text = "Count: " + String(result.voteCount)
+                
+                self.view.setNeedsDisplay()
             }
         }
     }
@@ -187,7 +202,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         if sender.isSelected {
             sender.tintColor = .systemGreen
         } else {
-            sender.tintColor = .systemGray6
+            sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
         CoreDataController.shared.buyTapped(movie, buyStatus: buyButton.isSelected)
@@ -198,7 +213,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         if sender.isSelected {
             sender.tintColor = .systemPurple
         } else {
-            sender.tintColor = .systemGray6
+            sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
         CoreDataController.shared.watchedTapped(movie, watchedStatus: watchedButton.isSelected)
@@ -209,7 +224,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         if sender.isSelected {
             sender.tintColor = .systemBlue
         } else {
-            sender.tintColor = .systemGray6
+            sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
         CoreDataController.shared.bookmarkTapped(movie, bookmarkStatus: bookmarkButton.isSelected)
@@ -221,7 +236,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         if sender.isSelected {
             sender.tintColor = .systemRed
         } else {
-            sender.tintColor = .systemGray6
+            sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
         CoreDataController.shared.favoriteTapped(movie, favoriteStatus: favoriteButton.isSelected)
@@ -231,7 +246,8 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     @IBAction func notesEditingEnded(_ sender: UITextField) {
         processInput()
     }
-    
+
+    /*
     func changeAlpha(sender: UIButton) {
         if sender.isSelected {
             sender.alpha = 1.0
@@ -239,4 +255,5 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             sender.alpha = 0.25
         }
     }
+ */
 }

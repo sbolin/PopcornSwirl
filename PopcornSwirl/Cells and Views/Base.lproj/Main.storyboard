@@ -125,7 +125,7 @@
                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="top" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="CRa-ag-uhP" userLabel="Button Stack">
                                                         <rect key="frame" x="8" y="320" width="359" height="40"/>
                                                         <subviews>
-                                                            <button opaque="NO" alpha="0.251" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zAE-mr-T4f">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zAE-mr-T4f">
                                                                 <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="40" id="fQF-dP-8uN"/>
@@ -141,7 +141,7 @@
                                                                     <action selector="favoriteTapped:" destination="1Ib-8f-X9W" eventType="touchUpInside" id="dfG-Wk-9Vl"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" alpha="0.251" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1md-9X-Z7y">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1md-9X-Z7y">
                                                                 <rect key="frame" x="106.33333333333333" y="0.0" width="39.999999999999986" height="40"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="40" id="KbT-b9-Ban"/>
@@ -157,7 +157,7 @@
                                                                     <action selector="bookmarkTapped:" destination="1Ib-8f-X9W" eventType="touchUpInside" id="ovf-L0-r01"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" alpha="0.25" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6H4-0y-UyE">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6H4-0y-UyE">
                                                                 <rect key="frame" x="212.66666666666666" y="0.0" width="40" height="40"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" constant="40" id="G6M-Yj-zXx"/>
@@ -173,7 +173,7 @@
                                                                     <action selector="watchTapped:" destination="1Ib-8f-X9W" eventType="touchUpInside" id="KlK-EA-s7W"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" alpha="0.251" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hIJ-ni-7dn">
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hIJ-ni-7dn">
                                                                 <rect key="frame" x="319" y="0.0" width="40" height="40"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" constant="40" id="DvS-AT-987"/>
@@ -232,20 +232,20 @@ Overview</string>
                                                         <color key="textColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Zl8-AO-9Ll" userLabel="Info Stacks">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="top" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Zl8-AO-9Ll" userLabel="Info Stacks">
                                                         <rect key="frame" x="8" y="480" width="359" height="56"/>
                                                         <subviews>
-                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="860-F6-PNV" userLabel="Actor Stack">
-                                                                <rect key="frame" x="0.0" y="0.0" width="28.333333333333332" height="56"/>
+                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="860-F6-PNV" userLabel="Actor Stack">
+                                                                <rect key="frame" x="0.0" y="0.0" width="28.333333333333332" height="52.666666666666664"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Actor" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XVr-pm-8n1">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="28.333333333333332" height="16.666666666666668"/>
+                                                                        <rect key="frame" x="0.0" y="0.0" width="28.333333333333332" height="13.333333333333334"/>
                                                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
                                                                         <nil key="textColor"/>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wQI-17-Mjj">
-                                                                        <rect key="frame" x="0.0" y="16.666666666666632" width="28.333333333333332" height="39.333333333333343"/>
+                                                                        <rect key="frame" x="0.0" y="13.333333333333375" width="28.333333333333332" height="39.333333333333343"/>
                                                                         <string key="text">Actor
 Actor
 Actor</string>
@@ -255,8 +255,8 @@ Actor</string>
                                                                     </label>
                                                                 </subviews>
                                                             </stackView>
-                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="blf-Sd-xnN" userLabel="Director Stack">
-                                                                <rect key="frame" x="148.66666666666666" y="0.0" width="42.666666666666657" height="56"/>
+                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="blf-Sd-xnN" userLabel="Director Stack">
+                                                                <rect key="frame" x="148.66666666666666" y="0.0" width="42.666666666666657" height="52.666666666666664"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Director" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FgL-TK-rJR">
                                                                         <rect key="frame" x="0.0" y="0.0" width="42.666666666666664" height="13.333333333333334"/>
@@ -265,7 +265,7 @@ Actor</string>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hdE-ys-Ig5">
-                                                                        <rect key="frame" x="0.0" y="13.333333333333368" width="42.666666666666664" height="42.666666666666657"/>
+                                                                        <rect key="frame" x="0.0" y="13.333333333333375" width="42.666666666666664" height="39.333333333333343"/>
                                                                         <string key="text">Director
 Director
 Director</string>
@@ -275,8 +275,8 @@ Director</string>
                                                                     </label>
                                                                 </subviews>
                                                             </stackView>
-                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="i9Z-EA-y0d" userLabel="Company Stack">
-                                                                <rect key="frame" x="292" y="0.0" width="67" height="56"/>
+                                                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="i9Z-EA-y0d" userLabel="Company Stack">
+                                                                <rect key="frame" x="292" y="0.0" width="67" height="52.666666666666664"/>
                                                                 <subviews>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Produced By" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JIk-YG-3ne">
                                                                         <rect key="frame" x="0.0" y="0.0" width="67" height="13.333333333333334"/>
@@ -285,7 +285,7 @@ Director</string>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9mp-Wr-A6t">
-                                                                        <rect key="frame" x="0.0" y="13.333333333333368" width="67" height="42.666666666666657"/>
+                                                                        <rect key="frame" x="0.0" y="13.333333333333375" width="49.666666666666664" height="39.333333333333343"/>
                                                                         <string key="text">Company
 Company
 Company</string>
@@ -431,7 +431,6 @@ Company</string>
                                                 </constraints>
                                             </stackView>
                                         </subviews>
-                                        <color key="backgroundColor" systemColor="systemGray5Color"/>
                                         <constraints>
                                             <constraint firstItem="2Ii-kK-vFf" firstAttribute="leading" secondItem="Z1m-1o-4dH" secondAttribute="leading" id="3FP-Xe-hcT"/>
                                             <constraint firstAttribute="bottom" secondItem="2Ii-kK-vFf" secondAttribute="bottom" id="Rx7-xJ-7VP"/>
@@ -452,7 +451,7 @@ Company</string>
                                 <viewLayoutGuide key="frameLayoutGuide" id="S1S-Sy-WVN"/>
                             </scrollView>
                         </subviews>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Lse-lE-T2s" firstAttribute="leading" secondItem="c4U-Qk-Ujq" secondAttribute="leading" id="9fY-vs-qMZ"/>
                             <constraint firstItem="Lse-lE-T2s" firstAttribute="top" secondItem="fHE-Dw-Do2" secondAttribute="bottom" id="BHP-G8-H3l"/>
@@ -539,9 +538,6 @@ Company</string>
         </systemColor>
         <systemColor name="systemGray4Color">
             <color red="0.81960784313725488" green="0.81960784313725488" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </systemColor>
-        <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemIndigoColor">
             <color red="0.34509803921568627" green="0.33725490196078434" blue="0.83921568627450982" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
