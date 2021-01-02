@@ -7,15 +7,7 @@
 
 import UIKit
 
-protocol MovieDetailViewControllerDelegate {
-    func favoriteTapped(_ movie: MovieDataStore.MovieItem, favoriteStatus: Bool)
-    func watchedTapped(_ movie: MovieDataStore.MovieItem, watchedStatus: Bool)
-    func bookmarkTapped(_ movie: MovieDataStore.MovieItem, bookmarkStatus: Bool)
-    func buyTapped(_ movie: MovieDataStore.MovieItem, buyStatus: Bool)
-    func noteAdded(_ movie: MovieDataStore.MovieItem, noteText: String)
-}
-
-class MovieDetailViewController: UIViewController {
+class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: - Outlets
     
@@ -56,8 +48,9 @@ class MovieDetailViewController: UIViewController {
     var companies: [String] = []
     var mainImage = UIImage()
     
-    var delegate: MovieDetailViewControllerDelegate?
-    
+    var oldNote: String = ""
+    var validation = Validation()
+        
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         guard let passedMovie = passedMovie else { return }
@@ -157,6 +150,34 @@ class MovieDetailViewController: UIViewController {
             }
         }
     }
+    //MARK: - Process note text
+    func processInput() {
+        guard let movieNote = movieNotes.text else {
+            return
+        }
+        let isValidated = validation.validatedText(newText: movieNote, oldText: oldNote)
+        if isValidated {
+            guard let movie = movieResult else { return }
+            CoreDataController.shared.noteAdded(movie, noteText: movieNote)
+        } else {
+            movieNotes.text = oldNote
+        }
+        movieNotes.resignFirstResponder()
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if let text = textField.text {
+            oldNote = text
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool { // return key tapped
+        if textField.text?.count == 0 {
+            return false
+        }
+        processInput()
+        return true
+    }
     
     //MARK: - Actions
     
@@ -169,7 +190,7 @@ class MovieDetailViewController: UIViewController {
             sender.tintColor = .systemGray6
         }
         guard let movie = movieResult else { return }
-        delegate?.buyTapped(movie, buyStatus: buyButton.isSelected)
+        CoreDataController.shared.buyTapped(movie, buyStatus: buyButton.isSelected)
     }
     
     @IBAction func watchTapped(_ sender: UIButton) {
@@ -180,7 +201,7 @@ class MovieDetailViewController: UIViewController {
             sender.tintColor = .systemGray6
         }
         guard let movie = movieResult else { return }
-        delegate?.watchedTapped(movie, watchedStatus: watchedButton.isSelected)
+        CoreDataController.shared.watchedTapped(movie, watchedStatus: watchedButton.isSelected)
     }
     
     @IBAction func bookmarkTapped(_ sender: UIButton) {
@@ -191,7 +212,7 @@ class MovieDetailViewController: UIViewController {
             sender.tintColor = .systemGray6
         }
         guard let movie = movieResult else { return }
-        delegate?.bookmarkTapped(movie, bookmarkStatus: bookmarkButton.isSelected)
+        CoreDataController.shared.bookmarkTapped(movie, bookmarkStatus: bookmarkButton.isSelected)
 
     }
     
@@ -203,10 +224,13 @@ class MovieDetailViewController: UIViewController {
             sender.tintColor = .systemGray6
         }
         guard let movie = movieResult else { return }
-        delegate?.favoriteTapped(movie, favoriteStatus: favoriteButton.isSelected)
+        CoreDataController.shared.favoriteTapped(movie, favoriteStatus: favoriteButton.isSelected)
     }
     
     //TODO: Handle text field (note)
+    @IBAction func notesEditingEnded(_ sender: UITextField) {
+        processInput()
+    }
     
     func changeAlpha(sender: UIButton) {
         if sender.isSelected {

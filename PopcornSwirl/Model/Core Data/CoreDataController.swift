@@ -85,6 +85,22 @@ class CoreDataController {
         }
     }
     
+    func favoriteTapped(_ movie: MovieDataStore.MovieItem, favoriteStatus: Bool) {
+        
+    }
+    func watchedTapped(_ movie: MovieDataStore.MovieItem, watchedStatus: Bool) {
+        
+    }
+    func bookmarkTapped(_ movie: MovieDataStore.MovieItem, bookmarkStatus: Bool) {
+        
+    }
+    func buyTapped(_ movie: MovieDataStore.MovieItem, buyStatus: Bool) {
+        
+    }
+    func noteAdded(_ movie: MovieDataStore.MovieItem, noteText: String) {
+        
+    }
+    
 /*
     private func saveDataToCoreData(movies: [Movie], context: NSManagedObjectContext) { //[MovieData] -> [Movie]
         context.perform {

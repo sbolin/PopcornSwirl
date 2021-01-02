@@ -28,6 +28,7 @@
 		15C29883255668430064B074 /* WatchedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C29882255668430064B074 /* WatchedViewController.swift */; };
 		15C29887255668550064B074 /* FavoritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15C29886255668550064B074 /* FavoritesViewController.swift */; };
 		15CF92A82543409C00CCBBF9 /* MovieModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 15CF92A62543409C00CCBBF9 /* MovieModel.xcdatamodeld */; };
+		15E287C725A02EF10075639F /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E287C625A02EF10075639F /* Validation.swift */; };
 		15E7E9FD2540987D00D459FA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E7E9FC2540987D00D459FA /* AppDelegate.swift */; };
 		15E7E9FF2540987D00D459FA /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E7E9FE2540987D00D459FA /* SceneDelegate.swift */; };
 		15E7EA012540987D00D459FA /* MovieCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E7EA002540987D00D459FA /* MovieCollectionViewController.swift */; };
@@ -59,6 +60,7 @@
 		15C29882255668430064B074 /* WatchedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchedViewController.swift; sourceTree = "<group>"; };
 		15C29886255668550064B074 /* FavoritesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewController.swift; sourceTree = "<group>"; };
 		15CF92A72543409C00CCBBF9 /* MovieModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MovieModel.xcdatamodel; sourceTree = "<group>"; };
+		15E287C625A02EF10075639F /* Validation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
 		15E7E9F92540987D00D459FA /* PopcornSwirl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PopcornSwirl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		15E7E9FC2540987D00D459FA /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		15E7E9FE2540987D00D459FA /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				151B9F98258C5B58001DE93C /* MovieService.swift */,
 				151B9F9C258C5E42001DE93C /* MovieActions.swift */,
 				151B9F95258B945C001DE93C /* Utils.swift */,
+				15E287C625A02EF10075639F /* Validation.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -257,6 +260,7 @@
 				15E7EA12254098A700D459FA /* MovieResponse.swift in Sources */,
 				150DD150255ED9D90068A1B8 /* ListViewCell.swift in Sources */,
 				15A4B60225493DCF00534EFE /* MovieCollectionViewController+Extensions.swift in Sources */,
+				15E287C725A02EF10075639F /* Validation.swift in Sources */,
 				155A08D3259D6D66006054F6 /* SingleMovieResponse.swift in Sources */,
 				154F116C2595CAEF006E3392 /* MoviesDTOMapper.swift in Sources */,
 				15A4B60E2549D8AC00534EFE /* MovieDataStore.swift in Sources */,
