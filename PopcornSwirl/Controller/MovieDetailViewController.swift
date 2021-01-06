@@ -31,6 +31,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var bookmarkButton: UIButton!
     @IBOutlet weak var watchedButton: UIButton!
     @IBOutlet weak var buyButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     @IBOutlet weak var relatedCollectionView: UICollectionView!
     
@@ -50,6 +51,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     var oldNote: String = ""
     var validation = Validation()
+    
         
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -138,24 +140,28 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                 self.heroImage.image = self.mainImage
                 let genreTitle = movieResult?.genreText ?? "Genre"
                 let movieTitle = movieResult?.title ?? "Title"
-                self.movieTitle.text = movieTitle + " / " + genreTitle
+                self.movieTitle.text = movieTitle + " (" + genreTitle + ")"
                 self.movieYear.text = Utils.yearFormatter.string(from: movie.releaseDate)
                 self.movieOverview.text = movie.overview
                 
                 // from API result
                 guard let result = movieResult else { return }
                 var actorResult = [""]
+                var directorResult = [""]
                 var companyResult = [""]
                 
                 result.actor.prefix(5).forEach { actor in
                     actorResult.append(actor)
                 }
+                result.director.prefix(3).forEach { director in
+                    directorResult.append(director)
+                }
                 result.company.prefix(3).forEach { company in
                     companyResult.append(company)
                 }
                 self.movieActor.text = actorResult.joined(separator: "\n")
-                self.movieDirector.text = result.director[0]
-                self.movieCompany.text = result.company.joined(separator: "\n")
+                self.movieDirector.text = directorResult.joined(separator: "\n")
+                self.movieCompany.text = companyResult.joined(separator: "\n")
                 
                 self.movieRating.text = "Rating: " + result.ratingText
                 self.movieAverageScore.text = "Score: " + String(result.voteAverage)

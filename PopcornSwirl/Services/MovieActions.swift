@@ -69,8 +69,7 @@ class MovieActions {
             url = baseURL.appendingPathComponent("movie").appendingPathComponent("popular")
             params = [:]
         }
-        self.loadURLAndDecode(url: url, params: params,
-                              completion: completion)
+        self.loadURLAndDecode(url: url, params: params, completion: completion)
     }
     
     //MARK: Fetch Movie by id

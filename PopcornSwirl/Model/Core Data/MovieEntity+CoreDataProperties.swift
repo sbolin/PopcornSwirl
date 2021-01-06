@@ -16,7 +16,7 @@ extension MovieEntity {
         return NSFetchRequest<MovieEntity>(entityName: "MovieEntity")
     }
     // main movie data
-    @NSManaged public var id: Int32
+    @NSManaged public var movieId: Int32
     @NSManaged public var title: String
 
     // user generated data - bookmark a movie, mark as watched, mark as favorite
