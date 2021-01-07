@@ -145,7 +145,6 @@ extension MovieCollectionViewController {
                 let collection = collections.filter {
                     $0.genreID == genre.id
                 }
-                
                 for genreMovie in collection {
                     snapshot.appendItems(genreMovie.movies, toSection: genre)
                 }

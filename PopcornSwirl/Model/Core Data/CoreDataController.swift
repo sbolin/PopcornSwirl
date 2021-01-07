@@ -24,67 +24,6 @@ class CoreDataController {
         persistentContainer.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     } // init
     
-    
-    /*
-    static let shared = CoreDataController() // singleton
-    init() {} // Change from private to allow subclassing with new init for unit testing
-    
-    lazy var modelName = "MovieModel"
-
-    lazy var model: NSManagedObjectModel = {
-        let modelURL = Bundle.main.url(forResource: modelName, withExtension: "momd")!
-        return NSManagedObjectModel(contentsOf: modelURL)!
-    }()
-    
-    lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: modelName, managedObjectModel: model)
-        container.loadPersistentStores { (storeDescription, error) in
-            if let error = error as NSError? {
-                print("Error creating persistent container: \(error), \(error.userInfo)")
-            }
-        }
-        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        
-        return container
-    }()
-    
-    lazy var managedContext: NSManagedObjectContext = {
-        let context = self.persistentContainer.viewContext
-        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        return context
-    }()
-    
-    lazy var backgroundContext: NSManagedObjectContext = {
-        let context = self.persistentContainer.newBackgroundContext()
-        context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        return context
-    }()
- */
-    
-    lazy var bookmarkPredicate: NSPredicate = {
-        return NSPredicate(format: "%K = %@", #keyPath(MovieEntity.bookmarked), true)
-    }()
-
-    lazy var favoritePredicate: NSPredicate = {
-        return NSPredicate(format: "%K = %@", #keyPath(MovieEntity.favorite), true)
-    }()
-
-    lazy var watchedPredicate: NSPredicate = {
-        return NSPredicate(format: "%K = %@", #keyPath(MovieEntity.watched), true)
-    }()
-    
-    lazy var boughtPredicate: NSPredicate = {
-        return NSPredicate(format: "%K = %@", #keyPath(MovieEntity.bought), true)
-    }()
-    
-    lazy var titlePredicate: NSPredicate = {
-        return NSPredicate(format: "%K = %@", #keyPath(MovieEntity.title), true)
-    }()
-    
-    lazy var idPredicate: NSPredicate = {
-        return NSPredicate(format: "%K = %@", #keyPath(MovieEntity.movieId), true)
-    }()
-    
     lazy var movieResultsController: NSFetchedResultsController<MovieEntity> = {
         let request = MovieEntity.movieFetchRequest()
         let nameSort = NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)
@@ -100,37 +39,62 @@ class CoreDataController {
     }()
     
     func favoriteTapped(_ movie: MovieDataStore.MovieItem, favoriteStatus: Bool) {
-        let movieID = movie.id
+        let context = persistentContainer.viewContext
+        let movieEntity = findMovieByID(using: movie.id, in: context)
+        context.perform {
+            movieEntity.favorite = favoriteStatus
+            self.saveContext(object: movieEntity, context: context)
+        }
+        
     }
     func watchedTapped(_ movie: MovieDataStore.MovieItem, watchedStatus: Bool) {
-        
+        let context = persistentContainer.viewContext
+        let movieEntity = findMovieByID(using: movie.id, in: context)
+        context.perform {
+            movieEntity.watched = watchedStatus
+            self.saveContext(object: movieEntity, context: context)
+        }
     }
     func bookmarkTapped(_ movie: MovieDataStore.MovieItem, bookmarkStatus: Bool) {
-        
+        let context = persistentContainer.viewContext
+        let movieEntity = findMovieByID(using: movie.id, in: context)
+        context.perform {
+            movieEntity.bookmarked = bookmarkStatus
+            self.saveContext(object: movieEntity, context: context)
+        }
     }
     func buyTapped(_ movie: MovieDataStore.MovieItem, buyStatus: Bool) {
-        
+        let context = persistentContainer.viewContext
+        let movieEntity = findMovieByID(using: movie.id, in: context)
+        context.perform {
+            movieEntity.bought = buyStatus
+            self.saveContext(object: movieEntity, context: context)
+        }
     }
-    func noteAdded(_ movie: MovieDataStore.MovieItem, noteText: String) {
-        
-    }
-    
-    //MARK: - SaveContext
-    func saveContext(managedContext: NSManagedObjectContext) {
-        guard managedContext.hasChanges else { return }
-        do {
-            try managedContext.save()
-        } catch let error as NSError {
-            print("Unresolved error \(error), \(error.localizedDescription)")
+    func updateNote(_ movie: MovieDataStore.MovieItem, noteText: String) {
+        let context = persistentContainer.viewContext
+        let movieEntity = findMovieByID(using: movie.id, in: context)
+        context.perform {
+            movieEntity.note = noteText
+            self.saveContext(object: movieEntity, context: context)
         }
     }
     
+    //MARK: - SaveContext
+    func saveContext(object: NSManagedObject, context: NSManagedObjectContext) {
+        guard context.hasChanges else { return }
+        do {
+            try context.save()
+            context.refresh(object, mergeChanges: true)
+        } catch let error as NSError {
+            print("Unresolved error \(error), \(error.localizedDescription)")
+            context.rollback()
+        }
+    }
     
-    func findMovie(using movieID: Int, in context: NSManagedObjectContext) -> MovieEntity {
+    func findMovieByID(using movieID: Int, in context: NSManagedObjectContext) -> MovieEntity {
         let request = NSFetchRequest<MovieEntity>(entityName: "MovieEntity")
-        request.predicate = NSPredicate(format: "%K == %@",
-                                        #keyPath(MovieEntity.movieId),
-                                        movieID)
+        request.predicate = NSPredicate(format: "%K == %@", #keyPath(MovieEntity.movieId), movieID)
         
         if let movie = try? context.fetch(request).first {
             return movie

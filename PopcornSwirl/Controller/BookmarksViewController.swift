@@ -12,24 +12,25 @@ class BookmarksViewController: UIViewController {
     
     // MARK: - Properties
     var collectionView: UICollectionView! = nil
-    
-    // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
     var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
-    var currentSnapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
+    var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
+    
     var movies = [MovieDataStore.MovieItem]()
         
     enum Section {
         case main
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // FIXME: need to get movie data via nsfetchedresultscontroller
+        navigationItem.title = "Bookmarks"
         configureCollectionView()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         configureDataSource()
     }
 }
@@ -50,7 +51,16 @@ extension BookmarksViewController {
     
     private func configureDataSource() {
         // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
-        let cellRegistration = UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
+            (collectionView, indexPath, movie) -> ListViewCell? in
+            // Return the cell.
+            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
+            return cell
+        }
+    }
+        
+    func configureListCell() -> UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> {
+        return UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
@@ -67,20 +77,24 @@ extension BookmarksViewController {
                 } // success
             } // fetchImage
         } // cellRegistration
-        
-        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataStore.MovieItem) -> ListViewCell? in
-            // Return the cell.
-            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
-        }
-        var currentSnapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
-        
-        // should search over movies with bookmark == true, display those movies
-        currentSnapshot.appendSections([.main])
-        currentSnapshot.appendItems(movies)
-        dataSource.apply(currentSnapshot, animatingDifferences: true)
     }
+    
+    //MARK: Setup Snapshot data in proper order
+    func setupSnapshot() {
+        snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
+        snapshot.appendSections([.main])
+        Section.allCases.forEach { genre in
+            if let collections = movieCollections {
+                let collection = collections.filter {
+                    $0.genreID == genre.id
+                }
+                for genreMovie in collection {
+                    snapshot.appendItems(genreMovie.movies, toSection: genre)
+                }
+            }
+        }
+        dataSource.apply(snapshot, animatingDifferences: true)
+    } // applyInitialSnapshots
 }
 
 extension BookmarksViewController: UICollectionViewDelegate {
@@ -94,12 +108,5 @@ extension BookmarksViewController: UICollectionViewDelegate {
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.movieResult = movie
         tabBarController?.show(detailViewController, sender: self)
-    }
-}
-
-extension BookmarksViewController: NSFetchedResultsControllerDelegate {
-    // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
-        dataSource.apply(snapshot as NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>, animatingDifferences: true)
     }
 }

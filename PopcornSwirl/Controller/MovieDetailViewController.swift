@@ -51,6 +51,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     var oldNote: String = ""
     var validation = Validation()
+    let coreDataController = CoreDataController()
     
         
     override func viewWillAppear(_ animated: Bool) {
@@ -61,8 +62,9 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Movies"//"\(movie.title)"
-//        view.backgroundColor = .systemBackground
+        let navTitle = passedMovie?.title ?? "Movie Detail"
+        navigationItem.title = navTitle
+        view.backgroundColor = .systemBackground
     }
     
     // called from MovieCollectionViewController prior to segue
@@ -90,49 +92,23 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             self.group.leave()
         } // getMovieImage
         
+        let movieEntity = coreDataController.findMovieByID(using: movie.id, in: coreDataController.persistentContainer.viewContext)
         
-        //TODO: Core Data Methods
-        // set status:
-        // set movie status from coredata (search on movie id)
-        // update UI accordingly:
-        // movie.movieNotes = result.notes
-        // movie.favorite = result.favorite
-        // movie.bookmarked = result.bookmarked
-        // movie.watched = result.watched
-        // movie.bought = result.bought
+        movieResult?.bookmarked =  movieEntity.bookmarked
+        movieResult?.favorite = movieEntity.favorite
+        movieResult?.watched = movieEntity.watched
+        movieResult?.bought = movieEntity.bought
+        movieResult?.note = movieEntity.note ?? ""
         // set needs display
         
-        if movie.bookmarked {
-            bookmarkButton.isSelected = true
-            bookmarkButton.tintColor = .systemBlue
-        } else {
-            bookmarkButton.isSelected = false
-            bookmarkButton.tintColor = .placeholderText
-        }
+        movie.bookmarked ? (bookmarkButton.tintColor = .systemBlue) : (bookmarkButton.tintColor = .placeholderText)
         
-        if movie.favorite {
-            favoriteButton.isSelected = true
-            favoriteButton.tintColor = .systemRed
-        } else {
-            favoriteButton.isSelected = false
-            favoriteButton.tintColor = .placeholderText
-        }
+        movie.favorite ? (favoriteButton.tintColor = .systemRed) : (favoriteButton.tintColor = .placeholderText)
         
-        if movie.watched {
-            watchedButton.isSelected = true
-            watchedButton.tintColor = .systemPurple
-        } else {
-            watchedButton.isSelected = false
-            watchedButton.tintColor = .placeholderText
-        }
+        movie.watched ? (watchedButton.tintColor = .systemPurple) : (watchedButton.tintColor = .placeholderText)
         
-        if movie.bought {
-            buyButton.isSelected = true
-            buyButton.tintColor = .systemGreen
-        } else {
-            buyButton.isSelected = false
-            buyButton.tintColor = .placeholderText
-        }
+        movie.bought ? (buyButton.tintColor = .systemGreen) : (buyButton.tintColor = .placeholderText)
+        
         
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
@@ -179,7 +155,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         let isValidated = validation.validatedText(newText: movieNote, oldText: oldNote)
         if isValidated {
             guard let movie = movieResult else { return }
-            CoreDataController.shared.noteAdded(movie, noteText: movieNote)
+            coreDataController.updateNote(movie, noteText: movieNote)
         } else {
             movieNotes.text = oldNote
         }
@@ -211,7 +187,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
-        CoreDataController.shared.buyTapped(movie, buyStatus: buyButton.isSelected)
+        coreDataController.buyTapped(movie, buyStatus: buyButton.isSelected)
     }
     
     @IBAction func watchTapped(_ sender: UIButton) {
@@ -222,7 +198,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
-        CoreDataController.shared.watchedTapped(movie, watchedStatus: watchedButton.isSelected)
+        coreDataController.watchedTapped(movie, watchedStatus: watchedButton.isSelected)
     }
     
     @IBAction func bookmarkTapped(_ sender: UIButton) {
@@ -233,7 +209,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
-        CoreDataController.shared.bookmarkTapped(movie, bookmarkStatus: bookmarkButton.isSelected)
+        coreDataController.bookmarkTapped(movie, bookmarkStatus: bookmarkButton.isSelected)
 
     }
     
@@ -245,7 +221,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
-        CoreDataController.shared.favoriteTapped(movie, favoriteStatus: favoriteButton.isSelected)
+        coreDataController.favoriteTapped(movie, favoriteStatus: favoriteButton.isSelected)
     }
     
     //TODO: Handle text field (note)
