@@ -8,33 +8,64 @@
 import UIKit
 import CoreData
 
+private enum Section {
+    case main
+}
+
 class BookmarksViewController: UIViewController {
     
     // MARK: - Properties
-    var collectionView: UICollectionView! = nil
-    var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
-    var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
-    
+    private var collectionView: UICollectionView! = nil
+    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
+    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
+
+    let coreDataController = CoreDataController()
+    let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-        
-    enum Section {
-        case main
-    }
+    let request = CoreDataController.bookmarkedMovies
+    var fetchedMovies = [MovieEntity]()
+    var movieResult: MovieDataStore.MovieItem?
+    var error: MovieError?
+  
     
+// MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        loadBookmarkedMovies()
+//        setupSnapshot()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // FIXME: need to get movie data via nsfetchedresultscontroller
         navigationItem.title = "Bookmarks"
         configureCollectionView()
         configureDataSource()
     }
+    
+    //MARK: - Fetch bookmarked movies from core data then download from tmdb API
+    func loadBookmarkedMovies() {
+        fetchedMovies = try! coreDataController.persistentContainer.viewContext.fetch(request)
+        for movie in fetchedMovies {
+            let id = movie.movieId
+            movieAction.fetchMovie(id: id) { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                    case .success(let response):
+                        print("fetchMovie success")
+                        self.movies.append(SingleMovieDTOMapper.map(response))
+                    case .failure(let error):
+                        self.error = error
+                        print("Error fetching movie: \(error.localizedDescription)")
+                }
+            }
+        }
+        setupSnapshot() // may be called here or in viewWillAppear - check.
+    }
 }
 
+///
+//MARK: - Extensions
+//MARK: Configure Collection View
 extension BookmarksViewController {
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
@@ -49,22 +80,14 @@ extension BookmarksViewController {
         return UICollectionViewCompositionalLayout.list(using: config)
     }
     
-    private func configureDataSource() {
-        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
-            (collectionView, indexPath, movie) -> ListViewCell? in
-            // Return the cell.
-            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
-            return cell
-        }
-    }
-        
-    func configureListCell() -> UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> {
+//MARK: Configure and Register ListViewCell
+    private func configureListCell() -> UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> {
         return UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
             cell.yearLabel.text = Utils.yearFormatter.string(from: movie.releaseDate)
+            cell.accessories = [.disclosureIndicator()]
             cell.activityIndicator.startAnimating()
             // load image
             let backdropURL = movie.backdropURL
@@ -78,25 +101,28 @@ extension BookmarksViewController {
             } // fetchImage
         } // cellRegistration
     }
+
+//MARK: - Configure DataSource
+    private func configureDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
+            (collectionView, indexPath, movie) -> ListViewCell? in
+            // Return the cell.
+            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
+            return cell
+        }
+    }
     
-    //MARK: Setup Snapshot data in proper order
-    func setupSnapshot() {
+//MARK: Setup Snapshot data
+    private func setupSnapshot() {
         snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
         snapshot.appendSections([.main])
-        Section.allCases.forEach { genre in
-            if let collections = movieCollections {
-                let collection = collections.filter {
-                    $0.genreID == genre.id
-                }
-                for genreMovie in collection {
-                    snapshot.appendItems(genreMovie.movies, toSection: genre)
-                }
-            }
-        }
+        snapshot.appendItems(movies)
         dataSource.apply(snapshot, animatingDifferences: true)
-    } // applyInitialSnapshots
+    }
 }
 
+///
+//MARK: - CollectionView Delegate Methods
 extension BookmarksViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 //        collectionView.deselectItem(at: indexPath, animated: true)

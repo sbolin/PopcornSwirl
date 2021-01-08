@@ -1,9 +1,11 @@
 //
-//  WatchedViewController.swift
+//  SearchViewController.swift
 //  PopcornSwirl
 //
-//  Created by Scott Bolin on 11/7/20.
+//  Created by Scott Bolin on 1/8/21.
 //
+
+import Foundation
 
 import UIKit
 import CoreData
@@ -12,51 +14,45 @@ private enum Section {
     case main
 }
 
-class WatchedViewController: UIViewController {
-
+class SearchViewController: UIViewController {
+    
     // MARK: - Properties
     private var collectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
-    let coreDataController = CoreDataController()
+    let searchBar = UISearchBar(frame: .zero)
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-    let request = CoreDataController.watchedMovies
-    var fetchedMovies = [MovieEntity]()
-    var movieResult: MovieDataStore.MovieItem?
-    var error: MovieError?
+    var nameFilter: String?
+
     
     
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadWatchedMovies()
+        loadSearchedMovies()
         //        setupSnapshot()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Watched"
+        navigationItem.title = "Search"
         configureCollectionView()
         configureDataSource()
     }
     
-    //MARK: - Fetch watched movies from core data then download from tmdb API
-    func loadWatchedMovies() {
-        fetchedMovies = try! coreDataController.persistentContainer.viewContext.fetch(request)
-        for movie in fetchedMovies {
-            let id = movie.movieId
-            movieAction.fetchMovie(id: id) { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                    case .success(let response):
-                        print("fetchMovie success")
-                        self.movies.append(SingleMovieDTOMapper.map(response))
-                    case .failure(let error):
-                        self.error = error
-                        print("Error fetching movie: \(error.localizedDescription)")
-                }
+    //MARK: - Fetch bookmarked movies from core data then download from tmdb API
+    func loadSearchedMovies() {
+        movieAction.fetchMovie(id: id) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+                case .success(let response):
+                    print("fetchMovie success")
+                    self.movies.append(SingleMovieDTOMapper.map(response))
+                case .failure(let error):
+                    self.error = error
+                    print("Error fetching movie: \(error.localizedDescription)")
             }
         }
         setupSnapshot() // may be called here or in viewWillAppear - check.
@@ -66,7 +62,7 @@ class WatchedViewController: UIViewController {
 ///
 //MARK: - Extensions
 //MARK: Configure Collection View
-extension WatchedViewController {
+extension SearchViewController {
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -124,7 +120,7 @@ extension WatchedViewController {
 
 ///
 //MARK: - CollectionView Delegate Methods
-extension WatchedViewController: UICollectionViewDelegate {
+extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         //        collectionView.deselectItem(at: indexPath, animated: true)
         

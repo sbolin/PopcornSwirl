@@ -7,7 +7,7 @@
 
 import UIKit
 
-class ListViewCell: UICollectionViewCell {
+class ListViewCell: UICollectionViewListCell {
     
     static let reuseIdentifier = "list-cell-reuse-identifier"
     let imageView = UIImageView()

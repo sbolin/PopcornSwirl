@@ -1,8 +1,8 @@
 //
-//  WatchedViewController.swift
+//  BoughtViewController.swift
 //  PopcornSwirl
 //
-//  Created by Scott Bolin on 11/7/20.
+//  Created by Scott Bolin on 1/8/21.
 //
 
 import UIKit
@@ -12,8 +12,8 @@ private enum Section {
     case main
 }
 
-class WatchedViewController: UIViewController {
-
+class BoughtViewController: UIViewController {
+    
     // MARK: - Properties
     private var collectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
@@ -22,7 +22,7 @@ class WatchedViewController: UIViewController {
     let coreDataController = CoreDataController()
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-    let request = CoreDataController.watchedMovies
+    let request = CoreDataController.boughtMovies
     var fetchedMovies = [MovieEntity]()
     var movieResult: MovieDataStore.MovieItem?
     var error: MovieError?
@@ -31,19 +31,19 @@ class WatchedViewController: UIViewController {
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadWatchedMovies()
+        loadBookmarkedMovies()
         //        setupSnapshot()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Watched"
+        navigationItem.title = "Bought Movies"
         configureCollectionView()
         configureDataSource()
     }
     
-    //MARK: - Fetch watched movies from core data then download from tmdb API
-    func loadWatchedMovies() {
+    //MARK: - Fetch bought movies from core data then download from tmdb API
+    func loadBookmarkedMovies() {
         fetchedMovies = try! coreDataController.persistentContainer.viewContext.fetch(request)
         for movie in fetchedMovies {
             let id = movie.movieId
@@ -66,7 +66,7 @@ class WatchedViewController: UIViewController {
 ///
 //MARK: - Extensions
 //MARK: Configure Collection View
-extension WatchedViewController {
+extension BoughtViewController {
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
@@ -104,7 +104,6 @@ extension WatchedViewController {
     
     //MARK: - Configure DataSource
     private func configureDataSource() {
-        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
         dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
             (collectionView, indexPath, movie) -> ListViewCell? in
             // Return the cell.
@@ -124,7 +123,7 @@ extension WatchedViewController {
 
 ///
 //MARK: - CollectionView Delegate Methods
-extension WatchedViewController: UICollectionViewDelegate {
+extension BoughtViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         //        collectionView.deselectItem(at: indexPath, animated: true)
         

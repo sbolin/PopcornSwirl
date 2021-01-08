@@ -8,32 +8,64 @@
 import UIKit
 import CoreData
 
+private enum Section {
+    case main
+}
+
 class FavoritesViewController: UIViewController {
 
     // MARK: - Properties
-    var collectionView: UICollectionView! = nil
+    private var collectionView: UICollectionView! = nil
+    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
+    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
-    // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
-    var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
-    var currentSnapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
+    let coreDataController = CoreDataController()
+    let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-        
-    enum Section {
-        case main
+    let request = CoreDataController.favoriteMovies
+    var fetchedMovies = [MovieEntity]()
+    var movieResult: MovieDataStore.MovieItem?
+    var error: MovieError?
+    
+    
+    // MARK: - View Lifecycle Methods
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadFavoriteMovies()
+        //        setupSnapshot()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // FIXME: need to get movie data via nsfetchedresultscontroller
+        navigationItem.title = "Favorites"
         configureCollectionView()
+        configureDataSource()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        configureDataSource()
+    //MARK: - Fetch favorite movies from core data then download from tmdb API
+    func loadFavoriteMovies() {
+        fetchedMovies = try! coreDataController.persistentContainer.viewContext.fetch(request)
+        for movie in fetchedMovies {
+            let id = movie.movieId
+            movieAction.fetchMovie(id: id) { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                    case .success(let response):
+                        print("fetchMovie success")
+                        self.movies.append(SingleMovieDTOMapper.map(response))
+                    case .failure(let error):
+                        self.error = error
+                        print("Error fetching movie: \(error.localizedDescription)")
+                }
+            }
+        }
+        setupSnapshot() // may be called here or in viewWillAppear - check.
     }
 }
 
+///
+//MARK: - Extensions
+//MARK: Configure Collection View
 extension FavoritesViewController {
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
@@ -48,13 +80,14 @@ extension FavoritesViewController {
         return UICollectionViewCompositionalLayout.list(using: config)
     }
     
-    private func configureDataSource() {
-        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
-        let cellRegistration = UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
+    //MARK: Configure and Register ListViewCell
+    private func configureListCell() -> UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> {
+        return UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
             cell.yearLabel.text = Utils.yearFormatter.string(from: movie.releaseDate)
+            cell.accessories = [.disclosureIndicator()]
             cell.activityIndicator.startAnimating()
             // load image
             let backdropURL = movie.backdropURL
@@ -64,25 +97,32 @@ extension FavoritesViewController {
                         cell.imageView.image = image
                         cell.activityIndicator.stopAnimating()
                     } // Dispatch
-            } // success
-        } // fetchImage
-    } // cellRegistration
-        
-        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
+                } // success
+            } // fetchImage
+        } // cellRegistration
+    }
+    
+    //MARK: - Configure DataSource
+    private func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, movie: MovieDataStore.MovieItem) -> ListViewCell? in
+            (collectionView, indexPath, movie) -> ListViewCell? in
             // Return the cell.
-            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: movie)
+            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
+            return cell
         }
-        var currentSnapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
-        
-        // should search over movies with bookmark == true, display those movies
-        currentSnapshot.appendSections([.main])
-        currentSnapshot.appendItems(movies)
-        dataSource.apply(currentSnapshot, animatingDifferences: true)
+    }
+    
+    //MARK: Setup Snapshot data
+    private func setupSnapshot() {
+        snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(movies)
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
 }
 
+///
+//MARK: - CollectionView Delegate Methods
 extension FavoritesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         //        collectionView.deselectItem(at: indexPath, animated: true)
@@ -94,12 +134,5 @@ extension FavoritesViewController: UICollectionViewDelegate {
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.movieResult = movie
         tabBarController?.show(detailViewController, sender: self)
-    }
-}
-
-extension FavoritesViewController: NSFetchedResultsControllerDelegate {
-    // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChangeContentWith snapshot: NSDiffableDataSourceSnapshotReference) {
-        dataSource.apply(snapshot as NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>, animatingDifferences: true)
     }
 }

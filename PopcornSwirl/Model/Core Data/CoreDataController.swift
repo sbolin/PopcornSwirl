@@ -24,19 +24,41 @@ class CoreDataController {
         persistentContainer.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     } // init
     
-    lazy var movieResultsController: NSFetchedResultsController<MovieEntity> = {
-        let request = MovieEntity.movieFetchRequest()
-        let nameSort = NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)
-        request.sortDescriptors = [nameSort]// [todoIDSort]
-        
-        let fetchedResultsController = NSFetchedResultsController(
-            fetchRequest: request,
-            managedObjectContext: persistentContainer.viewContext,
-            sectionNameKeyPath: nil,
-            cacheName: nil)
-        
-        return fetchedResultsController
-    }()
+    static var bookmarkedMovies: NSFetchRequest<MovieEntity> {
+        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
+        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
+        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.bookmarked), true)
+        request.sortDescriptors = sort
+        request.predicate = predicate
+        return request
+    }
+    
+    static var watchedMovies: NSFetchRequest<MovieEntity> {
+        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
+        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
+        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.watched), true)
+        request.sortDescriptors = sort
+        request.predicate = predicate
+        return request
+    }
+    
+    static var favoriteMovies: NSFetchRequest<MovieEntity> {
+        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
+        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
+        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.favorite), true)
+        request.sortDescriptors = sort
+        request.predicate = predicate
+        return request
+    }
+    
+    static var boughtMovies: NSFetchRequest<MovieEntity> {
+        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
+        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
+        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.bought), true)
+        request.sortDescriptors = sort
+        request.predicate = predicate
+        return request
+    }
     
     func favoriteTapped(_ movie: MovieDataStore.MovieItem, favoriteStatus: Bool) {
         let context = persistentContainer.viewContext
