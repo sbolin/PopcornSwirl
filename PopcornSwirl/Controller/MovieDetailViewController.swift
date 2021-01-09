@@ -52,12 +52,11 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     var oldNote: String = ""
     var validation = Validation()
     let coreDataController = CoreDataController()
-    
         
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        guard let passedMovie = passedMovie else { return }
-        setup(movie: passedMovie)
+ //       guard let passedMovie = passedMovie else { return }
+ //       setup(movie: passedMovie)
     }
     
     override func viewDidLoad() {
@@ -65,6 +64,10 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         let navTitle = passedMovie?.title ?? "Movie Detail"
         navigationItem.title = navTitle
         view.backgroundColor = .systemBackground
+
+        guard let passedMovie = passedMovie else { return }
+        setup(movie: passedMovie)
+        
     }
     
     // called from MovieCollectionViewController prior to segue
@@ -94,11 +97,11 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         
         let movieEntity = coreDataController.findMovieByID(using: movie.id, in: coreDataController.persistentContainer.viewContext)
         
-        movieResult?.bookmarked =  movieEntity.bookmarked
-        movieResult?.favorite = movieEntity.favorite
-        movieResult?.watched = movieEntity.watched
-        movieResult?.bought = movieEntity.bought
-        movieResult?.note = movieEntity.note ?? ""
+        movieResult?.bookmarked =  movieEntity[0].bookmarked
+        movieResult?.favorite = movieEntity[0].favorite
+        movieResult?.watched = movieEntity[0].watched
+        movieResult?.bought = movieEntity[0].bought
+        movieResult?.note = movieEntity[0].note ?? ""
         // set needs display
         
         movie.bookmarked ? (bookmarkButton.tintColor = .systemBlue) : (bookmarkButton.tintColor = .placeholderText)

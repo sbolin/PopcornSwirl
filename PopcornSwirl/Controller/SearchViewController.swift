@@ -17,7 +17,7 @@ private enum Section {
 class SearchViewController: UIViewController {
     
     // MARK: - Properties
-    private var collectionView: UICollectionView! = nil
+    private var moviesCollectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
@@ -37,6 +37,7 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Search"
+        searchBar.placeholder = "Search Movies"
         configureCollectionView()
         configureDataSource()
         setupSnapshot()
@@ -49,7 +50,7 @@ class SearchViewController: UIViewController {
 extension SearchViewController {
     
     private func configureCollectionView() {
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
+        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemBackground
@@ -58,7 +59,20 @@ extension SearchViewController {
         view.addSubview(collectionView)
         view.addSubview(searchBar)
         
+        // from Apple Modern Collection Views/Diffable/MountainsViewController.swift
         
+        let views = ["cv": collectionView, "searchBar": searchBar]
+        var constraints = [NSLayoutConstraint]()
+        constraints.append(contentsOf: NSLayoutConstraint.constraints(
+                            withVisualFormat: "H:|[cv]|", options: [], metrics: nil, views: views))
+        constraints.append(contentsOf: NSLayoutConstraint.constraints(
+                            withVisualFormat: "H:|[searchBar]|", options: [], metrics: nil, views: views))
+        constraints.append(contentsOf: NSLayoutConstraint.constraints(
+                            withVisualFormat: "V:[searchBar]-20-[cv]|", options: [], metrics: nil, views: views))
+        constraints.append(searchBar.topAnchor.constraint(
+                            equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 1.0))
+        NSLayoutConstraint.activate(constraints)
+        moviesCollectionView = collectionView
         
         searchBar.delegate = self
     }
@@ -93,7 +107,7 @@ extension SearchViewController {
     //MARK: - Configure DataSource
     private func configureDataSource() {
         // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: moviesCollectionView) {
             (collectionView, indexPath, movie) -> ListViewCell? in
             // Return the cell.
             let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
@@ -140,7 +154,11 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     func filteredMovies(with filter: String?=nil, limit: Int?=nil) -> [MovieDataStore.MovieItem] {
-        let filtered = movies.filter { $0.contains(filter) }
+        let filtered = movies.filter {
+            guard let filterText = filter else { return true }
+            if filterText.isEmpty { return true }
+            return $0.title.lowercased().contains(filterText.lowercased())
+        }
         if let limit = limit {
             return Array(filtered.prefix(through: limit))
         } else {

@@ -24,48 +24,12 @@ class CoreDataController {
         persistentContainer.viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     } // init
     
-    static var bookmarkedMovies: NSFetchRequest<MovieEntity> {
-        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
-        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
-        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.bookmarked), true)
-        request.sortDescriptors = sort
-        request.predicate = predicate
-        return request
-    }
-    
-    static var watchedMovies: NSFetchRequest<MovieEntity> {
-        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
-        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
-        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.watched), true)
-        request.sortDescriptors = sort
-        request.predicate = predicate
-        return request
-    }
-    
-    static var favoriteMovies: NSFetchRequest<MovieEntity> {
-        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
-        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
-        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.favorite), true)
-        request.sortDescriptors = sort
-        request.predicate = predicate
-        return request
-    }
-    
-    static var boughtMovies: NSFetchRequest<MovieEntity> {
-        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
-        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
-        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.bought), true)
-        request.sortDescriptors = sort
-        request.predicate = predicate
-        return request
-    }
-    
     func favoriteTapped(_ movie: MovieDataStore.MovieItem, favoriteStatus: Bool) {
         let context = persistentContainer.viewContext
         let movieEntity = findMovieByID(using: movie.id, in: context)
         context.perform {
-            movieEntity.favorite = favoriteStatus
-            self.saveContext(object: movieEntity, context: context)
+            movieEntity[0].favorite = favoriteStatus
+            self.saveContext(object: movieEntity[0], context: context)
         }
         
     }
@@ -73,32 +37,57 @@ class CoreDataController {
         let context = persistentContainer.viewContext
         let movieEntity = findMovieByID(using: movie.id, in: context)
         context.perform {
-            movieEntity.watched = watchedStatus
-            self.saveContext(object: movieEntity, context: context)
+            movieEntity[0].watched = watchedStatus
+            self.saveContext(object: movieEntity[0], context: context)
         }
     }
     func bookmarkTapped(_ movie: MovieDataStore.MovieItem, bookmarkStatus: Bool) {
         let context = persistentContainer.viewContext
         let movieEntity = findMovieByID(using: movie.id, in: context)
         context.perform {
-            movieEntity.bookmarked = bookmarkStatus
-            self.saveContext(object: movieEntity, context: context)
+            movieEntity[0].bookmarked = bookmarkStatus
+            self.saveContext(object: movieEntity[0], context: context)
         }
     }
     func buyTapped(_ movie: MovieDataStore.MovieItem, buyStatus: Bool) {
         let context = persistentContainer.viewContext
         let movieEntity = findMovieByID(using: movie.id, in: context)
         context.perform {
-            movieEntity.bought = buyStatus
-            self.saveContext(object: movieEntity, context: context)
+            movieEntity[0].bought = buyStatus
+            self.saveContext(object: movieEntity[0], context: context)
         }
     }
     func updateNote(_ movie: MovieDataStore.MovieItem, noteText: String) {
         let context = persistentContainer.viewContext
         let movieEntity = findMovieByID(using: movie.id, in: context)
         context.perform {
-            movieEntity.note = noteText
-            self.saveContext(object: movieEntity, context: context)
+            movieEntity[0].note = noteText
+            self.saveContext(object: movieEntity[0], context: context)
+        }
+    }
+    
+    //MARK: - Creeate and Save Movie
+    func newMovie(name: String, with movieID: Int) -> MovieEntity {
+        let movie = MovieEntity(context: persistentContainer.viewContext)
+        movie.title = name
+        movie.movieId = Int32(movieID)
+        movie.bookmarked = false
+        movie.bought = false
+        movie.favorite = false
+        movie.note = ""
+        movie.watched = false
+        saveContext(object: movie, context: persistentContainer.viewContext)
+        return movie
+    }
+    
+    //MARK: - Delete movie by name
+    func deleteMovie(_ movie: MovieEntity) {
+        persistentContainer.viewContext.delete(movie)
+        do {
+            try persistentContainer.viewContext.save()
+        } catch {
+            persistentContainer.viewContext.rollback()
+            print("Failed to save context: \(error)")
         }
     }
     
@@ -114,14 +103,16 @@ class CoreDataController {
         }
     }
     
-    func findMovieByID(using movieID: Int, in context: NSManagedObjectContext) -> MovieEntity {
-        let request = NSFetchRequest<MovieEntity>(entityName: "MovieEntity")
-        request.predicate = NSPredicate(format: "%K == %@", #keyPath(MovieEntity.movieId), movieID)
-        
-        if let movie = try? context.fetch(request).first {
-            return movie
-        } else {
-            fatalError("Could not find movie from movieID: \(movieID)")
+    //MARK: Find Movie by Movie ID (used by DetailView
+    func findMovieByID(using movieID: Int, in context: NSManagedObjectContext) -> [MovieEntity] {
+        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
+        let movieIDPredicate = NSPredicate(format: "%K == %i", #keyPath(MovieEntity.movieId), Int32(movieID))
+        request.predicate = movieIDPredicate
+        do {
+            return try persistentContainer.viewContext.fetch(request)
+        } catch {
+            print("Failed to fetch movies: \(error)")
         }
+        return []
     }
 }

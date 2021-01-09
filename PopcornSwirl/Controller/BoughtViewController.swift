@@ -22,7 +22,7 @@ class BoughtViewController: UIViewController {
     let coreDataController = CoreDataController()
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-    let request = CoreDataController.boughtMovies
+    let request = MovieEntity.boughtMovies
     var fetchedMovies = [MovieEntity]()
     var movieResult: MovieDataStore.MovieItem?
     var error: MovieError?
@@ -47,7 +47,7 @@ class BoughtViewController: UIViewController {
         fetchedMovies = try! coreDataController.persistentContainer.viewContext.fetch(request)
         for movie in fetchedMovies {
             let id = movie.movieId
-            movieAction.fetchMovie(id: id) { [weak self] result in
+            movieAction.fetchMovie(id: Int(id)) { [weak self] result in
                 guard let self = self else { return }
                 switch result {
                     case .success(let response):
