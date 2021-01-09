@@ -31,7 +31,6 @@ class SearchViewController: UIViewController {
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadSearchedMovies()
         //        setupSnapshot()
     }
     
@@ -40,22 +39,7 @@ class SearchViewController: UIViewController {
         navigationItem.title = "Search"
         configureCollectionView()
         configureDataSource()
-    }
-    
-    //MARK: - Fetch bookmarked movies from core data then download from tmdb API
-    func loadSearchedMovies() {
-        movieAction.fetchMovie(id: id) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-                case .success(let response):
-                    print("fetchMovie success")
-                    self.movies.append(SingleMovieDTOMapper.map(response))
-                case .failure(let error):
-                    self.error = error
-                    print("Error fetching movie: \(error.localizedDescription)")
-            }
-        }
-        setupSnapshot() // may be called here or in viewWillAppear - check.
+        setupSnapshot()
     }
 }
 
@@ -63,12 +47,20 @@ class SearchViewController: UIViewController {
 //MARK: - Extensions
 //MARK: Configure Collection View
 extension SearchViewController {
+    
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
-        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemBackground
-        collectionView.delegate = self
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+
         view.addSubview(collectionView)
+        view.addSubview(searchBar)
+        
+        
+        
+        searchBar.delegate = self
     }
     
     private func createLayout() -> UICollectionViewLayout {
@@ -131,5 +123,28 @@ extension SearchViewController: UICollectionViewDelegate {
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.movieResult = movie
         tabBarController?.show(detailViewController, sender: self)
+    }
+}
+
+extension SearchViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        performQuery(with: searchText)
+    }
+    
+    func performQuery(with filter: String?) {
+        let movies = filteredMovies(with: filter).sorted { $0.title < $1.title }
+        
+        snapshot.appendSections([.main])
+        snapshot.appendItems(movies)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
+    func filteredMovies(with filter: String?=nil, limit: Int?=nil) -> [MovieDataStore.MovieItem] {
+        let filtered = movies.filter { $0.contains(filter) }
+        if let limit = limit {
+            return Array(filtered.prefix(through: limit))
+        } else {
+            return filtered
+        }
     }
 }
