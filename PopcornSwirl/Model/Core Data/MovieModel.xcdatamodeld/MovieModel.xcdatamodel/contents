@@ -4,7 +4,7 @@
         <attribute name="bookmarked" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="bought" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="favorite" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
-        <attribute name="id" attributeType="Integer 32" usesScalarValueType="YES"/>
+        <attribute name="movieId" attributeType="Integer 32" usesScalarValueType="YES"/>
         <attribute name="note" optional="YES" attributeType="String"/>
         <attribute name="title" attributeType="String"/>
         <attribute name="watched" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>

@@ -42,6 +42,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     let movieAction = MovieActions.shared
     var passedMovie: MovieDataStore.MovieItem?
     var movieResult: MovieDataStore.MovieItem?
+    var movieEntity = [MovieEntity]()
     var error: MovieError?
     
     var actors: [String] = []
@@ -51,7 +52,6 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     var oldNote: String = ""
     var validation = Validation()
-    let coreDataController = CoreDataController()
         
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -95,7 +95,12 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             self.group.leave()
         } // getMovieImage
         
-        let movieEntity = coreDataController.findMovieByID(using: movie.id, in: coreDataController.persistentContainer.viewContext)
+        // check if movie has been created in core data, if not create entity with current movie title and it
+        if CoreDataController.shared.entityExists(using: movie.id, in: CoreDataController.shared.managedContext) {
+            movieEntity = CoreDataController.shared.findMovieByID(using: movie.id, in: CoreDataController.shared.managedContext)
+        } else {
+            movieEntity = [CoreDataController.shared.newMovie(name: movie.title, id: movie.id)]
+        }
         
         movieResult?.bookmarked =  movieEntity[0].bookmarked
         movieResult?.favorite = movieEntity[0].favorite
@@ -158,7 +163,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         let isValidated = validation.validatedText(newText: movieNote, oldText: oldNote)
         if isValidated {
             guard let movie = movieResult else { return }
-            coreDataController.updateNote(movie, noteText: movieNote)
+            CoreDataController.shared.updateNote(movie, noteText: movieNote)
         } else {
             movieNotes.text = oldNote
         }
@@ -190,7 +195,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
-        coreDataController.buyTapped(movie, buyStatus: buyButton.isSelected)
+        CoreDataController.shared.buyTapped(movie, buyStatus: buyButton.isSelected)
     }
     
     @IBAction func watchTapped(_ sender: UIButton) {
@@ -201,7 +206,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
-        coreDataController.watchedTapped(movie, watchedStatus: watchedButton.isSelected)
+        CoreDataController.shared.watchedTapped(movie, watchedStatus: watchedButton.isSelected)
     }
     
     @IBAction func bookmarkTapped(_ sender: UIButton) {
@@ -212,7 +217,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
-        coreDataController.bookmarkTapped(movie, bookmarkStatus: bookmarkButton.isSelected)
+        CoreDataController.shared.bookmarkTapped(movie, bookmarkStatus: bookmarkButton.isSelected)
 
     }
     
@@ -224,7 +229,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             sender.tintColor = .placeholderText
         }
         guard let movie = movieResult else { return }
-        coreDataController.favoriteTapped(movie, favoriteStatus: favoriteButton.isSelected)
+        CoreDataController.shared.favoriteTapped(movie, favoriteStatus: favoriteButton.isSelected)
     }
     
     //TODO: Handle text field (note)

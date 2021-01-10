@@ -44,7 +44,7 @@ class FavoritesViewController: UIViewController {
     
     //MARK: - Fetch favorite movies from core data then download from tmdb API
     func loadFavoriteMovies() {
-        fetchedMovies = try! coreDataController.persistentContainer.viewContext.fetch(request)
+        fetchedMovies = try! coreDataController.managedContext.fetch(request)
         for movie in fetchedMovies {
             let id = movie.movieId
             movieAction.fetchMovie(id: Int(id)) { [weak self] result in

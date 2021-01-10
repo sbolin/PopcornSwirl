@@ -44,7 +44,7 @@ class WatchedViewController: UIViewController {
     
     //MARK: - Fetch watched movies from core data then download from tmdb API
     func loadWatchedMovies() {
-        fetchedMovies = try! coreDataController.persistentContainer.viewContext.fetch(request)
+        fetchedMovies = try! coreDataController.managedContext.fetch(request)
         for movie in fetchedMovies {
             let id = movie.movieId
             movieAction.fetchMovie(id: Int(id)) { [weak self] result in
