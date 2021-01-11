@@ -40,6 +40,8 @@ extension ListViewCell {
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(yearLabel)
         contentView.addSubview(activityIndicator)
+
+        contentView.frame.size.height = 90
         
         titleLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
         titleLabel.adjustsFontForContentSizeCategory = true

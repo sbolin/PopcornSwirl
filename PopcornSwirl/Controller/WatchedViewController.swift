@@ -32,7 +32,7 @@ class WatchedViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadWatchedMovies()
-        //        setupSnapshot()
+        setupSnapshot()
     }
     
     override func viewDidLoad() {

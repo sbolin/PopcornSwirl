@@ -471,12 +471,16 @@ Company</string>
                             </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="Lse-lE-T2s" firstAttribute="leading" secondItem="c4U-Qk-Ujq" secondAttribute="leading" id="9fY-vs-qMZ"/>
                             <constraint firstItem="Lse-lE-T2s" firstAttribute="top" secondItem="fHE-Dw-Do2" secondAttribute="bottom" id="BHP-G8-H3l"/>
                             <constraint firstItem="Wf9-B7-Aon" firstAttribute="top" secondItem="Lse-lE-T2s" secondAttribute="bottom" id="UXK-Dg-hek"/>
                             <constraint firstItem="Lse-lE-T2s" firstAttribute="trailing" secondItem="c4U-Qk-Ujq" secondAttribute="trailing" id="bva-Zl-484"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="Fum-wq-tCe" appends="YES" id="h1b-ZY-qjS"/>
+                        </connections>
                     </view>
                     <tabBarItem key="tabBarItem" title="Detail" image="square.and.pencil" catalog="system" selectedImage="square.and.pencil" id="DAW-PT-JdO"/>
                     <navigationItem key="navigationItem" id="kHJ-BN-CSu"/>
@@ -501,6 +505,11 @@ Company</string>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uK6-hI-4am" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="Fum-wq-tCe">
+                    <connections>
+                        <action selector="hideKeyboard:" destination="1Ib-8f-X9W" id="Jz6-RV-iuk"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2282" y="-98"/>
         </scene>

@@ -32,7 +32,7 @@ class BookmarksViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         loadBookmarkedMovies()
-//        setupSnapshot()
+        setupSnapshot()
     }
     
     override func viewDidLoad() {

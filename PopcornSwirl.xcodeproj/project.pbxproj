@@ -121,8 +121,8 @@
 				15C2987F255668210064B074 /* BookmarksViewController.swift */,
 				15C29882255668430064B074 /* WatchedViewController.swift */,
 				15C29886255668550064B074 /* FavoritesViewController.swift */,
-				157FD14325A86BDE000D5739 /* SearchViewController.swift */,
 				157FD14725A87CC6000D5739 /* BoughtViewController.swift */,
+				157FD14325A86BDE000D5739 /* SearchViewController.swift */,
 				15C2987C2556640D0064B074 /* MainTabBarController.swift */,
 			);
 			path = Controller;

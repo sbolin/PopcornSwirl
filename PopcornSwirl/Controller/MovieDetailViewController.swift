@@ -41,8 +41,8 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     let movieAction = MovieActions.shared
     var passedMovie: MovieDataStore.MovieItem?
-    var movieResult: MovieDataStore.MovieItem?
-    var movieEntity = [MovieEntity]()
+    var movieResult: MovieDataStore.MovieItem!
+    var movieEntity = MovieEntity()
     var error: MovieError?
     
     var actors: [String] = []
@@ -55,6 +55,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        registerForKeyboardNotifications()
  //       guard let passedMovie = passedMovie else { return }
  //       setup(movie: passedMovie)
     }
@@ -73,12 +74,25 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     // called from MovieCollectionViewController prior to segue
     func setup(movie: MovieDataStore.MovieItem) {
         self.group.enter()
+        
+        // check if movie has been created in core data, if not create entity with current movie title and it
+        if CoreDataController.shared.entityExists(using: movie.id, in: CoreDataController.shared.managedContext) {
+            movieEntity = CoreDataController.shared.findMovieByID(using: movie.id, in: CoreDataController.shared.managedContext)! // note force unwrapping!
+        } else {
+            movieEntity = CoreDataController.shared.newMovie(name: movie.title, id: movie.id)
+        }
+        
         movieAction.fetchMovie(id: movie.id) { [weak self] result in
             guard let self = self else { return }
             switch result {
                 case .success(let response):
                     print("fetchMovie success")
                     self.movieResult = SingleMovieDTOMapper.map(response)
+                    self.movieResult.bookmarked = self.movieEntity.bookmarked
+                    self.movieResult.favorite = self.movieEntity.favorite
+                    self.movieResult.watched = self.movieEntity.watched
+                    self.movieResult.bought = self.movieEntity.bought
+                    self.movieResult.note = self.movieEntity.note ?? ""
                 case .failure(let error):
                     self.error = error
                     print("Error fetching movie: \(error.localizedDescription)")
@@ -95,38 +109,21 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             self.group.leave()
         } // getMovieImage
         
-        // check if movie has been created in core data, if not create entity with current movie title and it
-        if CoreDataController.shared.entityExists(using: movie.id, in: CoreDataController.shared.managedContext) {
-            movieEntity = CoreDataController.shared.findMovieByID(using: movie.id, in: CoreDataController.shared.managedContext)
-        } else {
-            movieEntity = [CoreDataController.shared.newMovie(name: movie.title, id: movie.id)]
-        }
-        
-        movieResult?.bookmarked =  movieEntity[0].bookmarked
-        movieResult?.favorite = movieEntity[0].favorite
-        movieResult?.watched = movieEntity[0].watched
-        movieResult?.bought = movieEntity[0].bought
-        movieResult?.note = movieEntity[0].note ?? ""
-        // set needs display
-        
-        movie.bookmarked ? (bookmarkButton.tintColor = .systemBlue) : (bookmarkButton.tintColor = .placeholderText)
-        
-        movie.favorite ? (favoriteButton.tintColor = .systemRed) : (favoriteButton.tintColor = .placeholderText)
-        
-        movie.watched ? (watchedButton.tintColor = .systemPurple) : (watchedButton.tintColor = .placeholderText)
-        
-        movie.bought ? (buyButton.tintColor = .systemGreen) : (buyButton.tintColor = .placeholderText)
-        
-        
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
+                // button state
+                movieResult.bookmarked ? (bookmarkButton.tintColor = .systemBlue) : (bookmarkButton.tintColor = .placeholderText)
+                movieResult.favorite ? (favoriteButton.tintColor = .systemRed) : (favoriteButton.tintColor = .placeholderText)
+                movieResult.watched ? (watchedButton.tintColor = .systemPurple) : (watchedButton.tintColor = .placeholderText)
+                movieResult.bought ? (buyButton.tintColor = .systemGreen) : (buyButton.tintColor = .placeholderText)
+                
                 // from passed in movie
                 self.heroImage.image = self.mainImage
-                let genreTitle = movieResult?.genreText ?? "Genre"
-                let movieTitle = movieResult?.title ?? "Title"
+                let genreTitle = movieResult.genreText
+                let movieTitle = movieResult.title
                 self.movieTitle.text = movieTitle + " (" + genreTitle + ")"
-                self.movieYear.text = Utils.yearFormatter.string(from: movie.releaseDate)
-                self.movieOverview.text = movie.overview
+                self.movieYear.text = Utils.yearFormatter.string(from: movieResult.releaseDate)
+                self.movieOverview.text = movieResult.overview
                 
                 // from API result
                 guard let result = movieResult else { return }
@@ -155,40 +152,11 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
-    //MARK: - Process note text
-    func processInput() {
-        guard let movieNote = movieNotes.text else {
-            return
-        }
-        let isValidated = validation.validatedText(newText: movieNote, oldText: oldNote)
-        if isValidated {
-            guard let movie = movieResult else { return }
-            CoreDataController.shared.updateNote(movie, noteText: movieNote)
-        } else {
-            movieNotes.text = oldNote
-        }
-        movieNotes.resignFirstResponder()
-    }
-    
-    func textFieldDidBeginEditing(_ textField: UITextField) {
-        if let text = textField.text {
-            oldNote = text
-        }
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool { // return key tapped
-        if textField.text?.count == 0 {
-            return false
-        }
-        processInput()
-        return true
-    }
     
     //MARK: - Actions
     
     @IBAction func buyTapped(_ sender: UIButton) {
         buyButton.isSelected.toggle()
-//        changeAlpha(sender: sender)
         if sender.isSelected {
             sender.tintColor = .systemGreen
         } else {
@@ -196,6 +164,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         }
         guard let movie = movieResult else { return }
         CoreDataController.shared.buyTapped(movie, buyStatus: buyButton.isSelected)
+        
     }
     
     @IBAction func watchTapped(_ sender: UIButton) {
@@ -232,9 +201,78 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         CoreDataController.shared.favoriteTapped(movie, favoriteStatus: favoriteButton.isSelected)
     }
     
-    //TODO: Handle text field (note)
+    //Handle text field (note)
     @IBAction func notesEditingEnded(_ sender: UITextField) {
         processInput()
+    }
+    
+    @IBAction func hideKeyboard(_ sender: AnyObject) {
+        movieNotes.endEditing(true)
+    }
+    
+    //MARK: - Process note text
+    func processInput() {
+        guard let movieNote = movieNotes.text else {
+            return
+        }
+        let isValidated = validation.validatedText(newText: movieNote, oldText: oldNote)
+        if isValidated {
+            guard let movie = movieResult else { return }
+            CoreDataController.shared.updateNote(movie, noteText: movieNote)
+        } else {
+            movieNotes.text = oldNote
+        }
+        movieNotes.resignFirstResponder()
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        if let text = textField.text {
+            oldNote = text
+        }
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool { // return key tapped
+        if textField.text?.count == 0 {
+            return false
+        }
+        processInput()
+        return true
+    }
+    
+    //MARK:- Keyboard Notification for showing and hiding
+    func registerForKeyboardNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow(_:)),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil)
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide(_:)),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil)
+    }
+    
+    @objc func keyboardWillShow(_ notification: Notification) {
+        adjustInsetForKeyboardShow(true, notification: notification)
+    }
+    
+    @objc func keyboardWillHide(_ notification: Notification) {
+        adjustInsetForKeyboardShow(false, notification: notification)
+    }
+    
+    func adjustInsetForKeyboardShow(_ show: Bool, notification: Notification) {
+        guard
+            let userInfo = notification.userInfo,
+            let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
+        else {
+            return
+        }
+        
+        let adjustmentHeight = (keyboardFrame.cgRectValue.height + 20) * (show ? 1 : -1)
+        scrollView.contentInset.bottom += adjustmentHeight
+        scrollView.verticalScrollIndicatorInsets.bottom += adjustmentHeight
     }
 
     /*

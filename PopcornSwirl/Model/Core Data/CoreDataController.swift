@@ -39,43 +39,47 @@ class CoreDataController {
     
     func favoriteTapped(_ movie: MovieDataStore.MovieItem, favoriteStatus: Bool) {
         let context = managedContext
-        let movieEntity = findMovieByID(using: movie.id, in: context)
+        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
+        print("favoriteTapped movie: \(movieEntity)")
         context.perform {
-            movieEntity[0].favorite = favoriteStatus
-            self.saveContext(object: movieEntity[0], context: context)
-        }
-        
+            movieEntity.favorite = favoriteStatus
+            self.saveContext(object: movieEntity, context: context)
+        } // perform
     }
     func watchedTapped(_ movie: MovieDataStore.MovieItem, watchedStatus: Bool) {
         let context = managedContext
-        let movieEntity = findMovieByID(using: movie.id, in: context)
+        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
+        print("watchTapped movie: \(movieEntity)")
         context.perform {
-            movieEntity[0].watched = watchedStatus
-            self.saveContext(object: movieEntity[0], context: context)
+            movieEntity.watched = watchedStatus
+            self.saveContext(object: movieEntity, context: context)
         }
     }
     func bookmarkTapped(_ movie: MovieDataStore.MovieItem, bookmarkStatus: Bool) {
         let context = managedContext
-        let movieEntity = findMovieByID(using: movie.id, in: context)
+        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
+        print("bookmarkTapped movie: \(movieEntity)")
         context.perform {
-            movieEntity[0].bookmarked = bookmarkStatus
-            self.saveContext(object: movieEntity[0], context: context)
+            movieEntity.bookmarked = bookmarkStatus
+            self.saveContext(object: movieEntity, context: context)
         }
     }
     func buyTapped(_ movie: MovieDataStore.MovieItem, buyStatus: Bool) {
         let context = managedContext
-        let movieEntity = findMovieByID(using: movie.id, in: context)
+        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
+        print("buyTapped movie: \(movieEntity)")
         context.perform {
-            movieEntity[0].bought = buyStatus
-            self.saveContext(object: movieEntity[0], context: context)
+            movieEntity.bought = buyStatus
+            self.saveContext(object: movieEntity, context: context)
         }
     }
     func updateNote(_ movie: MovieDataStore.MovieItem, noteText: String) {
         let context = managedContext
-        let movieEntity = findMovieByID(using: movie.id, in: context)
+        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
+        print("updateNote: \(movieEntity)")
         context.perform {
-            movieEntity[0].note = noteText
-            self.saveContext(object: movieEntity[0], context: context)
+            movieEntity.note = noteText
+            self.saveContext(object: movieEntity, context: context)
         }
     }
     
@@ -110,6 +114,7 @@ class CoreDataController {
         do {
             try context.save()
             context.refresh(object, mergeChanges: true)
+            print("Movie saved")
         } catch let error as NSError {
             print("Unresolved error \(error), \(error.localizedDescription)")
             context.rollback()
@@ -117,16 +122,22 @@ class CoreDataController {
     }
     
     //MARK: Find Movie by Movie ID (used by DetailView
-    func findMovieByID(using id: Int, in context: NSManagedObjectContext) -> [MovieEntity] {
+    func findMovieByID(using id: Int, in context: NSManagedObjectContext) -> MovieEntity? {
         let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
         let movieIdPredicate = NSPredicate(format: "%K = %i", #keyPath(MovieEntity.movieId), Int32(id))
         request.predicate = movieIdPredicate
         do {
-            return try context.fetch(request)
+            print("find movie \(id)")
+            let movies = try context.fetch(request)
+            for movie in movies {
+                if movie.movieId == id {
+                    return movie
+                } // if
+            } // for in
         } catch {
             print("Failed to fetch movies: \(error)")
         }
-        return []
+        return nil
     }
     
     //MARK: Method to check if entity exists
@@ -139,9 +150,11 @@ class CoreDataController {
         do {
             entitiesCount = try context.count(for: idRequest)
             let movies = try context.fetch(movieRequest)
+            print("entityExists movie count: \(movies.count)")
             for movie in movies {
                 if movie.movieId == id {
                     movieIdExists = true
+                    print("Movie \(id) exists")
                     break
                 }
             }
