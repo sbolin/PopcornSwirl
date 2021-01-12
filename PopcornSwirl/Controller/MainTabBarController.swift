@@ -23,7 +23,7 @@ class MainTabBarController: UITabBarController {
     //MARK: - Setup Tab Bar
     func setupTabBar() {
         self.selectedIndex = 0 // 1
-        let tabBarItemSize = CGSize(width: mainTabBar.frame.width / 4, height: mainTabBar.frame.height - 1)
+        let tabBarItemSize = CGSize(width: mainTabBar.frame.width / 5, height: mainTabBar.frame.height - 1)
         let tabBarBGImage = UIImage(named: "TabBarBackground")?.resized(toSize: tabBarItemSize)
         mainTabBar.selectionIndicatorImage = tabBarBGImage
         

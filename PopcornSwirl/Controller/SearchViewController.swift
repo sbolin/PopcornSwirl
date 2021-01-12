@@ -17,21 +17,20 @@ private enum Section {
 class SearchViewController: UIViewController {
     
     // MARK: - Properties
-    private var moviesCollectionView: UICollectionView!
+    private var moviesCollectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
     let searchBar = UISearchBar(frame: .zero)
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-    var nameFilter: String?
-
+    var error: MovieError?
     
     
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //        setupSnapshot()
+        setupSnapshot()
     }
     
     override func viewDidLoad() {
@@ -40,7 +39,7 @@ class SearchViewController: UIViewController {
         searchBar.placeholder = "Search Movies"
         configureCollectionView()
         configureDataSource()
-        setupSnapshot()
+//        setupSnapshot()
     }
 }
 
@@ -60,7 +59,6 @@ extension SearchViewController {
         view.addSubview(searchBar)
         
         // from Apple Modern Collection Views/Diffable/MountainsViewController.swift
-        
         let views = ["cv": collectionView, "searchBar": searchBar]
         var constraints = [NSLayoutConstraint]()
         constraints.append(contentsOf: NSLayoutConstraint.constraints(
@@ -124,7 +122,6 @@ extension SearchViewController {
     }
 }
 
-///
 //MARK: - CollectionView Delegate Methods
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -142,27 +139,20 @@ extension SearchViewController: UICollectionViewDelegate {
 
 extension SearchViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        performQuery(with: searchText)
-    }
-    
-    func performQuery(with filter: String?) {
-        let movies = filteredMovies(with: filter).sorted { $0.title < $1.title }
+        movieAction.searchMovie(query: searchText) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+                case .success(let response):
+                    self.movies.append(contentsOf: MoviesDTOMapper.map(response))
+                case .failure(let error):
+                    self.error = error
+            }
+        }
+
+        let filteredMovie = movies.sorted { $0.title < $1.title }
         
         snapshot.appendSections([.main])
-        snapshot.appendItems(movies)
+        snapshot.appendItems(filteredMovie)
         dataSource.apply(snapshot, animatingDifferences: true)
-    }
-    
-    func filteredMovies(with filter: String?=nil, limit: Int?=nil) -> [MovieDataStore.MovieItem] {
-        let filtered = movies.filter {
-            guard let filterText = filter else { return true }
-            if filterText.isEmpty { return true }
-            return $0.title.lowercased().contains(filterText.lowercased())
-        }
-        if let limit = limit {
-            return Array(filtered.prefix(through: limit))
-        } else {
-            return filtered
-        }
     }
 }

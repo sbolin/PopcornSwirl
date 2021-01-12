@@ -24,14 +24,15 @@ class BookmarksViewController: UIViewController {
     var movies = [MovieDataStore.MovieItem]()
     let request = MovieEntity.bookmarkedMovies
     var fetchedMovies = [MovieEntity]()
-    var movieResult: MovieDataStore.MovieItem?
     var error: MovieError?
   
     
 // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadBookmarkedMovies()
+        if movies.isEmpty {
+            loadBookmarkedMovies()
+        }
         setupSnapshot()
     }
     
@@ -51,7 +52,7 @@ class BookmarksViewController: UIViewController {
                 guard let self = self else { return }
                 switch result {
                     case .success(let response):
-                        print("fetchMovie success")
+                        print("BookmarksViewController fetchMovie success")
                         self.movies.append(SingleMovieDTOMapper.map(response))
                     case .failure(let error):
                         self.error = error

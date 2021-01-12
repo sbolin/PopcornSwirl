@@ -24,14 +24,15 @@ class FavoritesViewController: UIViewController {
     var movies = [MovieDataStore.MovieItem]()
     let request = MovieEntity.favoriteMovies
     var fetchedMovies = [MovieEntity]()
-    var movieResult: MovieDataStore.MovieItem?
     var error: MovieError?
     
     
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadFavoriteMovies()
+        if movies.isEmpty {
+            loadFavoriteMovies()
+        }
         setupSnapshot()
     }
     

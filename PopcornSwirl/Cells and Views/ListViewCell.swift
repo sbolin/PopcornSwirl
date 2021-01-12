@@ -40,8 +40,6 @@ extension ListViewCell {
         contentView.addSubview(descriptionLabel)
         contentView.addSubview(yearLabel)
         contentView.addSubview(activityIndicator)
-
-        contentView.frame.size.height = 90
         
         titleLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
         titleLabel.adjustsFontForContentSizeCategory = true
@@ -67,8 +65,8 @@ extension ListViewCell {
         
         NSLayoutConstraint.activate([
             imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.5),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 2),
+            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.25),
             imageView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.25),
             
             titleLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
@@ -87,7 +85,7 @@ extension ListViewCell {
             descriptionLabel.heightAnchor.constraint(equalToConstant: 30),
             
             activityIndicator.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
-            activityIndicator.heightAnchor.constraint(equalTo: imageView.heightAnchor)
+            activityIndicator.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 0.75)
         ])
         
     }

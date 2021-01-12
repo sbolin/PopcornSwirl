@@ -24,15 +24,16 @@ class WatchedViewController: UIViewController {
     var movies = [MovieDataStore.MovieItem]()
     let request = MovieEntity.watchedMovies
     var fetchedMovies = [MovieEntity]()
-    var movieResult: MovieDataStore.MovieItem?
     var error: MovieError?
     
     
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadWatchedMovies()
-        setupSnapshot()
+        if movies.isEmpty {
+            loadWatchedMovies()
+        }
+       setupSnapshot()
     }
     
     override func viewDidLoad() {
