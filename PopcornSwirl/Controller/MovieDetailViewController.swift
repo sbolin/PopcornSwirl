@@ -25,7 +25,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var movieAverageScore: UILabel!
     @IBOutlet weak var movieVoteCount: UILabel!
     
-    @IBOutlet weak var movieNotes: UITextField!
+    @IBOutlet weak var movieNote: UITextField!
     
     @IBOutlet weak var favoriteButton: UIButton!
     @IBOutlet weak var bookmarkButton: UIButton!
@@ -207,22 +207,25 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func hideKeyboard(_ sender: AnyObject) {
-        movieNotes.endEditing(true)
+       movieNote.resignFirstResponder()
+//        movieNote.endEditing(true)
     }
     
     //MARK: - Process note text
     func processInput() {
-        guard let movieNote = movieNotes.text else {
+        guard let note = movieNote.text else {
             return
         }
-        let isValidated = validation.validatedText(newText: movieNote, oldText: oldNote)
+        let isValidated = validation.validatedText(newText: note, oldText: oldNote)
         if isValidated {
             guard let movie = movieResult else { return }
-            CoreDataController.shared.updateNote(movie, noteText: movieNote)
+            print("About to call core data to save note for movie \(movie.title): \(note)")
+            CoreDataController.shared.updateNote(movie, noteText: note)
         } else {
-            movieNotes.text = oldNote
+            movieNote.text = oldNote
         }
-        movieNotes.resignFirstResponder()
+        movieNote.resignFirstResponder()
+//        movieNote.endEditing(true)
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {

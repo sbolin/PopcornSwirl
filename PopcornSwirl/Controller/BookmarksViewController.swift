@@ -17,7 +17,7 @@ class BookmarksViewController: UIViewController {
     // MARK: - Properties
     private var collectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
-    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
+//    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
 
     let coreDataController = CoreDataController()
     let movieAction = MovieActions.shared
@@ -33,13 +33,13 @@ class BookmarksViewController: UIViewController {
         if movies.isEmpty {
             loadBookmarkedMovies()
         }
-        setupSnapshot()
+//        setupSnapshot()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Bookmarks"
-        configureCollectionView()
+        configureCollectionView() //
         configureDataSource()
     }
     
@@ -60,7 +60,7 @@ class BookmarksViewController: UIViewController {
                 }
             }
         }
-        setupSnapshot() // may be called here or in viewWillAppear - check.
+//        setupSnapshot() // may be called here or in viewWillAppear - check.
     }
 }
 
@@ -68,15 +68,15 @@ class BookmarksViewController: UIViewController {
 //MARK: - Extensions
 //MARK: Configure Collection View
 extension BookmarksViewController {
-    private func configureCollectionView() {
+    private func configureCollectionView() { //
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .systemBackground
-        collectionView.delegate = self
         view.addSubview(collectionView)
+        collectionView.delegate = self
     }
     
-    private func createLayout() -> UICollectionViewLayout {
+    private func createLayout() -> UICollectionViewLayout { //
         let config = UICollectionLayoutListConfiguration(appearance: .plain)
         return UICollectionViewCompositionalLayout.list(using: config)
     }
@@ -104,35 +104,31 @@ extension BookmarksViewController {
     }
 
 //MARK: - Configure DataSource
-    private func configureDataSource() {
+    private func configureDataSource() { //
         dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
-            (collectionView, indexPath, movie) -> ListViewCell? in
+            (collectionView, indexPath, movie) -> UICollectionViewCell? in
             // Return the cell.
-            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
-            return cell
+            return collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
         }
-    }
-    
-//MARK: Setup Snapshot data
-    private func setupSnapshot() {
-        snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
+        // initial data
+        var snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
         snapshot.appendSections([.main])
         snapshot.appendItems(movies)
-        dataSource.apply(snapshot, animatingDifferences: true)
+        dataSource.apply(snapshot, animatingDifferences: false)
+        
+        view.setNeedsDisplay()
     }
 }
 
-///
 //MARK: - CollectionView Delegate Methods
 extension BookmarksViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        collectionView.deselectItem(at: indexPath, animated: true)
-        
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
             collectionView.deselectItem(at: indexPath, animated: true)
             return
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
+        print("BookmarksViewController to MovieDetailViewController view with: \(movie.title)")
         detailViewController.movieResult = movie
         tabBarController?.show(detailViewController, sender: self)
     }

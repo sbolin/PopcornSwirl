@@ -493,7 +493,7 @@ Company</string>
                         <outlet property="movieAverageScore" destination="UXL-2E-U97" id="dUl-lo-lhh"/>
                         <outlet property="movieCompany" destination="9mp-Wr-A6t" id="VeF-vw-cJy"/>
                         <outlet property="movieDirector" destination="hdE-ys-Ig5" id="Plg-Tk-brt"/>
-                        <outlet property="movieNotes" destination="WdW-4o-knV" id="aKE-4l-PUP"/>
+                        <outlet property="movieNote" destination="WdW-4o-knV" id="aKE-4l-PUP"/>
                         <outlet property="movieOverview" destination="SUy-OF-dQi" id="td3-Fx-xFk"/>
                         <outlet property="movieRating" destination="9EJ-9S-Wqu" id="DKR-bp-rZP"/>
                         <outlet property="movieTitle" destination="8X6-3Q-UXr" id="wWI-KL-9bl"/>
