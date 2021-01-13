@@ -8,8 +8,12 @@
 \f0\fs22 \cf2 Core data saves bookmark, bought, favorite, and watched, but does not save notes.\
 \
 Continue working on BookmarksView, BoughtView, FavoritesView, WatchedView:\
-1. Layout - still messed up, may change to IB and build up cell, then use that rather than programmatically?\
-x. When select same movie again, movies are doubled (etc) in the list. <- seems to be fixed now\
+x. Layout - still messed up, may change to IB and build up cell, then use that rather than programmatically? <- fixed, still done programmatically\
+x. When select same movie again, movies are doubled (etc) in the list. <- fixed now\
 \
-Notes: In addition to not saving, the keyboard is messed up - it continues to offset view each time it come up, it doesn't leave properly (won't resign first responder)\
+DetailView Notes to fix:\
+1. Note is not saved;\
+2. Keyboard continues to offset view upon text entry in note text field - need to check on device, not sure if toggled keyboard in simulator is the problem\
+3. Keyboard _may_ not leave properly (won't resign first responder) - need to check on device, not sure if toggled keyboard in simulator is the problem\
+\
 Search: still broken....}

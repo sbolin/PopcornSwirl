@@ -33,6 +33,8 @@ class BookmarksViewController: UIViewController {
         if movies.isEmpty {
             loadBookmarkedMovies()
         }
+        configureDataSource()
+
 //        setupSnapshot()
     }
     
@@ -40,7 +42,7 @@ class BookmarksViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.title = "Bookmarks"
         configureCollectionView() //
-        configureDataSource()
+//        configureDataSource()
     }
     
     //MARK: - Fetch bookmarked movies from core data then download from tmdb API

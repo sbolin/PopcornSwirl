@@ -24,6 +24,8 @@ class MovieCollectionViewController: UIViewController {
     var movieCollections: [MovieDataStore.MovieCollection]?
     
     static let sectionHeaderElementKind = "section-header-element-kind"
+//    static let sectionBackgroundDecorationElementKind = "section-background-element-kind"
+
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -49,8 +51,8 @@ extension MovieCollectionViewController {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .systemBackground
-        collectionView.delegate = self
         view.addSubview(collectionView)
+        collectionView.delegate = self
     }
     
     private func createLayout() -> UICollectionViewLayout {
@@ -72,6 +74,14 @@ extension MovieCollectionViewController {
             let section = NSCollectionLayoutSection(group: group)
             section.orthogonalScrollingBehavior = .groupPagingCentered // originally .continuous
             section.interGroupSpacing = 12
+            
+// set up background decoration
+//            let sectionBackgroundDecoration = NSCollectionLayoutDecorationItem.background(
+//                elementKind: MovieCollectionViewController.sectionBackgroundDecorationElementKind)
+//            sectionBackgroundDecoration.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
+//            section.decorationItems = [sectionBackgroundDecoration]
+            
+// set up header
             let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
             let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
                 layoutSize: headerSize,
@@ -81,8 +91,8 @@ extension MovieCollectionViewController {
             return section
         }
         
-        let layout = UICollectionViewCompositionalLayout(
-            sectionProvider: sectionProvider, configuration: config)
+        let layout = UICollectionViewCompositionalLayout(sectionProvider: sectionProvider, configuration: config)
+//        layout.register(MovieCollectionViewController.self, forDecorationViewOfKind: MovieCollectionViewController.sectionBackgroundDecorationElementKind)
         return layout
     }
 }
@@ -150,7 +160,7 @@ extension MovieCollectionViewController {
                 }
             }
         }
-        dataSource.apply(snapshot, animatingDifferences: true)
+        dataSource.apply(snapshot, animatingDifferences: false)  // true
     } // applyInitialSnapshots
 }
 
