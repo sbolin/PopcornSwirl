@@ -38,7 +38,7 @@ class WatchedViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Watched"
+        self.navigationItem.title = "Watched"
         configureCollectionView()
         configureDataSource()
     }
@@ -60,7 +60,7 @@ class WatchedViewController: UIViewController {
                 }
             }
         }
-        setupSnapshot() // may be called here or in viewWillAppear - check.
+//        setupSnapshot() // may be called here or in viewWillAppear - check.
     }
 }
 
@@ -77,7 +77,7 @@ extension WatchedViewController {
     }
     
     private func createLayout() -> UICollectionViewLayout {
-        let config = UICollectionLayoutListConfiguration(appearance: .plain)
+        let config = UICollectionLayoutListConfiguration(appearance: .grouped)
         return UICollectionViewCompositionalLayout.list(using: config)
     }
     

@@ -31,7 +31,6 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var bookmarkButton: UIButton!
     @IBOutlet weak var watchedButton: UIButton!
     @IBOutlet weak var buyButton: UIButton!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     @IBOutlet weak var relatedCollectionView: UICollectionView!
     
@@ -56,8 +55,6 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         registerForKeyboardNotifications()
- //       guard let passedMovie = passedMovie else { return }
- //       setup(movie: passedMovie)
     }
     
     override func viewDidLoad() {

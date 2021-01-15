@@ -38,7 +38,7 @@ class FavoritesViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Favorites"
+        self.navigationItem.title = "Favorites"
         configureCollectionView()
         configureDataSource()
     }
@@ -60,7 +60,7 @@ class FavoritesViewController: UIViewController {
                 }
             }
         }
-        setupSnapshot() // may be called here or in viewWillAppear - check.
+//        setupSnapshot() // may be called here or in viewWillAppear - check.
     }
 }
 
@@ -77,7 +77,7 @@ extension FavoritesViewController {
     }
     
     private func createLayout() -> UICollectionViewLayout {
-        let config = UICollectionLayoutListConfiguration(appearance: .plain)
+        let config = UICollectionLayoutListConfiguration(appearance: .grouped)
         return UICollectionViewCompositionalLayout.list(using: config)
     }
     

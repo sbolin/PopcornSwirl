@@ -38,7 +38,7 @@ class BoughtViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Bought Movies"
+        self.navigationItem.title = "Bought Movies"
         configureCollectionView()
         configureDataSource()
     }
@@ -60,7 +60,7 @@ class BoughtViewController: UIViewController {
                 }
             }
         }
-        setupSnapshot() // may be called here or in viewWillAppear - check.
+//        setupSnapshot() // may be called here or in viewWillAppear - check.
     }
 }
 
@@ -77,7 +77,7 @@ extension BoughtViewController {
     }
     
     private func createLayout() -> UICollectionViewLayout {
-        let config = UICollectionLayoutListConfiguration(appearance: .plain)
+        let config = UICollectionLayoutListConfiguration(appearance: .grouped)
         return UICollectionViewCompositionalLayout.list(using: config)
     }
     

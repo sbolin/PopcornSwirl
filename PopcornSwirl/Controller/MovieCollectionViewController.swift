@@ -160,7 +160,7 @@ extension MovieCollectionViewController {
                 }
             }
         }
-        dataSource.apply(snapshot, animatingDifferences: false)  // true
+        dataSource.apply(snapshot, animatingDifferences: true)
     } // applyInitialSnapshots
 }
 

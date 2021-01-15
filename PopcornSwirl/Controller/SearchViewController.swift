@@ -35,7 +35,7 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "Search"
+        tabBarItem.title = "Search"
         searchBar.placeholder = "Search Movies"
         configureCollectionView()
         configureDataSource()
@@ -52,11 +52,11 @@ extension SearchViewController {
         let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(searchBar)
+        
         collectionView.backgroundColor = .systemBackground
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-
         view.addSubview(collectionView)
-        view.addSubview(searchBar)
         
         // from Apple Modern Collection Views/Diffable/MountainsViewController.swift
         let views = ["cv": collectionView, "searchBar": searchBar]
