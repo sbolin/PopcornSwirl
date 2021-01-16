@@ -64,16 +64,22 @@ extension ListViewCell {
         activityIndicator.style = .medium
         activityIndicator.color = .white
         
+//      let topImageAnchor = imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
+        let topImageAnchor = imageView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor)
+        let centerImageAnchor = imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
+        centerImageAnchor.priority = UILayoutPriority(999)
+        let leadingImageAnchor = imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4)
+        let widthImageAnchor = imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.4)
+        let heightImageAnchor = imageView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.25)
+//      let bottomImageAnchor = imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
+        
         NSLayoutConstraint.activate([
-//            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            imageView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
-//            imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
-            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.4),
-            imageView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.25),
-            // change priority of height
-            // or fix aspect ratio?
-            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            topImageAnchor,
+            centerImageAnchor,
+            leadingImageAnchor,
+            widthImageAnchor,
+            heightImageAnchor,
             
             titleLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
