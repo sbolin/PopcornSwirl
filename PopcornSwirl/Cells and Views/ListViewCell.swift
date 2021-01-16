@@ -65,13 +65,15 @@ extension ListViewCell {
         activityIndicator.color = .white
         
         NSLayoutConstraint.activate([
-//            imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
+//            imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
-            imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+//            imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
             imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4),
             imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.4),
             imageView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.25),
-//            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -4),
+            // change priority of height
+            // or fix aspect ratio?
+            imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
             
             titleLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),

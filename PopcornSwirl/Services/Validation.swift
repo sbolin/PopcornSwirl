@@ -12,10 +12,10 @@ class Validation {
         let trimmedNewText = newText.trimmingCharacters(in: .whitespaces)
         let trimmedOldText = oldText.trimmingCharacters(in: .whitespaces)
         let isValidatedNewText = trimmedNewText.count > 0
-        let isValidatedOldText = trimmedOldText.count > 0
+//        let isValidatedOldText = trimmedOldText.count > 0
         let isValidatedDifferent = trimmedNewText != trimmedOldText
         
-        let isValid = isValidatedNewText && isValidatedOldText && isValidatedDifferent
+        let isValid = isValidatedNewText && isValidatedDifferent // && isValidatedOldText
         return isValid
     }
 }

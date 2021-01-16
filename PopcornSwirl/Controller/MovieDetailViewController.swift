@@ -206,21 +206,19 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     //Handle text field (note)
     @IBAction func notesEditingEnded(_ sender: UITextField) {
+        print("notesEditingEnded")
         processInput()
     }
     
-    @IBAction func hideKeyboard(_ sender: AnyObject) {
-//       movieNote.resignFirstResponder()
-        movieNote.endEditing(true)
-    }
-    
-    //MARK: - Process note text
+//MARK: - Process note text
     func processInput() {
+        print("processInput")
         guard let note = movieNote.text else {
             return
         }
-        print("Movie note: \(movieNote.text ?? "note lost")")
+        print("Process Input note: \(note)")
         let isValidated = validation.validatedText(newText: note, oldText: oldNote)
+        print("isValidated? \(isValidated)")
         if isValidated {
             guard let movie = movieResult else { return }
             print("About to call core data to save note for movie \(movie.title): \(note)")
@@ -228,17 +226,17 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         } else {
             movieNote.text = oldNote
         }
-//        movieNote.resignFirstResponder()
-        movieNote.endEditing(true)
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
+        print("textFieldDidBeginEditing")
         if let text = textField.text {
             oldNote = text
         }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool { // return key tapped
+        print("textFieldShouldReturn")
         if textField.text?.count == 0 {
             return false
         }
