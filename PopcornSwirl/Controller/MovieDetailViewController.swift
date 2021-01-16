@@ -204,8 +204,8 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     }
     
     @IBAction func hideKeyboard(_ sender: AnyObject) {
-       movieNote.resignFirstResponder()
-//        movieNote.endEditing(true)
+//       movieNote.resignFirstResponder()
+        movieNote.endEditing(true)
     }
     
     //MARK: - Process note text
@@ -221,8 +221,8 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         } else {
             movieNote.text = oldNote
         }
-        movieNote.resignFirstResponder()
-//        movieNote.endEditing(true)
+//        movieNote.resignFirstResponder()
+        movieNote.endEditing(true)
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
@@ -243,45 +243,27 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     func registerForKeyboardNotifications() {
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillShow(_:)),
+            selector: #selector(keyboardWillShow(notification:)),
             name: UIResponder.keyboardWillShowNotification,
             object: nil)
         
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(keyboardWillHide(_:)),
+            selector: #selector(keyboardWillHide(notification:)),
             name: UIResponder.keyboardWillHideNotification,
             object: nil)
     }
     
-    @objc func keyboardWillShow(_ notification: Notification) {
-        adjustInsetForKeyboardShow(true, notification: notification)
+    @objc func keyboardWillShow(notification: Notification) {
+        let keyboardFrame = notification.userInfo![UIResponder.keyboardFrameEndUserInfoKey] as! CGRect
+        adjustLayoutForKeyboard(targetHeight: (keyboardFrame.size.height + 20))
     }
     
-    @objc func keyboardWillHide(_ notification: Notification) {
-        adjustInsetForKeyboardShow(false, notification: notification)
+    @objc func keyboardWillHide(notification: Notification) {
+        adjustLayoutForKeyboard(targetHeight: 0)
     }
-    
-    func adjustInsetForKeyboardShow(_ show: Bool, notification: Notification) {
-        guard
-            let userInfo = notification.userInfo,
-            let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue
-        else {
-            return
-        }
         
-        let adjustmentHeight = (keyboardFrame.cgRectValue.height + 20) * (show ? 1 : -1)
-        scrollView.contentInset.bottom += adjustmentHeight
-        scrollView.verticalScrollIndicatorInsets.bottom += adjustmentHeight
+    func adjustLayoutForKeyboard(targetHeight: CGFloat) {
+        scrollView.contentInset.bottom = targetHeight
     }
-
-    /*
-    func changeAlpha(sender: UIButton) {
-        if sender.isSelected {
-            sender.alpha = 1.0
-        } else {
-            sender.alpha = 0.25
-        }
-    }
- */
 }

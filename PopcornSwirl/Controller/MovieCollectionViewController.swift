@@ -174,7 +174,7 @@ extension MovieCollectionViewController: UICollectionViewDelegate {
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else { return }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.passedMovie = movie
-//        detailViewController.modalPresentationStyle = .formSheet
+        detailViewController.modalPresentationStyle = .automatic
         tabBarController?.show(detailViewController, sender: self)
     }
 }
