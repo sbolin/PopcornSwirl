@@ -14,7 +14,7 @@ private enum Section {
 
 class WatchedViewController: UIViewController {
 
-    // MARK: - Properties
+// MARK: - Properties
     private var collectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
@@ -26,27 +26,34 @@ class WatchedViewController: UIViewController {
     var fetchedMovies = [MovieEntity]()
     var error: MovieError?
     
-    
-    // MARK: - View Lifecycle Methods
+// MARK: - DispatchGroup
+    let group = DispatchGroup()
+    let queue = DispatchQueue.global()
+
+// MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if movies.isEmpty {
             loadWatchedMovies()
         }
-       setupSnapshot()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = "Watched"
-        configureCollectionView()
-        configureDataSource()
+        title = "Watched"
+        group.notify(queue: queue) { [self] in
+            DispatchQueue.main.async { [self] in
+                self.configureCollectionView()
+                self.configureDataSource()
+            }
+        }
     }
     
     //MARK: - Fetch watched movies from core data then download from tmdb API
     func loadWatchedMovies() {
         fetchedMovies = try! coreDataController.managedContext.fetch(request)
         for movie in fetchedMovies {
+            self.group.enter()
             let id = movie.movieId
             movieAction.fetchMovie(id: Int(id)) { [weak self] result in
                 guard let self = self else { return }
@@ -58,13 +65,13 @@ class WatchedViewController: UIViewController {
                         self.error = error
                         print("Error fetching movie: \(error.localizedDescription)")
                 }
+                self.group.leave()
+                self.setupSnapshot()
             }
         }
-//        setupSnapshot() // may be called here or in viewWillAppear - check.
     }
 }
 
-///
 //MARK: - Extensions
 //MARK: Configure Collection View
 extension WatchedViewController {

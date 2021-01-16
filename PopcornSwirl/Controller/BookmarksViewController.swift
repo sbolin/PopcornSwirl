@@ -26,32 +26,27 @@ class BookmarksViewController: UIViewController {
     var fetchedMovies = [MovieEntity]()
     var error: MovieError?
     
-    //MARK: - Properties
+// MARK: - DispatchGroup
     let group = DispatchGroup()
     let queue = DispatchQueue.global()
   
-    
 // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if movies.isEmpty {
             loadBookmarkedMovies()
         }
-//        setupSnapshot() // works here without DispatchGroup, crashes with DispatchGroup
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Bookmarks"
+        title = "Bookmarked"
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
                 self.configureCollectionView()
                 self.configureDataSource()
-//                self.setupSnapshot() // doesn't crash, but doesn't work
             }
-//            setupSnapshot() // crashes here...
         }
-//        setupSnapshot() // crashes here, too...
     }
     
     //MARK: - Fetch bookmarked movies from core data then download from tmdb API
@@ -74,7 +69,6 @@ class BookmarksViewController: UIViewController {
                 self.setupSnapshot()
             }
         }
-//        setupSnapshot() // crashes here, as well...
     }
 }
 
