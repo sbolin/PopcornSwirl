@@ -75,33 +75,22 @@ class BookmarksViewController: UIViewController {
 //MARK: - Extensions
 //MARK: Configure Collection View
 extension BookmarksViewController {
-    private func configureCollectionView() { //
-        let layoutConfig = UICollectionLayoutListConfiguration(appearance: .grouped)
-        let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
-        
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: listLayout)
-//        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    private func configureCollectionView() {
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .systemBackground
-        view.addSubview(collectionView)
         collectionView.delegate = self
-        
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            //            collectionView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            collectionView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor, constant: 0.0),
-            //            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0.0),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0.0),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0.0),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0.0)
-        ])
+        view.addSubview(collectionView)
     }
     
-//MARK: Configure and Register ListViewCell
-
-    private func configureDataSource() {
-        
-        let movieListCellRegistration = UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { cell, indexPath, movie in
-            //        return UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
+    private func createLayout() -> UICollectionViewLayout {
+        let config = UICollectionLayoutListConfiguration(appearance: .grouped)
+        return UICollectionViewCompositionalLayout.list(using: config)
+    }
+    
+    //MARK: Configure and Register ListViewCell
+    private func configureListCell() -> UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> {
+        return UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
@@ -118,18 +107,20 @@ extension BookmarksViewController {
                     } // Dispatch
                 } // success
             } // fetchImage
-        }
-        
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) { (collectionView, indexPath, movie) -> UICollectionViewCell? in
-            // Return the cell.
-            let cell = collectionView.dequeueConfiguredReusableCell(
-                using: movieListCellRegistration,
-                for: indexPath,
-                item: movie)
-            return cell
         } // cellRegistration
     }
-        
+    
+    //MARK: - Configure DataSource
+    private func configureDataSource() {
+        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
+            (collectionView, indexPath, movie) -> ListViewCell? in
+            // Return the cell.
+            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
+            return cell
+        }
+    }
+    
     //MARK: Setup Snapshot data
     private func setupSnapshot() {
         snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()

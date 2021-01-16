@@ -74,9 +74,11 @@ class CoreDataController {
         }
     }
     func updateNote(_ movie: MovieDataStore.MovieItem, noteText: String) {
+        print("CoreDataController passed in movie: \(movie)")
+        print("CoreDataController passed in note: \(noteText)")
         let context = managedContext
         guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        print("updateNote: \(movieEntity)")
+        print("CoreDataController findMovieByID: \(movieEntity)")
         context.perform {
             movieEntity.note = noteText
             self.saveContext(object: movieEntity, context: context)

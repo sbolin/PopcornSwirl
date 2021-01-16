@@ -24,7 +24,7 @@ extension MovieEntity {
     @NSManaged public var favorite: Bool
     @NSManaged public var watched: Bool
     @NSManaged public var bought: Bool
-    @NSManaged public var note: String? // may or may not have note
+    @NSManaged public var note: String // may or may not have note
 
 }
 

@@ -368,7 +368,7 @@ Company</string>
                                                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences" keyboardType="alphabet" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
                                                                         <connections>
-                                                                            <action selector="notesEditingEnded:" destination="1Ib-8f-X9W" eventType="editingDidEnd" id="iKu-jj-3xP"/>
+                                                                            <action selector="notesEditingEnded:" destination="1Ib-8f-X9W" eventType="editingDidEnd" id="nKh-JQ-ugr"/>
                                                                         </connections>
                                                                     </textField>
                                                                     <collectionView clipsSubviews="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="oBr-pp-qUo">
@@ -469,14 +469,19 @@ Company</string>
                                 <viewLayoutGuide key="contentLayoutGuide" id="njH-m9-M18"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="S1S-Sy-WVN"/>
                             </scrollView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="7gB-KO-C5o">
+                                <rect key="frame" x="169" y="387.66666666666669" width="37" height="37"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <gestureRecognizers/>
                         <constraints>
                             <constraint firstItem="Lse-lE-T2s" firstAttribute="leading" secondItem="c4U-Qk-Ujq" secondAttribute="leading" id="9fY-vs-qMZ"/>
+                            <constraint firstItem="7gB-KO-C5o" firstAttribute="centerX" secondItem="c4U-Qk-Ujq" secondAttribute="centerX" id="A0l-Dm-4C1"/>
                             <constraint firstItem="Lse-lE-T2s" firstAttribute="top" secondItem="fHE-Dw-Do2" secondAttribute="bottom" id="BHP-G8-H3l"/>
                             <constraint firstItem="Wf9-B7-Aon" firstAttribute="top" secondItem="Lse-lE-T2s" secondAttribute="bottom" id="UXK-Dg-hek"/>
                             <constraint firstItem="Lse-lE-T2s" firstAttribute="trailing" secondItem="c4U-Qk-Ujq" secondAttribute="trailing" id="bva-Zl-484"/>
+                            <constraint firstItem="7gB-KO-C5o" firstAttribute="centerY" secondItem="c4U-Qk-Ujq" secondAttribute="centerY" id="ygT-zw-ObB"/>
                         </constraints>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="Fum-wq-tCe" appends="YES" id="h1b-ZY-qjS"/>
@@ -485,6 +490,7 @@ Company</string>
                     <tabBarItem key="tabBarItem" title="Detail" image="square.and.pencil" catalog="system" selectedImage="square.and.pencil" id="DAW-PT-JdO"/>
                     <navigationItem key="navigationItem" id="kHJ-BN-CSu"/>
                     <connections>
+                        <outlet property="activity" destination="7gB-KO-C5o" id="eZ2-hq-IbC"/>
                         <outlet property="bookmarkButton" destination="1md-9X-Z7y" id="eLX-wB-bmK"/>
                         <outlet property="buyButton" destination="hIJ-ni-7dn" id="qnY-OF-jlL"/>
                         <outlet property="favoriteButton" destination="zAE-mr-T4f" id="lkI-Vr-h3s"/>
@@ -493,7 +499,7 @@ Company</string>
                         <outlet property="movieAverageScore" destination="UXL-2E-U97" id="dUl-lo-lhh"/>
                         <outlet property="movieCompany" destination="9mp-Wr-A6t" id="VeF-vw-cJy"/>
                         <outlet property="movieDirector" destination="hdE-ys-Ig5" id="Plg-Tk-brt"/>
-                        <outlet property="movieNote" destination="WdW-4o-knV" id="aKE-4l-PUP"/>
+                        <outlet property="movieNote" destination="WdW-4o-knV" id="tre-rw-wv0"/>
                         <outlet property="movieOverview" destination="SUy-OF-dQi" id="td3-Fx-xFk"/>
                         <outlet property="movieRating" destination="9EJ-9S-Wqu" id="DKR-bp-rZP"/>
                         <outlet property="movieTitle" destination="8X6-3Q-UXr" id="wWI-KL-9bl"/>

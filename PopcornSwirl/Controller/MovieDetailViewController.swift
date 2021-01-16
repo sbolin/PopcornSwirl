@@ -33,6 +33,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var buyButton: UIButton!
     
     @IBOutlet weak var relatedCollectionView: UICollectionView!
+    @IBOutlet weak var activity: UIActivityIndicatorView!
     
     //MARK: - Properties
     let group = DispatchGroup()
@@ -54,28 +55,29 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        registerForKeyboardNotifications()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        let navTitle = passedMovie?.title ?? "Movie Detail"
-        navigationItem.title = navTitle
         view.backgroundColor = .systemBackground
-
+        activity.hidesWhenStopped = true
         guard let passedMovie = passedMovie else { return }
+        registerForKeyboardNotifications()
+        movieNote.delegate = self
+        title = passedMovie.title
         setup(movie: passedMovie)
-        
     }
     
     // called from MovieCollectionViewController prior to segue
     func setup(movie: MovieDataStore.MovieItem) {
         self.group.enter()
-        
+        activity.startAnimating()
         // check if movie has been created in core data, if not create entity with current movie title and it
         if CoreDataController.shared.entityExists(using: movie.id, in: CoreDataController.shared.managedContext) {
+            print("Movie exists in Core Data")
             movieEntity = CoreDataController.shared.findMovieByID(using: movie.id, in: CoreDataController.shared.managedContext)! // note force unwrapping!
         } else {
+            print("Movie not in Core Data")
             movieEntity = CoreDataController.shared.newMovie(name: movie.title, id: movie.id)
         }
         
@@ -89,7 +91,8 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                     self.movieResult.favorite = self.movieEntity.favorite
                     self.movieResult.watched = self.movieEntity.watched
                     self.movieResult.bought = self.movieEntity.bought
-                    self.movieResult.note = self.movieEntity.note ?? ""
+                    print("fetchMovie success, note: \(self.movieEntity.note)")
+                    self.movieResult.note = self.movieEntity.note
                 case .failure(let error):
                     self.error = error
                     print("Error fetching movie: \(error.localizedDescription)")
@@ -108,6 +111,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
+                activity.stopAnimating()
                 // button state
                 movieResult.bookmarked ? (bookmarkButton.tintColor = .systemBlue) : (bookmarkButton.tintColor = .placeholderText)
                 movieResult.favorite ? (favoriteButton.tintColor = .systemRed) : (favoriteButton.tintColor = .placeholderText)
@@ -121,6 +125,8 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                 self.movieTitle.text = movieTitle + " (" + genreTitle + ")"
                 self.movieYear.text = Utils.yearFormatter.string(from: movieResult.releaseDate)
                 self.movieOverview.text = movieResult.overview
+                print("Updating UI, fetched note: \(movieResult.note)")
+                self.movieNote.text = movieResult.note
                 
                 // from API result
                 guard let result = movieResult else { return }
@@ -213,6 +219,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         guard let note = movieNote.text else {
             return
         }
+        print("Movie note: \(movieNote.text ?? "note lost")")
         let isValidated = validation.validatedText(newText: note, oldText: oldNote)
         if isValidated {
             guard let movie = movieResult else { return }
