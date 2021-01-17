@@ -209,6 +209,9 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         print("notesEditingEnded")
         processInput()
     }
+    @IBAction func tappedOut(_ sender: UITapGestureRecognizer) {
+        movieNote.resignFirstResponder()
+    }
     
 //MARK: - Process note text
     func processInput() {
@@ -226,6 +229,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         } else {
             movieNote.text = oldNote
         }
+        movieNote.resignFirstResponder()
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {

@@ -377,7 +377,7 @@ Company</string>
                                                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                                         </collectionViewFlowLayout>
                                                         <cells>
-                                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" insetsLayoutMarginsFromSafeArea="NO" id="qIg-8B-Dfo">
+                                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="adViewCell" id="qIg-8B-Dfo">
                                                                 <rect key="frame" x="0.0" y="4" width="72" height="72"/>
                                                                 <autoresizingMask key="autoresizingMask"/>
                                                                 <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="sJV-KO-AQg">
@@ -446,6 +446,9 @@ Company</string>
                             <constraint firstItem="Lse-lE-T2s" firstAttribute="trailing" secondItem="c4U-Qk-Ujq" secondAttribute="trailing" id="bva-Zl-484"/>
                             <constraint firstItem="7gB-KO-C5o" firstAttribute="centerY" secondItem="c4U-Qk-Ujq" secondAttribute="centerY" id="ygT-zw-ObB"/>
                         </constraints>
+                        <connections>
+                            <outletCollection property="gestureRecognizers" destination="zgG-lT-btO" appends="YES" id="Hlw-Ie-EsP"/>
+                        </connections>
                     </view>
                     <tabBarItem key="tabBarItem" title="Detail" image="square.and.pencil" catalog="system" selectedImage="square.and.pencil" id="DAW-PT-JdO"/>
                     <navigationItem key="navigationItem" id="kHJ-BN-CSu"/>
@@ -471,6 +474,11 @@ Company</string>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="uK6-hI-4am" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="zgG-lT-btO">
+                    <connections>
+                        <action selector="tappedOut:" destination="1Ib-8f-X9W" id="nxj-ot-7XK"/>
+                    </connections>
+                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2280.8000000000002" y="-98.275862068965523"/>
         </scene>
