@@ -14,7 +14,7 @@ private enum Section {
 class SearchViewController: UIViewController {
     
     // MARK: - Properties
-    private var collectionView: UICollectionView! = nil
+    private var movieCollectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
@@ -26,6 +26,7 @@ class SearchViewController: UIViewController {
     // MARK: - DispatchGroup
     let group = DispatchGroup()
     let queue = DispatchQueue.global()
+    var query = ""
     
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
@@ -44,9 +45,15 @@ class SearchViewController: UIViewController {
         }
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        searchBar.text = ""
+        self.movies = [MovieDataStore.MovieItem]()
+    }
+    
     func setupSearchBar() {
         searchBar.placeholder = "Search Movies"
         searchBar.keyboardType = .asciiCapable
+        searchBar.enablesReturnKeyAutomatically = true
  //       searchBar.prompt = "Search"
     }
 }
@@ -56,26 +63,53 @@ class SearchViewController: UIViewController {
 //MARK: Configure Collection View
 extension SearchViewController {
     private func configureCollectionView() {
+        /*
         view.backgroundColor = .systemBackground
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
- //       collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemBackground
- //       collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(collectionView)
         view.addSubview(searchBar)
         
         NSLayoutConstraint.activate([
-            searchBar.topAnchor.constraint(
-                equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 1.0),
+            searchBar.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
             searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
             
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor, constant: 40),
+            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 20),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
         ])
-//        collectionView.delegate = self
+        */
+        
+        // from Apple: Modern Collection Views
+        view.backgroundColor = .systemBackground
+        let layout = createLayout()
+        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .systemBackground
+        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(collectionView)
+        view.addSubview(searchBar)
+        
+        let views = ["cv": collectionView, "searchBar": searchBar]
+        var constraints = [NSLayoutConstraint]()
+        constraints.append(contentsOf: NSLayoutConstraint.constraints(
+                            withVisualFormat: "H:|[cv]|", options: [], metrics: nil, views: views))
+        constraints.append(contentsOf: NSLayoutConstraint.constraints(
+                            withVisualFormat: "H:|[searchBar]|", options: [], metrics: nil, views: views))
+        constraints.append(contentsOf: NSLayoutConstraint.constraints(
+                            withVisualFormat: "V:[searchBar]-0-[cv]|", options: [], metrics: nil, views: views))
+        constraints.append(searchBar.topAnchor.constraint(
+                            equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 1.0))
+        NSLayoutConstraint.activate(constraints)
+        movieCollectionView = collectionView
+        // end from Apple
+        
+//        movieCollectionView.delegate = self
         searchBar.delegate = self
     }
     
@@ -109,11 +143,9 @@ extension SearchViewController {
     //MARK: - Configure DataSource
     private func configureDataSource() {
         // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
-            (collectionView, indexPath, movie) -> ListViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: movieCollectionView) { (collectionView, indexPath, movie) -> ListViewCell? in
             // Return the cell.
-            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
-            return cell
+            return collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
         }
     }
     
@@ -140,8 +172,34 @@ extension SearchViewController: UICollectionViewDelegate {
 }
 
 extension SearchViewController: UISearchBarDelegate {
+    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        guard let searchText = searchBar.text else { return }
+//        search(for: searchText)
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else { return }
+        search(for: searchText)
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else { return }
+        search(for: searchText)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        self.searchBar.resignFirstResponder()
+    }
+    
+    func search(for searchText: String) {
+        self.movies = [MovieDataStore.MovieItem]()
+        self.error = nil
+        guard !searchText.isEmpty else {
+            return
+        }
         self.group.enter()
+        guard let searchText = searchBar.text else { return }
         movieAction.searchMovie(query: searchText) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -150,9 +208,10 @@ extension SearchViewController: UISearchBarDelegate {
                 case .failure(let error):
                     self.error = error
             }
-            self.group.leave()
             self.movies.sort { $0.title < $1.title }
             self.setupSnapshot()
+            self.group.leave()
         }
+        searchBar.resignFirstResponder()
     }
 }
