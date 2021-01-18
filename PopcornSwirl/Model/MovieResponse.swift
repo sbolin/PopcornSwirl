@@ -25,8 +25,8 @@ struct Movie: Decodable, Identifiable, Hashable {
     let title: String
     let overview: String
     let genreIds: [Int]
-    let backdropPath: String
-    let posterPath: String
+    let backdropPath: String?
+    let posterPath: String?
     let voteAverage: Double
     let voteCount: Int
     

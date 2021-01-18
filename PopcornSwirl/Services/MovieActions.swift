@@ -101,6 +101,7 @@ class MovieActions {
             return
         }
         self.loadURLAndDecode(url: url, params: [
+            "original_language": "en",
             "language" : "en-US",
             "include_adult" : "false",
             "region" : "US",

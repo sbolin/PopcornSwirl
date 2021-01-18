@@ -57,8 +57,8 @@ class MovieDataStore {
         var id: Int
         var title: String
         var overview: String
-        var posterPath: String
-        var backdropPath: String
+        var posterPath: String?
+        var backdropPath: String?
         var genreIds: [Int]
         var releaseDate: Date
         var voteAverage: Double
@@ -69,12 +69,12 @@ class MovieDataStore {
         
         // data from domain model
         var backdropURL: URL {
-            return URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath )")!
+            return URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath ?? "")")!
         }
         var backdropImage = UIImage() // using backdropURL
         
         var posterURL: URL {
-            return URL(string: "https://image.tmdb.org/t/p/w780\(posterPath )")!
+            return URL(string: "https://image.tmdb.org/t/p/w780\(posterPath ?? "")")!
         }
         var posterImage = UIImage() // using posterURL
         

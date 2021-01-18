@@ -22,11 +22,6 @@ class SearchViewController: UIViewController {
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
     var error: MovieError?
- 
-    // MARK: - DispatchGroup
-    let group = DispatchGroup()
-    let queue = DispatchQueue.global()
-    var query = ""
     
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
@@ -37,12 +32,9 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Search"
-        group.notify(queue: queue) { [self] in
-            DispatchQueue.main.async { [self] in
                 self.configureCollectionView()
                 self.configureDataSource()
-            }
-        }
+
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -174,44 +166,55 @@ extension SearchViewController: UICollectionViewDelegate {
 extension SearchViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-//        guard let searchText = searchBar.text else { return }
-//        search(for: searchText)
+        guard let searchText = searchBar.text else { return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+           self.search(for: searchText)
+        }
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
-        search(for: searchText)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.search(for: searchText)
+        }
+        searchBar.resignFirstResponder()
     }
     
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        guard let searchText = searchBar.text else { return }
-        search(for: searchText)
-    }
+//    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+//        guard let searchText = searchBar.text else { return }
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//            self.search(for: searchText)
+//        }
+//    }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        print("search clicked")
+        self.movies = [MovieDataStore.MovieItem]()
+        self.error = nil
+        self.setupSnapshot()
         self.searchBar.resignFirstResponder()
     }
     
     func search(for searchText: String) {
+        print("start search for \(searchText)")
         self.movies = [MovieDataStore.MovieItem]()
         self.error = nil
         guard !searchText.isEmpty else {
             return
         }
-        self.group.enter()
-        guard let searchText = searchBar.text else { return }
+ //       self.group.enter()
         movieAction.searchMovie(query: searchText) { [weak self] result in
             guard let self = self else { return }
             switch result {
                 case .success(let response):
+                    print("search returned with a response")
                     self.movies.append(contentsOf: MoviesDTOMapper.map(response))
                 case .failure(let error):
                     self.error = error
+                    print("no response, error: \(self.error.debugDescription)")
             }
             self.movies.sort { $0.title < $1.title }
             self.setupSnapshot()
-            self.group.leave()
         }
-        searchBar.resignFirstResponder()
     }
 }
