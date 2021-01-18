@@ -11,12 +11,12 @@ struct MovieResponse: Decodable {
     let results: [Movie]
 }
 
-struct Movie: Decodable, Identifiable, Hashable {
+struct Movie: Decodable, Identifiable, Hashable { //
     // Results when fetching by endpoint or genre
     static func == (lhs: Movie, rhs: Movie) -> Bool {
         lhs.id == rhs.id
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }

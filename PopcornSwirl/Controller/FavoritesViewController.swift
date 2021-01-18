@@ -13,8 +13,8 @@ private enum Section {
 }
 
 class FavoritesViewController: UIViewController {
-
-// MARK: - Properties
+    
+    // MARK: - Properties
     private var collectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
@@ -26,11 +26,11 @@ class FavoritesViewController: UIViewController {
     var fetchedMovies = [MovieEntity]()
     var error: MovieError?
     
-// MARK: - DispatchGroup
+    // MARK: - DispatchGroup
     let group = DispatchGroup()
     let queue = DispatchQueue.global()
     
-// MARK: - View Lifecycle Methods
+    // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if movies.isEmpty {
@@ -77,7 +77,7 @@ class FavoritesViewController: UIViewController {
 extension FavoritesViewController {
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
- //       collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        //       collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
         view.addSubview(collectionView)
@@ -133,14 +133,12 @@ extension FavoritesViewController {
 //MARK: - CollectionView Delegate Methods
 extension FavoritesViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //        collectionView.deselectItem(at: indexPath, animated: true)
-        
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
             collectionView.deselectItem(at: indexPath, animated: true)
             return
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        detailViewController.movieResult = movie
+        detailViewController.passedMovie = movie
         tabBarController?.show(detailViewController, sender: self)
     }
 }

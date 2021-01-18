@@ -32,21 +32,24 @@ class SearchViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Search"
-                self.configureCollectionView()
-                self.configureDataSource()
-
+        self.configureCollectionView()
+        self.configureDataSource()
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         searchBar.text = ""
-        self.movies = [MovieDataStore.MovieItem]()
+        var currentSnapshot = dataSource.snapshot()
+        currentSnapshot.deleteItems(movies)
+        dataSource.apply(currentSnapshot, animatingDifferences: false)
+        self.error = nil
     }
     
     func setupSearchBar() {
         searchBar.placeholder = "Search Movies"
         searchBar.keyboardType = .asciiCapable
         searchBar.enablesReturnKeyAutomatically = true
- //       searchBar.prompt = "Search"
+        //       searchBar.prompt = "Search"
     }
 }
 
@@ -56,25 +59,25 @@ class SearchViewController: UIViewController {
 extension SearchViewController {
     private func configureCollectionView() {
         /*
-        view.backgroundColor = .systemBackground
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        collectionView.backgroundColor = .systemBackground
-        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        view.addSubview(collectionView)
-        view.addSubview(searchBar)
-        
-        NSLayoutConstraint.activate([
-            searchBar.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-            
-            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 20),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
-        ])
-        */
+         view.backgroundColor = .systemBackground
+         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
+         collectionView.translatesAutoresizingMaskIntoConstraints = false
+         searchBar.translatesAutoresizingMaskIntoConstraints = false
+         collectionView.backgroundColor = .systemBackground
+         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+         view.addSubview(collectionView)
+         view.addSubview(searchBar)
+         
+         NSLayoutConstraint.activate([
+         searchBar.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+         searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+         searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
+         
+         collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 20),
+         collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
+         collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
+         ])
+         */
         
         // from Apple: Modern Collection Views
         view.backgroundColor = .systemBackground
@@ -101,7 +104,7 @@ extension SearchViewController {
         movieCollectionView = collectionView
         // end from Apple
         
-//        movieCollectionView.delegate = self
+        movieCollectionView.delegate = self
         searchBar.delegate = self
     }
     
@@ -148,61 +151,15 @@ extension SearchViewController {
         snapshot.appendItems(movies)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
-}    
-
-//MARK: - CollectionView Delegate Methods
-extension SearchViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
-            collectionView.deselectItem(at: indexPath, animated: true)
-            return
-        }
-        let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        detailViewController.movieResult = movie
-        tabBarController?.show(detailViewController, sender: self)
-    }
-}
-
-extension SearchViewController: UISearchBarDelegate {
     
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        guard let searchText = searchBar.text else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-           self.search(for: searchText)
-        }
-    }
     
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        guard let searchText = searchBar.text else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.search(for: searchText)
-        }
-        searchBar.resignFirstResponder()
-    }
-    
-//    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-//        guard let searchText = searchBar.text else { return }
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//            self.search(for: searchText)
-//        }
-//    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        print("search clicked")
-        self.movies = [MovieDataStore.MovieItem]()
-        self.error = nil
-        self.setupSnapshot()
-        self.searchBar.resignFirstResponder()
-    }
-    
-    func search(for searchText: String) {
+    //MARK: - Helper Methods
+    private func search(for searchText: String) {
         print("start search for \(searchText)")
-        self.movies = [MovieDataStore.MovieItem]()
-        self.error = nil
         guard !searchText.isEmpty else {
             return
         }
- //       self.group.enter()
+        zeroDataSource()
         movieAction.searchMovie(query: searchText) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -213,8 +170,59 @@ extension SearchViewController: UISearchBarDelegate {
                     self.error = error
                     print("no response, error: \(self.error.debugDescription)")
             }
-            self.movies.sort { $0.title < $1.title }
+            self.movies.sort { $0.voteCount > $1.voteCount }
             self.setupSnapshot()
         }
+    }
+    
+    private func zeroDataSource() {
+        var currentSnapshot = dataSource.snapshot()
+        currentSnapshot.deleteItems(movies)
+        dataSource.apply(currentSnapshot)
+        error = nil
+        
+    }
+}
+
+extension SearchViewController: UISearchBarDelegate {
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        guard let searchText = searchBar.text else { return }
+        if searchText == "" {
+            zeroDataSource()
+            return }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            self.search(for: searchText)
+        }
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        print("search clicked")
+        zeroDataSource()
+        searchBar.resignFirstResponder()
+    }
+}
+
+//MARK: - CollectionView Delegate Methods
+extension SearchViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        print("item tapped: \(indexPath.section)-\(indexPath.row)")
+        guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
+            collectionView.deselectItem(at: indexPath, animated: true)
+            return
+        }
+        print("movie selected: \(movie.title)")
+        let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
+        detailViewController.passedMovie = movie
+        print("Search view: \(movie.title) selected at \(indexPath.section)-\(indexPath.row)")
+        tabBarController?.show(detailViewController, sender: self)
     }
 }

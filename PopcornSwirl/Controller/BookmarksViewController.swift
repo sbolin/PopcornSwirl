@@ -140,7 +140,7 @@ extension BookmarksViewController: UICollectionViewDelegate {
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         print("BookmarksViewController to MovieDetailViewController view with: \(movie.title)")
-        detailViewController.movieResult = movie
+        detailViewController.passedMovie = movie
         tabBarController?.show(detailViewController, sender: self)
     }
 }

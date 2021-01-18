@@ -49,7 +49,11 @@ class MovieDataStore {
     struct MovieItem: Hashable, Identifiable {
         
         static func == (lhs: MovieItem, rhs: MovieItem) -> Bool {
-            lhs.uuid == rhs.uuid
+            lhs.uuid == rhs.uuid //uuid
+        }
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(uuid) // uuid
         }
         
         // Domain model used in App

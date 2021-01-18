@@ -132,15 +132,13 @@ extension BoughtViewController {
 ///
 //MARK: - CollectionView Delegate Methods
 extension BoughtViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        //        collectionView.deselectItem(at: indexPath, animated: true)
-        
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {        
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
             collectionView.deselectItem(at: indexPath, animated: true)
             return
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        detailViewController.movieResult = movie
+        detailViewController.passedMovie = movie
         tabBarController?.show(detailViewController, sender: self)
     }
 }
