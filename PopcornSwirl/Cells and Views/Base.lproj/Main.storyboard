@@ -6,7 +6,6 @@
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
-        <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -121,10 +120,10 @@
                                 <rect key="frame" x="0.0" y="44" width="390" height="766"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z1m-1o-4dH" userLabel="Container View">
-                                        <rect key="frame" x="0.0" y="0.0" width="390" height="747.33333333333337"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="390" height="717.33333333333337"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="2Ii-kK-vFf">
-                                                <rect key="frame" x="0.0" y="0.0" width="390" height="747.33333333333337"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="390" height="717.33333333333337"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="huh-Y4-RQT">
                                                         <rect key="frame" x="8" y="-0.33333333333334281" width="374" height="313.33333333333331"/>
@@ -364,33 +363,16 @@ Company</string>
                                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <collectionView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" bouncesZoom="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="oBr-pp-qUo">
-                                                        <rect key="frame" x="8" y="667.33333333333337" width="374" height="80"/>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aPa-Oc-Udx" customClass="ADBannerView">
+                                                        <rect key="frame" x="35" y="667.33333333333337" width="320" height="50"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="height" constant="80" id="gd4-fw-za3"/>
+                                                            <constraint firstAttribute="height" constant="50" id="1y2-fo-APr"/>
+                                                            <constraint firstAttribute="width" constant="320" id="4IC-gS-TEb"/>
                                                         </constraints>
-                                                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="10" minimumInteritemSpacing="10" id="jbq-mg-Hli">
-                                                            <size key="itemSize" width="128" height="128"/>
-                                                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
-                                                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
-                                                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                                        </collectionViewFlowLayout>
-                                                        <cells>
-                                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFit" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="adViewCell" id="qIg-8B-Dfo">
-                                                                <rect key="frame" x="0.0" y="4" width="72" height="72"/>
-                                                                <autoresizingMask key="autoresizingMask"/>
-                                                                <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="sJV-KO-AQg">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="72" height="72"/>
-                                                                    <autoresizingMask key="autoresizingMask"/>
-                                                                </collectionViewCellContentView>
-                                                                <size key="customSize" width="72" height="72"/>
-                                                            </collectionViewCell>
-                                                        </cells>
-                                                    </collectionView>
+                                                    </view>
                                                 </subviews>
                                                 <constraints>
-                                                    <constraint firstItem="oBr-pp-qUo" firstAttribute="trailing" secondItem="2Ii-kK-vFf" secondAttribute="trailing" constant="-8" id="1so-FP-SJs"/>
                                                     <constraint firstAttribute="trailing" secondItem="UpR-Mj-eLj" secondAttribute="trailing" constant="8" id="6H3-lU-X8V"/>
                                                     <constraint firstItem="Zl8-AO-9Ll" firstAttribute="leading" secondItem="2Ii-kK-vFf" secondAttribute="leading" constant="8" id="7yV-Jj-KBq"/>
                                                     <constraint firstItem="CRa-ag-uhP" firstAttribute="leading" secondItem="2Ii-kK-vFf" secondAttribute="leading" constant="8" id="86I-3U-Olt"/>
@@ -398,6 +380,7 @@ Company</string>
                                                     <constraint firstAttribute="trailing" secondItem="huh-Y4-RQT" secondAttribute="trailing" constant="8" id="9Pc-1w-j0e"/>
                                                     <constraint firstItem="lTC-CC-Cwg" firstAttribute="leading" secondItem="2Ii-kK-vFf" secondAttribute="leading" constant="8" id="G5V-4C-jSq"/>
                                                     <constraint firstAttribute="trailing" secondItem="bOZ-vW-ftG" secondAttribute="trailing" constant="8" id="IbC-YY-R4v"/>
+                                                    <constraint firstItem="aPa-Oc-Udx" firstAttribute="centerX" secondItem="2Ii-kK-vFf" secondAttribute="centerX" id="IsE-OR-blX"/>
                                                     <constraint firstAttribute="trailing" secondItem="Zl8-AO-9Ll" secondAttribute="trailing" constant="8" id="Peh-QO-WfA"/>
                                                     <constraint firstItem="WdW-4o-knV" firstAttribute="top" secondItem="bOZ-vW-ftG" secondAttribute="bottom" constant="8" id="R4a-ba-sPs"/>
                                                     <constraint firstItem="UpR-Mj-eLj" firstAttribute="top" secondItem="WdW-4o-knV" secondAttribute="bottom" constant="8" symbolic="YES" id="RuA-i0-xKu"/>
@@ -408,7 +391,6 @@ Company</string>
                                                     <constraint firstItem="UpR-Mj-eLj" firstAttribute="leading" secondItem="2Ii-kK-vFf" secondAttribute="leading" constant="8" id="fCB-gY-G42"/>
                                                     <constraint firstAttribute="trailing" secondItem="SUy-OF-dQi" secondAttribute="trailing" constant="8" id="kl0-uq-YfF"/>
                                                     <constraint firstAttribute="trailing" secondItem="lTC-CC-Cwg" secondAttribute="trailing" constant="8" id="n8a-9g-Iba"/>
-                                                    <constraint firstItem="oBr-pp-qUo" firstAttribute="leading" secondItem="2Ii-kK-vFf" secondAttribute="leading" constant="8" id="xPB-Ir-LE4"/>
                                                     <constraint firstItem="SUy-OF-dQi" firstAttribute="leading" secondItem="2Ii-kK-vFf" secondAttribute="leading" constant="8" id="xSg-ac-MjP"/>
                                                 </constraints>
                                             </stackView>
@@ -457,6 +439,7 @@ Company</string>
                         <outlet property="bookmarkButton" destination="1md-9X-Z7y" id="eLX-wB-bmK"/>
                         <outlet property="buyButton" destination="hIJ-ni-7dn" id="qnY-OF-jlL"/>
                         <outlet property="favoriteButton" destination="zAE-mr-T4f" id="lkI-Vr-h3s"/>
+                        <outlet property="gadBannerView" destination="aPa-Oc-Udx" id="6CS-gL-qPa"/>
                         <outlet property="heroImage" destination="huh-Y4-RQT" id="Y77-za-Ksu"/>
                         <outlet property="movieActor" destination="wQI-17-Mjj" id="gBU-px-26V"/>
                         <outlet property="movieAverageScore" destination="UXL-2E-U97" id="dUl-lo-lhh"/>
@@ -468,7 +451,6 @@ Company</string>
                         <outlet property="movieTitle" destination="8X6-3Q-UXr" id="wWI-KL-9bl"/>
                         <outlet property="movieVoteCount" destination="DBs-Np-ucl" id="Y4n-dA-BMC"/>
                         <outlet property="movieYear" destination="ugo-JY-ABz" id="jna-Gb-Ks4"/>
-                        <outlet property="relatedCollectionView" destination="oBr-pp-qUo" id="ME9-4M-UsG"/>
                         <outlet property="scrollView" destination="Lse-lE-T2s" id="DEK-2e-diy"/>
                         <outlet property="watchedButton" destination="6H4-0y-UyE" id="tpZ-wa-wH1"/>
                     </connections>

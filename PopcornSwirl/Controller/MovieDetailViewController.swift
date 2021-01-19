@@ -6,6 +6,9 @@
 //
 
 import UIKit
+import GoogleMobileAds
+import AppTrackingTransparency
+import AdSupport
 
 class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
@@ -32,8 +35,12 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var watchedButton: UIButton!
     @IBOutlet weak var buyButton: UIButton!
     
-    @IBOutlet weak var relatedCollectionView: UICollectionView!
     @IBOutlet weak var activity: UIActivityIndicatorView!
+    @IBOutlet weak var gadBannerView: GADBannerView!
+    
+    //MARK: Tracking AuthorizationStatus
+    var trackingAuthorizationStatus: ATTrackingManager.AuthorizationStatus!
+    
     
     //MARK: - Properties
     let group = DispatchGroup()
@@ -66,6 +73,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         movieNote.delegate = self
         title = passedMovie.title
         setup(movie: passedMovie)
+        setupGoogleAds()
     }
     
     // called from MovieCollectionViewController prior to segue
@@ -156,8 +164,32 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    //MARK: - Google Ads
+    func setupGoogleAds() {
+        gadBannerView.delegate = self
+        gadBannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        gadBannerView.rootViewController = self
+        
+        // if authorization false then ask, else go ahead and present ad
+        
+        ATTrackingManager.requestTrackingAuthorization { [weak self] (status) in
+            guard let self = self else { return }
+            switch status {
+                case .notDetermined:
+                    self.trackingAuthorizationStatus = .notDetermined
+                case .restricted:
+                    self.trackingAuthorizationStatus = .restricted
+                case .denied:
+                    self.trackingAuthorizationStatus = .denied
+                case .authorized:
+                    self.trackingAuthorizationStatus = .authorized
+                    self.gadBannerView.load(GADRequest())
+                @unknown default:
+                    self.trackingAuthorizationStatus = .notDetermined
+            }
+        }
+    }
     //MARK: - Actions
-    
     @IBAction func buyTapped(_ sender: UIButton) {
         buyButton.isSelected.toggle()
         if sender.isSelected {
@@ -274,5 +306,45 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         
     func adjustLayoutForKeyboard(targetHeight: CGFloat) {
         scrollView.contentInset.bottom = targetHeight
+    }
+}
+
+// MARK: - GADBannerViewDelegate
+extension MovieDetailViewController: GADBannerViewDelegate {
+    // Called when an ad request loaded an ad.
+    func adViewDidReceiveAd(_ bannerView: GADBannerView) {
+        print(#function)
+        
+        gadBannerView.alpha = 0
+        UIView.animate(withDuration: 1, animations: {
+            self.gadBannerView.alpha = 1
+        })
+    }
+    
+    // Called when an ad request failed.
+    func adView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: GADRequestError) {
+        print("\(#function): \(error.localizedDescription)")
+    }
+    
+    // Called just before presenting the user a full screen view, such as a browser, in response to
+    // clicking on an ad.
+    func adViewWillPresentScreen(_ bannerView: GADBannerView) {
+        print(#function)
+    }
+    
+    // Called just before dismissing a full screen view.
+    func adViewWillDismissScreen(_ bannerView: GADBannerView) {
+        print(#function)
+    }
+    
+    // Called just after dismissing a full screen view.
+    func adViewDidDismissScreen(_ bannerView: GADBannerView) {
+        print(#function)
+    }
+    
+    // Called just before the application will background or terminate because the user clicked on an
+    // ad that will launch another application (such as the App Store).
+    func adViewWillLeaveApplication(_ bannerView: GADBannerView) {
+        print(#function)
     }
 }
