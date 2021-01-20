@@ -36,7 +36,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var buyButton: UIButton!
     
     @IBOutlet weak var activity: UIActivityIndicatorView!
-    @IBOutlet weak var gadBannerView: GADBannerView!
+    @IBOutlet weak var bannerView: GADBannerView!
     
     //MARK: Tracking AuthorizationStatus
     var trackingAuthorizationStatus: ATTrackingManager.AuthorizationStatus!
@@ -73,6 +73,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         movieNote.delegate = self
         title = passedMovie.title
         setup(movie: passedMovie)
+        bannerView.delegate = self
         setupGoogleAds()
     }
     
@@ -166,9 +167,10 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: - Google Ads
     func setupGoogleAds() {
-        gadBannerView.delegate = self
-        gadBannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
-        gadBannerView.rootViewController = self
+
+        bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        //ca-app-pub-3940256099942544~1458002511
+        bannerView.rootViewController = self
         
         // if authorization false then ask, else go ahead and present ad
         
@@ -183,7 +185,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                     self.trackingAuthorizationStatus = .denied
                 case .authorized:
                     self.trackingAuthorizationStatus = .authorized
-                    self.gadBannerView.load(GADRequest())
+                    self.bannerView.load(GADRequest())
                 @unknown default:
                     self.trackingAuthorizationStatus = .notDetermined
             }
@@ -314,10 +316,9 @@ extension MovieDetailViewController: GADBannerViewDelegate {
     // Called when an ad request loaded an ad.
     func adViewDidReceiveAd(_ bannerView: GADBannerView) {
         print(#function)
-        
-        gadBannerView.alpha = 0
+        bannerView.alpha = 0
         UIView.animate(withDuration: 1, animations: {
-            self.gadBannerView.alpha = 1
+            self.bannerView.alpha = 1
         })
     }
     

@@ -363,7 +363,7 @@ Company</string>
                                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aPa-Oc-Udx" customClass="ADBannerView">
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aPa-Oc-Udx" customClass="GADBannerView">
                                                         <rect key="frame" x="35" y="667.33333333333337" width="320" height="50"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                         <constraints>
@@ -436,10 +436,10 @@ Company</string>
                     <navigationItem key="navigationItem" id="kHJ-BN-CSu"/>
                     <connections>
                         <outlet property="activity" destination="7gB-KO-C5o" id="eZ2-hq-IbC"/>
+                        <outlet property="bannerView" destination="aPa-Oc-Udx" id="6CS-gL-qPa"/>
                         <outlet property="bookmarkButton" destination="1md-9X-Z7y" id="eLX-wB-bmK"/>
                         <outlet property="buyButton" destination="hIJ-ni-7dn" id="qnY-OF-jlL"/>
                         <outlet property="favoriteButton" destination="zAE-mr-T4f" id="lkI-Vr-h3s"/>
-                        <outlet property="gadBannerView" destination="aPa-Oc-Udx" id="6CS-gL-qPa"/>
                         <outlet property="heroImage" destination="huh-Y4-RQT" id="Y77-za-Ksu"/>
                         <outlet property="movieActor" destination="wQI-17-Mjj" id="gBU-px-26V"/>
                         <outlet property="movieAverageScore" destination="UXL-2E-U97" id="dUl-lo-lhh"/>
