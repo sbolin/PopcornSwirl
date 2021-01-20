@@ -40,7 +40,6 @@ class CoreDataController {
     func favoriteTapped(_ movie: MovieDataStore.MovieItem, favoriteStatus: Bool) {
         let context = managedContext
         guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        print("favoriteTapped movie: \(movieEntity)")
         context.perform {
             movieEntity.favorite = favoriteStatus
             self.saveContext(object: movieEntity, context: context)
@@ -49,7 +48,6 @@ class CoreDataController {
     func watchedTapped(_ movie: MovieDataStore.MovieItem, watchedStatus: Bool) {
         let context = managedContext
         guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        print("watchTapped movie: \(movieEntity)")
         context.perform {
             movieEntity.watched = watchedStatus
             self.saveContext(object: movieEntity, context: context)
@@ -58,7 +56,6 @@ class CoreDataController {
     func bookmarkTapped(_ movie: MovieDataStore.MovieItem, bookmarkStatus: Bool) {
         let context = managedContext
         guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        print("bookmarkTapped movie: \(movieEntity)")
         context.perform {
             movieEntity.bookmarked = bookmarkStatus
             self.saveContext(object: movieEntity, context: context)
@@ -67,18 +64,14 @@ class CoreDataController {
     func buyTapped(_ movie: MovieDataStore.MovieItem, buyStatus: Bool) {
         let context = managedContext
         guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        print("buyTapped movie: \(movieEntity)")
         context.perform {
             movieEntity.bought = buyStatus
             self.saveContext(object: movieEntity, context: context)
         }
     }
     func updateNote(_ movie: MovieDataStore.MovieItem, noteText: String) {
-        print("CoreDataController passed in movie: \(movie)")
-        print("CoreDataController passed in note: \(noteText)")
         let context = managedContext
         guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        print("CoreDataController findMovieByID: \(movieEntity)")
         context.perform {
             movieEntity.note = noteText
             self.saveContext(object: movieEntity, context: context)
@@ -116,7 +109,6 @@ class CoreDataController {
         do {
             try context.save()
             context.refresh(object, mergeChanges: true)
-            print("Movie saved")
         } catch let error as NSError {
             print("Unresolved error \(error), \(error.localizedDescription)")
             context.rollback()
@@ -129,7 +121,6 @@ class CoreDataController {
         let movieIdPredicate = NSPredicate(format: "%K = %i", #keyPath(MovieEntity.movieId), Int32(id))
         request.predicate = movieIdPredicate
         do {
-            print("find movie \(id)")
             let movies = try context.fetch(request)
             for movie in movies {
                 if movie.movieId == id {
@@ -152,11 +143,9 @@ class CoreDataController {
         do {
             entitiesCount = try context.count(for: idRequest)
             let movies = try context.fetch(movieRequest)
-            print("entityExists movie count: \(movies.count)")
             for movie in movies {
                 if movie.movieId == id {
                     movieIdExists = true
-                    print("Movie \(id) exists")
                     break
                 }
             }

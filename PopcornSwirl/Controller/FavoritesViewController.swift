@@ -60,7 +60,6 @@ class FavoritesViewController: UIViewController {
                 guard let self = self else { return }
                 switch result {
                     case .success(let response):
-                        print("fetchMovie success")
                         self.movies.append(SingleMovieDTOMapper.map(response))
                     case .failure(let error):
                         self.error = error

@@ -202,7 +202,6 @@ class MovieActions {
             completion(.failure(.invalidEndpoint))
             return
         }
-        print("loadURLAndDecode finalURL: \(finalURL)")
         urlSession.dataTask(with: finalURL) { [weak self] (data, response, error) in
             guard let self = self else { return }
             if error != nil {
@@ -235,7 +234,7 @@ class MovieActions {
     /// - Parameters:
     ///   - result: pass in result to put on main thread
     ///   - completion: Result closure
-    /// - Returns: <#description#>
+    /// - Returns: closure
     private func executeCompletionHandlerInMainThread<D: Decodable>(with result: Result<D, MovieError>, completion: @escaping (Result<D, MovieError>) -> ()) {
         DispatchQueue.main.async {
             completion(result)

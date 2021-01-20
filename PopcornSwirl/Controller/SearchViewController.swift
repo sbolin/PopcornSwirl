@@ -158,7 +158,6 @@ extension SearchViewController {
     
     //MARK: - Helper Methods
     private func search(for searchText: String) {
-        print("start search for \(searchText)")
         guard !searchText.isEmpty else {
             return
         }
@@ -167,7 +166,6 @@ extension SearchViewController {
             guard let self = self else { return }
             switch result {
                 case .success(let response):
-                    print("search returned with a response")
                     self.movies.append(contentsOf: MoviesDTOMapper.map(response))
                 case .failure(let error):
                     self.error = error
@@ -208,7 +206,6 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        print("search clicked")
         zeroDataSource()
         searchBar.resignFirstResponder()
     }
@@ -217,15 +214,12 @@ extension SearchViewController: UISearchBarDelegate {
 //MARK: - CollectionView Delegate Methods
 extension SearchViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        print("item tapped: \(indexPath.section)-\(indexPath.row)")
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
             collectionView.deselectItem(at: indexPath, animated: true)
             return
         }
-        print("movie selected: \(movie.title)")
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.passedMovie = movie
-        print("Search view: \(movie.title) selected at \(indexPath.section)-\(indexPath.row)")
         tabBarController?.show(detailViewController, sender: self)
     }
 }

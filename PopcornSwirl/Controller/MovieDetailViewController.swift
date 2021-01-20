@@ -87,10 +87,10 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         activity.startAnimating()
         // check if movie has been created in core data, if not create entity with current movie title and it
         if CoreDataController.shared.entityExists(using: movie.id, in: CoreDataController.shared.managedContext) {
-            print("Movie exists in Core Data")
+            // Movie exists in Core Data
             movieEntity = CoreDataController.shared.findMovieByID(using: movie.id, in: CoreDataController.shared.managedContext)! // note force unwrapping!
         } else {
-            print("Movie not in Core Data")
+            // Movie does not exist in Core Data
             movieEntity = CoreDataController.shared.newMovie(name: movie.title, id: movie.id)
         }
         
@@ -98,13 +98,11 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             guard let self = self else { return }
             switch result {
                 case .success(let response):
-                    print("fetchMovie success")
                     self.movieResult = SingleMovieDTOMapper.map(response)
                     self.movieResult.bookmarked = self.movieEntity.bookmarked
                     self.movieResult.favorite = self.movieEntity.favorite
                     self.movieResult.watched = self.movieEntity.watched
                     self.movieResult.bought = self.movieEntity.bought
-                    print("fetchMovie success, note: \(self.movieEntity.note)")
                     self.movieResult.note = self.movieEntity.note
                 case .failure(let error):
                     self.error = error
@@ -138,7 +136,6 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                 self.movieTitle.text = movieTitle + " (" + genreTitle + ")"
                 self.movieYear.text = Utils.yearFormatter.string(from: movieResult.releaseDate)
                 self.movieOverview.text = movieResult.overview
-                print("Updating UI, fetched note: \(movieResult.note)")
                 self.movieNote.text = movieResult.note
                 
                 // from API result
@@ -244,7 +241,6 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     //Handle text field (note)
     @IBAction func notesEditingEnded(_ sender: UITextField) {
-        print("notesEditingEnded")
         processInput()
     }
     @IBAction func tappedOut(_ sender: UITapGestureRecognizer) {
@@ -253,16 +249,12 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
 //MARK: - Process note text
     func processInput() {
-        print("processInput")
         guard let note = movieNote.text else {
             return
         }
-        print("Process Input note: \(note)")
         let isValidated = validation.validatedText(newText: note, oldText: oldNote)
-        print("isValidated? \(isValidated)")
         if isValidated {
             guard let movie = movieResult else { return }
-            print("About to call core data to save note for movie \(movie.title): \(note)")
             CoreDataController.shared.updateNote(movie, noteText: note)
         } else {
             movieNote.text = oldNote
@@ -271,14 +263,12 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
-        print("textFieldDidBeginEditing")
         if let text = textField.text {
             oldNote = text
         }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool { // return key tapped
-        print("textFieldShouldReturn")
         if textField.text?.count == 0 {
             return false
         }
