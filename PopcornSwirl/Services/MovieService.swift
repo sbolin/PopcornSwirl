@@ -7,6 +7,9 @@
 
 import UIKit
 
+/// Services for tMDB.
+
+// create enum of built-in endpoints on tMDB. Note that on nowPlaying is actually used.
 enum MovieListEndpoint: String, CaseIterable, Identifiable {
     
     var id: String { rawValue }
@@ -26,6 +29,7 @@ enum MovieListEndpoint: String, CaseIterable, Identifiable {
     }
 }
 
+// error when looking up movies, create human readable errors
 enum MovieError: Error, CustomNSError {
     
     case apiError

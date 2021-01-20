@@ -8,6 +8,7 @@
 import CoreData
 import UIKit
 
+/// Main collection view showing movies according to genres
 class MovieCollectionViewController: UIViewController {
     
     // MARK: - Properties
@@ -24,7 +25,6 @@ class MovieCollectionViewController: UIViewController {
     var movieCollections: [MovieDataStore.MovieCollection]?
     
     static let sectionHeaderElementKind = "section-header-element-kind"
-//    static let sectionBackgroundDecorationElementKind = "section-background-element-kind"
 
     
     override func viewWillAppear(_ animated: Bool) {
@@ -54,7 +54,7 @@ extension MovieCollectionViewController {
         view.addSubview(collectionView)
         collectionView.delegate = self
     }
-    
+    // create UICollectionViewCompositionalLayout for collectionView
     private func createLayout() -> UICollectionViewLayout {
         let config = UICollectionViewCompositionalLayoutConfiguration()
         config.interSectionSpacing = 8
@@ -75,12 +75,6 @@ extension MovieCollectionViewController {
             section.orthogonalScrollingBehavior = .groupPagingCentered // originally .continuous
             section.interGroupSpacing = 12
             
-// set up background decoration
-//            let sectionBackgroundDecoration = NSCollectionLayoutDecorationItem.background(
-//                elementKind: MovieCollectionViewController.sectionBackgroundDecorationElementKind)
-//            sectionBackgroundDecoration.contentInsets = NSDirectionalEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
-//            section.decorationItems = [sectionBackgroundDecoration]
-            
 // set up header
             let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
             let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
@@ -92,7 +86,6 @@ extension MovieCollectionViewController {
         }
         
         let layout = UICollectionViewCompositionalLayout(sectionProvider: sectionProvider, configuration: config)
-//        layout.register(MovieCollectionViewController.self, forDecorationViewOfKind: MovieCollectionViewController.sectionBackgroundDecorationElementKind)
         return layout
     }
 }
@@ -111,7 +104,6 @@ extension MovieCollectionViewController {
         dataSource.supplementaryViewProvider = { (view, kind, index) in
             return self.collectionView.dequeueConfiguredReusableSupplementary(using: self.configureHeader(), for: index)
         }
-        //       setupSnapshot()
     }
     
     //MARK: Configure Collectionview Movie Cell
@@ -164,7 +156,7 @@ extension MovieCollectionViewController {
     } // applyInitialSnapshots
 }
 
-//MARK: - UICollectionViewDelegate
+//MARK: - UICollectionViewDelegate Methods
 extension MovieCollectionViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard self.dataSource.itemIdentifier(for: indexPath) != nil else {

@@ -7,6 +7,9 @@
 
 import Foundation
 
+/// SingleMovieResponse is the datamodel for the JSON data received from the tMDB API for a single movie (based on MovieID)
+/// note: no collection, just movie data
+
 struct SingleMovieResponse: Decodable, Identifiable, Hashable {
     // Results when fetching by endpoint or genre
     static func == (lhs: SingleMovieResponse, rhs: SingleMovieResponse) -> Bool {

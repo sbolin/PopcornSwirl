@@ -12,6 +12,7 @@ private enum Section {
     case main
 }
 
+/// Favorites View, showing movies that the user has marked as being a favorite
 class FavoritesViewController: UIViewController {
     
     // MARK: - Properties

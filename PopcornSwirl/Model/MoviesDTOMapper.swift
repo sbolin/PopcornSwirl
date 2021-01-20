@@ -7,8 +7,12 @@
 
 import Foundation
 
+/// Mapper Function for creating a collection of movies
 struct MoviesDTOMapper { // data transfer object
-    static func map(_ dto: MovieResponse) -> [MovieDataStore.MovieItem] {  // call when change to MovieController
+    /// Data Mapping Function which maps JSON data (MovieReponse) into MovieDataStore Movie item
+    /// - Parameter dto: pass in the movie response from API call (JSON dat)
+    /// - Returns: Array of MovieDataStore Movie Items, which form a MovieDataStore MovieCollection
+    static func map(_ dto: MovieResponse) -> [MovieDataStore.MovieItem] {
         var movieData = [MovieDataStore.MovieItem]()
         for movie in dto.results {
             let movieItem = MovieDataStore.MovieItem(

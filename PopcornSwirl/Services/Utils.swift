@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Utility calculated properties used throughout
 class Utils {
     
     static let jsonDecoder: JSONDecoder = {

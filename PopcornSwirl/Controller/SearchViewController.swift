@@ -11,6 +11,8 @@ private enum Section {
     case main
 }
 
+/// Search view, for finding movies on the tMDB based on keyword search. Results show in collection view list similar to Bookmark, Watched, etc.
+//TODO: SearchViewController is large, and should be split (at least) into extension or (better) separate out data search methods to MovieAction
 class SearchViewController: UIViewController {
     
     // MARK: - Properties
@@ -58,6 +60,7 @@ class SearchViewController: UIViewController {
 //MARK: Configure Collection View
 extension SearchViewController {
     private func configureCollectionView() {
+        // keep below for reference - still not sure why it didn't work properly
         /*
          view.backgroundColor = .systemBackground
          collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())

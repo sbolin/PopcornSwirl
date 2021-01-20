@@ -12,6 +12,7 @@ private enum Section {
     case main
 }
 
+/// Bought View, showing movies that the user has marked as having bought (sort of a user library)
 class BoughtViewController: UIViewController {
     
 // MARK: - Properties

@@ -7,7 +7,10 @@
 
 import UIKit
 
+
+/// Main movie data store, consists of MovieCollection and MovieItem. MovieCollection holds MovieItem objects for given Genre
 class MovieDataStore {
+    /// overarching collection type
     struct MovieCollection: Hashable, Identifiable {
         let id = UUID()
         let genreID: Int
@@ -46,6 +49,7 @@ class MovieDataStore {
         }
     }
     
+    /// Struct holding individual movie data. [MovieItem] makes up a MovieCollection
     struct MovieItem: Hashable, Identifiable {
         
         static func == (lhs: MovieItem, rhs: MovieItem) -> Bool {
@@ -57,7 +61,7 @@ class MovieDataStore {
         }
         
         // Domain model used in App
-        var uuid = UUID()
+        var uuid = UUID() // use this so that DiffableDataSource will display same movie more than once (when a movie is part of more than one genre)
         var id: Int
         var title: String
         var overview: String

@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// Setup tMDB API properties and movie fetch methods
 class MovieActions {
     
     static let shared = MovieActions()

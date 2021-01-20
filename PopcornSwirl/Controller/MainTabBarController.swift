@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// Controlls the tab bar UI - specifically, adding in the dark gray background color when tab is selected
 class MainTabBarController: UITabBarController {
     
     //MARK: - Properties

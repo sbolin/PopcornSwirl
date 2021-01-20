@@ -10,6 +10,8 @@ import GoogleMobileAds
 import AppTrackingTransparency
 import AdSupport
 
+/// Movie Detail View, note dependency on GoogleMobileAds
+/// AppTrackingTransparency is required for new apps
 class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: - Outlets
@@ -36,6 +38,8 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var buyButton: UIButton!
     
     @IBOutlet weak var activity: UIActivityIndicatorView!
+    
+    //bannerView for Google Ad
     @IBOutlet weak var bannerView: GADBannerView!
     
     //MARK: Tracking AuthorizationStatus

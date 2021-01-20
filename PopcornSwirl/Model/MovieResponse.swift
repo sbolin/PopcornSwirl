@@ -7,10 +7,13 @@
 
 import Foundation
 
+/// MovieResponse is the datamodel for the JSON data received from the tMDB API
+/// Note that results are provided in pages, but for this app only the first page of results is used
 struct MovieResponse: Decodable {
     let results: [Movie]
 }
 
+/// Movie Data response from API
 struct Movie: Decodable, Identifiable, Hashable { //
     // Results when fetching by endpoint or genre
     static func == (lhs: Movie, rhs: Movie) -> Bool {

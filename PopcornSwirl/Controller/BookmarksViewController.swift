@@ -12,6 +12,7 @@ private enum Section {
     case main
 }
 
+/// Bookmarks View, showing movies that the user has bookmarked for later viewing
 class BookmarksViewController: UIViewController {
     
     // MARK: - Properties
@@ -77,8 +78,6 @@ class BookmarksViewController: UIViewController {
 extension BookmarksViewController {
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
         view.addSubview(collectionView)

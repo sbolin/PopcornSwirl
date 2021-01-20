@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// Main CollectionVeiw Movie Cell
 class MovieCell: UICollectionViewCell {
     
     static let reuseIdentifier = "movie-cell-reuse-identifier"
@@ -26,6 +27,7 @@ class MovieCell: UICollectionViewCell {
 }
 
 extension MovieCell {
+    // configure the cell
     func configure() {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -65,6 +67,7 @@ extension MovieCell {
         
         let spacing = CGFloat(6)
         
+        // configure cell constraints
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
             imageView.heightAnchor.constraint(equalTo: contentView.heightAnchor, constant: -40),

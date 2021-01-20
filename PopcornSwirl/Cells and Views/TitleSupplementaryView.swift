@@ -7,6 +7,7 @@
 
 import UIKit
 
+/// Suppliementary view used as Section Identifier in Main MovieCollectionView
 class TitleSupplementaryView: UICollectionReusableView {
     let label = UILabel()
     static let reuseIdentifier = "title-supplementary-reuse-identifier"

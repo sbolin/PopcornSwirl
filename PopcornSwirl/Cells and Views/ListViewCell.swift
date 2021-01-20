@@ -7,9 +7,9 @@
 
 import UIKit
 
+/// ListView Cell used in BookmarkView, WatchedView, FavoritesView, and BoughtView Controllers
 class ListViewCell: UICollectionViewListCell {
         
-//    static let reuseIdentifier = "list-cell-reuse-identifier"
     let imageView = UIImageView()
     let titleLabel = UILabel()
     let descriptionLabel = UILabel()
@@ -25,6 +25,7 @@ class ListViewCell: UICollectionViewListCell {
     }
 }
 
+// configure cell
 extension ListViewCell {
     func configure() {
         
@@ -56,7 +57,6 @@ extension ListViewCell {
         imageView.layer.borderColor = UIColor.systemGray5.cgColor
         imageView.layer.borderWidth = 0
         imageView.layer.cornerRadius = 4
-//        imageView.backgroundColor = UIColor.systemIndigo.withAlphaComponent(0.5)
         imageView.image = UIImage(systemName: "film")
         imageView.contentMode = .scaleAspectFit
         
@@ -64,16 +64,15 @@ extension ListViewCell {
         activityIndicator.style = .medium
         activityIndicator.color = .white
         
-//      let topImageAnchor = imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
         let topImageAnchor = imageView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor)
+        // must decrease centerAnchorImage priority to avoid constraint errors.
         let centerImageAnchor = imageView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         centerImageAnchor.priority = UILayoutPriority(999)
         let leadingImageAnchor = imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 4)
         let widthImageAnchor = imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.4)
         let heightImageAnchor = imageView.heightAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.25)
-//      let bottomImageAnchor = imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 
-        
+        // cell constraints
         NSLayoutConstraint.activate([
             topImageAnchor,
             centerImageAnchor,
@@ -84,18 +83,14 @@ extension ListViewCell {
             titleLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 4),
-//            titleLabel.heightAnchor.constraint(equalToConstant: 30),
             
             yearLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
             yearLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             yearLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 0),
-//            yearLabel.heightAnchor.constraint(equalToConstant: 15),
             
             descriptionLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
             descriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             descriptionLabel.topAnchor.constraint(equalTo: yearLabel.bottomAnchor, constant: 0),
-//            descriptionLabel.heightAnchor.constraint(equalToConstant: 30),
-//            descriptionLabel.bottomAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 0),
             
             activityIndicator.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
             activityIndicator.heightAnchor.constraint(equalTo: imageView.heightAnchor, multiplier: 0.75)

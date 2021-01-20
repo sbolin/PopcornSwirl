@@ -7,7 +7,11 @@
 
 import Foundation
 
+/// Mapper Function for creating a single movie item
 struct SingleMovieDTOMapper { // data transfer object
+    /// Data Mapping Function which maps JSON data (SingleMovieReponse) into MovieDataStore Movie item
+    /// - Parameter dto: pass in the movie response from API call (JSON dat)
+    /// - Returns: Single MovieDataStore Movie Item
     static func map(_ dto: SingleMovieResponse) -> MovieDataStore.MovieItem {
         var movieGenres: [String] = []
         var movieCast: [String] = []
