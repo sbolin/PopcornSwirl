@@ -156,4 +156,15 @@ class CoreDataController {
         return (entitiesCount > 0 && movieIdExists)
     }
     
+    //MARK: Method to fetch requested movies and return []
+    
+    func getMovieIDs(request: NSFetchRequest<MovieEntity>) -> [Int32] {
+        var id = [Int32]()
+        let fetchedMovies = try! managedContext.fetch(request)
+        for movie in fetchedMovies {
+            id.append(movie.movieId)
+        }
+        return id
+    }
 }
+

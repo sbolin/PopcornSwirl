@@ -19,6 +19,9 @@
 		157FD14425A86BDE000D5739 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157FD14325A86BDE000D5739 /* SearchViewController.swift */; };
 		157FD14825A87CC6000D5739 /* BoughtViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157FD14725A87CC6000D5739 /* BoughtViewController.swift */; };
 		1585D78E254367C8006A9433 /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1585D78D254367C8006A9433 /* CoreDataController.swift */; };
+		15A2FB6025BB43670089D5B1 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A2FB5F25BB43670089D5B1 /* ListViewController.swift */; };
+		15A2FB6925BBE4540089D5B1 /* ListViewDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A2FB6825BBE4540089D5B1 /* ListViewDataController.swift */; };
+		15A2FB6C25BBEEBF0089D5B1 /* ListViewCollectionViewConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A2FB6B25BBEEBF0089D5B1 /* ListViewCollectionViewConstructor.swift */; };
 		15A4B5FF25493B0000534EFE /* ToDo.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 15A4B5FE25493B0000534EFE /* ToDo.rtf */; };
 		15A4B608254944C900534EFE /* MovieCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B607254944C900534EFE /* MovieCell.swift */; };
 		15A4B60B2549455800534EFE /* TitleSupplementaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4B60A2549455800534EFE /* TitleSupplementaryView.swift */; };
@@ -53,6 +56,9 @@
 		157FD14325A86BDE000D5739 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		157FD14725A87CC6000D5739 /* BoughtViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoughtViewController.swift; sourceTree = "<group>"; };
 		1585D78D254367C8006A9433 /* CoreDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataController.swift; sourceTree = "<group>"; };
+		15A2FB5F25BB43670089D5B1 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
+		15A2FB6825BBE4540089D5B1 /* ListViewDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewDataController.swift; sourceTree = "<group>"; };
+		15A2FB6B25BBEEBF0089D5B1 /* ListViewCollectionViewConstructor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewCollectionViewConstructor.swift; sourceTree = "<group>"; };
 		15A4B5FE25493B0000534EFE /* ToDo.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = ToDo.rtf; sourceTree = "<group>"; };
 		15A4B607254944C900534EFE /* MovieCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCell.swift; sourceTree = "<group>"; };
 		15A4B60A2549455800534EFE /* TitleSupplementaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleSupplementaryView.swift; sourceTree = "<group>"; };
@@ -126,6 +132,9 @@
 				157FD14725A87CC6000D5739 /* BoughtViewController.swift */,
 				157FD14325A86BDE000D5739 /* SearchViewController.swift */,
 				15C2987C2556640D0064B074 /* MainTabBarController.swift */,
+				15A2FB5F25BB43670089D5B1 /* ListViewController.swift */,
+				15A2FB6825BBE4540089D5B1 /* ListViewDataController.swift */,
+				15A2FB6B25BBEEBF0089D5B1 /* ListViewCollectionViewConstructor.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -200,7 +209,6 @@
 				75AEFE046448A0E5B9AB384C /* Pods-PopcornSwirl.debug.xcconfig */,
 				5B18B907252F30A56A8AEABB /* Pods-PopcornSwirl.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -306,12 +314,15 @@
 				15CF92A82543409C00CCBBF9 /* MovieModel.xcdatamodeld in Sources */,
 				1585D78E254367C8006A9433 /* CoreDataController.swift in Sources */,
 				15A4B608254944C900534EFE /* MovieCell.swift in Sources */,
+				15A2FB6025BB43670089D5B1 /* ListViewController.swift in Sources */,
+				15A2FB6C25BBEEBF0089D5B1 /* ListViewCollectionViewConstructor.swift in Sources */,
 				157FD14825A87CC6000D5739 /* BoughtViewController.swift in Sources */,
 				151B9F99258C5B58001DE93C /* MovieService.swift in Sources */,
 				15E7EA012540987D00D459FA /* MovieCollectionViewController.swift in Sources */,
 				155A08D0259D0867006054F6 /* SingleMovieDTOMapper.swift in Sources */,
 				15C29887255668550064B074 /* FavoritesViewController.swift in Sources */,
 				151B9F96258B945C001DE93C /* Utils.swift in Sources */,
+				15A2FB6925BBE4540089D5B1 /* ListViewDataController.swift in Sources */,
 				15E7EA12254098A700D459FA /* MovieResponse.swift in Sources */,
 				157FD14425A86BDE000D5739 /* SearchViewController.swift in Sources */,
 				150DD150255ED9D90068A1B8 /* ListViewCell.swift in Sources */,

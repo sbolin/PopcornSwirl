@@ -1,19 +1,20 @@
 //
-//  BookmarksViewController.swift
+//  ListViewController.swift
 //  PopcornSwirl
 //
-//  Created by Scott Bolin on 11/7/20.
+//  Created by Scott Bolin on 1/23/21.
 //
 
 import UIKit
 import CoreData
+
 
 private enum Section {
     case main
 }
 
 /// Bookmarks View, showing movies that the user has bookmarked for later viewing
-class BookmarksViewController: UIViewController {
+class ListViewController: UIViewController {
     
     // MARK: - Properties
     private var collectionView: UICollectionView! = nil
@@ -23,7 +24,7 @@ class BookmarksViewController: UIViewController {
     let coreDataController = CoreDataController()
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-    let request = MovieEntity.bookmarkedMovies
+    var request: NSFetchRequest<MovieEntity>
     var fetchedMovies = [MovieEntity]()
     var error: MovieError?
     
@@ -31,17 +32,27 @@ class BookmarksViewController: UIViewController {
     let group = DispatchGroup()
     let queue = DispatchQueue.global()
     
+    init(request: NSFetchRequest<MovieEntity>) {
+        self.request = request
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+        //        super.init(coder: aDecoder)
+    }
+    
+    
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if movies.isEmpty {
-            loadBookmarkedMovies()
+            loadSelectedMovies()
         }
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Bookmarked"
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
                 self.configureCollectionView()
@@ -51,7 +62,7 @@ class BookmarksViewController: UIViewController {
     }
     
     //MARK: - Fetch bookmarked movies from core data then download from tmdb API
-    func loadBookmarkedMovies() {
+    func loadSelectedMovies() {
         fetchedMovies = try! coreDataController.managedContext.fetch(request)
         for movie in fetchedMovies {
             self.group.enter()
@@ -74,7 +85,7 @@ class BookmarksViewController: UIViewController {
 
 //MARK: - Extensions
 //MARK: Configure Collection View
-extension BookmarksViewController {
+extension ListViewController {
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
         collectionView.backgroundColor = .systemBackground
@@ -130,7 +141,7 @@ extension BookmarksViewController {
 }
 
 //MARK: - CollectionView Delegate Methods
-extension BookmarksViewController: UICollectionViewDelegate {
+extension ListViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else {
             collectionView.deselectItem(at: indexPath, animated: true)

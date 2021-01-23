@@ -50,7 +50,7 @@
         <!--Bookmarked-->
         <scene sceneID="Q64-hq-Kzw">
             <objects>
-                <viewController title="Bookmarked" id="jMg-Fn-P89" customClass="BookmarksViewController" customModule="PopcornSwirl" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="bookmarked" title="Bookmarked" id="jMg-Fn-P89" customClass="BookmarksViewController" customModule="PopcornSwirl" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="fOf-yw-34G"/>
                         <viewControllerLayoutGuide type="bottom" id="MYA-YT-3bK"/>
