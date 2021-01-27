@@ -77,7 +77,6 @@ class FavoritesViewController: UIViewController {
 extension FavoritesViewController {
     private func configureCollectionView() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
-        //       collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
         view.addSubview(collectionView)
@@ -99,16 +98,24 @@ extension FavoritesViewController {
             cell.activityIndicator.startAnimating()
             // load image
             let backdropURL = movie.backdropURL
-            MovieActions.shared.fetchImage(imageURL: backdropURL) { (success, image) in
-                if success, let image = image {
-                    DispatchQueue.main.async {
-                        cell.imageView.image = image
-                        cell.activityIndicator.stopAnimating()
-                    } // Dispatch
-                } // success
+            MovieActions.shared.fetchImage(at: backdropURL) { result in
+                switch result {
+                    case .success(let image):
+                        DispatchQueue.main.async {
+                            cell.imageView.image = image
+                            cell.activityIndicator.stopAnimating()
+                        } // Dispatch
+                    case .failure(.networkFailure(_)):
+                        print("Internet connection error")
+                        
+                    case .failure(.invalidData):
+                        print("Could not parse image data")
+                    case .failure(.invalidResponse):
+                        print("Response from API was invalid")
+                } // Switch
             } // fetchImage
-        } // cellRegistration
-    }
+        } // cell registration
+    } // configureListCell
     
     //MARK: - Configure DataSource
     private func configureDataSource() {

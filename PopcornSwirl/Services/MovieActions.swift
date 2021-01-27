@@ -29,23 +29,70 @@ class MovieActions {
     let group = DispatchGroup()
     let queue = DispatchQueue.global()
     
-    // fetch movies at given endpoint
-    func fetchMovies(from endpoint: MovieListEndpoint, completion: @escaping (Result<MovieResponse, MovieError>) -> ()) {
-        guard let url = URL(string: "\(baseURL)/movie/\(endpoint.rawValue)") else {
+    typealias ImageHandler = (Result<UIImage, ImageLoadingError>) -> ()
+    typealias LoadMovieHandler = (Result<[MovieDataStore.MovieCollection], MovieError>) -> ()
+    typealias FetchMovieHandler = (Result<MovieResponse, MovieError>) -> ()
+    typealias FetchSingleMovieHandler = (Result<SingleMovieResponse, MovieError>) -> ()
+    
+    //MARK: Initial movie loader
+    // load movie data from tmdb API to Core Data
+    /// Initial Movie fetch
+    /// - Parameter completion: completion handler
+    /// - Returns: [MovieCollection]
+    func loadMovieData(completion: @escaping LoadMovieHandler) {
+        var loadedData = false
+        
+        // option fetch by genre
+        for genre in MovieDataStore.MovieCollection.Genres.allCases {
+            self.group.enter()
+            fetchMoviesByGenre(from: genre.rawValue) { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                    case .success(let response):
+                        loadedData = true
+                        self.movieList = MoviesDTOMapper.map(response)
+                        let collectionItem = MovieDataStore.MovieCollection(genreID: genre.rawValue, movies: self.movieList)
+                        self.localCollection.append(collectionItem)
+                    case .failure(let error):
+                        print("Error loading \(genre): \(error.localizedDescription)")
+                        loadedData = false
+                }
+                self.group.leave()
+            }
+        }
+        group.notify(queue: queue) { [self] in
+            DispatchQueue.main.async { [self] in
+                if loadedData {
+                    completion(.success(localCollection))
+                } else {
+                    completion(.failure(.apiError))
+                }
+            }
+        }
+    }
+    
+    
+    // MARK: Fetch moves at endpoint
+    /// Fetch movies at a given endpoint
+    /// - Parameters:
+    ///   - endpoint: MovieListEndpoint, such as nowPlaying, upcoming, topRated, popular
+    ///   - completion: Result closure with response or error returned
+    /// - Returns: Movie data for movies at endpoint (returns data for multiple movies)
+    func fetchMovies(from endpoint: MovieListEndpoint, completion: @escaping FetchMovieHandler) {
+        guard let movieURL = URL(string: "\(baseURL)/movie/\(endpoint.rawValue)") else {
             completion(.failure(.invalidEndpoint))
             return
         }
-        self.loadURLAndDecode(url: url, completion: completion)
+        fetchResources(url: movieURL, completion: completion)
     }
-    // MARK: - Movie fetch Methods
     
-    // MARK:  Fetch Movies by genre
+    // MARK: Fetch Movies by genre
     /// Fetch Movies by Genre
     /// - Parameters:
     ///   - genre: movie genre type, per TMDB API spec
-    ///   - completion: Result closure
+    ///   - completion: Result closure with response or error returned
     /// - Returns: Movie data for movies in genre
-    func fetchMoviesByGenre(from genre: Int, completion: @escaping (Result<MovieResponse, MovieError>) -> ()) {
+    func fetchMoviesByGenre(from genre: Int, completion: @escaping FetchMovieHandler) {
         var url = baseURL.appendingPathComponent("discover").appendingPathComponent("movie")
         
         var params = [
@@ -70,174 +117,129 @@ class MovieActions {
             url = baseURL.appendingPathComponent("movie").appendingPathComponent("popular")
             params = [:]
         }
-        self.loadURLAndDecode(url: url, params: params, completion: completion)
+        let finalURL = makeURL(url: url, params: params)
+        fetchResources(url: finalURL, completion: completion)
     }
     
-    //MARK: Fetch Movie by id
+    // MARK: Fetch Movie by id
     /// Fetch individual movie for detail view
     /// - Parameters:
     ///   - id: Movie id parameter (Int)
+    ///   - finalURL: URL to submit to API to fetch movie
     ///   - completion: Result closure
-    /// - Returns: Movie data for movie id
-    func fetchMovie(id: Int, completion: @escaping (Result<SingleMovieResponse, MovieError>) -> ()) {
+    /// - Returns: Movie data for movie id (returns data for a single movie)
+    func fetchMovie(id: Int, completion: @escaping FetchSingleMovieHandler) {
         guard let url = URL(string: "\(baseURL)/movie/\(id)") else {
             completion(.failure(.invalidEndpoint))
             return
         }
-        self.loadURLAndDecode(url: url, params: [
-            "append_to_response" : "videos,credits"
-        ],
-        completion: completion)
+        let params = ["append_to_response" : "videos,credits"]
+        let finalURL = makeURL(url: url, params: params)
+        fetchResources(url: finalURL, completion: completion)
     }
     
-    //MARK:  Search for movie using keyword
+    // MARK:  Search for movie using keyword
     /// Search for movie by keyword
     /// - Parameters:
     ///   - query: search keyword (String)
     ///   - completion: Result closure
     /// - Returns: Movies containing keyword
-    func searchMovie(query: String, completion: @escaping (Result<MovieResponse, MovieError>) -> ()) {
+    func searchMovie(query: String, completion: @escaping FetchMovieHandler) {
         guard let url = URL(string: "\(baseURL)/search/movie") else {
             completion(.failure(.invalidEndpoint))
             return
         }
-        self.loadURLAndDecode(url: url, params: [
-            "original_language": "en",
-            "language" : "en-US",
-            "include_adult" : "false",
-            "region" : "US",
-            "query" : query
-        ],
-        completion: completion)
+        let params = ["original_language": "en", "language" : "en-US", "include_adult" : "false", "region" : "US", "query" : query]
+        let finalURL = makeURL(url: url, params: params)
+        fetchResources(url: finalURL, completion: completion)
     }
     
-    //MARK: Fetch/cache movie Image
+    // MARK: Fetch/cache movie Image
     /// Fetch movie poster image
     /// - Parameters:
     ///   - imageURL: URL for image (URL included in movie fetch result)
     ///   - completion: Result closure containing image data
     /// - Returns: UIImage, stores image in cache with URL as key
-    func fetchImage(imageURL: URL, completion: @escaping (Bool, UIImage?) -> ()) {
+    func fetchImage(at imageURL: URL, completion: @escaping ImageHandler) {
         let imageKey = "\(imageURL)" as NSString
         if let imageCache = imageCache.object(forKey: imageKey) {
-            completion(true, imageCache)
+            completion(.success(imageCache))
         } else {
-            urlSession.dataTask(with: imageURL) { (data, response, error) in
-                if let data = data, error == nil,
-                   let response = response as? HTTPURLResponse,
-                   response.statusCode == 200 {
-                    guard let image = UIImage(data: data) else {
-                        completion(false, nil)
-                        return
-                    }
-                    DispatchQueue.main.async {
-                        self.imageCache.setObject(image, forKey: imageKey)
-                        completion(true, image)
-                    }
-                }
-                else {
-                    completion(false, nil)
+            urlSession.dataTask(with: imageURL) { result in
+                switch result {
+                    case .success(let (response, data)):
+                        guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
+                            completion(.failure(.invalidResponse))
+                            return
+                        }
+                        DispatchQueue.global(qos: .userInitiated).async {
+                            guard let image = UIImage(data: data) else {
+                                completion(.failure(.invalidData))
+                                return
+                            }
+                            self.imageCache.setObject(image, forKey: imageKey)
+                            completion(.success(image))
+                        }
+                    case .failure(let error):
+                        print("error: \(error.localizedDescription)")
+                        completion(.failure(.networkFailure(error)))
                 }
             }.resume()
         }
     }
     
-    //MARK: Initial movie loader
-    // load movie data from tmdb API to Core Data
-    /// Initial Movie fetch
-    /// - Parameter completion: completion handler
-    /// - Returns: [MovieCollection]
-    func loadMovieData(completion: @escaping ([MovieDataStore.MovieCollection]?) -> ()) {
-        var loadedData = false
-        
-        // option fetch by genre
-        for genre in MovieDataStore.MovieCollection.Genres.allCases {
-            self.group.enter()
-            fetchMoviesByGenre(from: genre.rawValue) { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                    case .success(let response):
-                        loadedData = true
-                        self.movieList = MoviesDTOMapper.map(response)
-                        let collectionItem = MovieDataStore.MovieCollection(genreID: genre.rawValue, movies: self.movieList)
-                        self.localCollection.append(collectionItem)
-                    case .failure(let error):
-                        print("Error loading \(genre): \(error.localizedDescription)")
-                        loadedData = false
-                }
-                self.group.leave()
-            }
-        }
-        group.notify(queue: queue) { [self] in
-            DispatchQueue.main.async { [self] in
-                if loadedData {
-                    completion(localCollection)
-                } else {
-                    completion(nil)
-                }
-            }
-        }
-    }
-    
-    //MARK: Generic helper load and decode data
-    /// Generic Helper method to fetch data from endpoint
-    /// - Parameters:
-    ///   - url: URL of endpoint with data to fetch
-    ///   - params: Dictionary containing URLQueryItems
-    ///   - completion: Result closure
-    /// - Returns: Generic data response
-    private func loadURLAndDecode<T: Decodable>(url: URL, params: [String: String]? = nil, completion: @escaping (Result<T, MovieError>) -> ()) {
-        guard var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
-            completion(.failure(.invalidEndpoint))
-            return
-        }
+    // MARK: - Helper Methods
+    // helper method to construct URL given base url and parameters
+    private func makeURL(url: URL, params: [String: String]? = nil) -> URL {
+        var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
         var queryItems = [URLQueryItem(name: "api_key", value: apiKey)]
         if let params = params {
             queryItems.append(contentsOf: params.map { URLQueryItem(name: $0.key, value: $0.value) })
         }
-        
-        urlComponents.queryItems = queryItems
-        
-        guard let finalURL = urlComponents.url else {
-            completion(.failure(.invalidEndpoint))
-            return
+        urlComponents?.queryItems = queryItems
+        guard let finalURL = urlComponents?.url else {
+            return url
         }
-        urlSession.dataTask(with: finalURL) { [weak self] (data, response, error) in
-            guard let self = self else { return }
-            if error != nil {
-                print("Error: \(error!.localizedDescription)")
-                self.executeCompletionHandlerInMainThread(with: .failure(.apiError), completion: completion)
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse, 200..<300 ~= httpResponse.statusCode else {
-                self.executeCompletionHandlerInMainThread(with: .failure(.invalidResponse), completion: completion)
-                return
-            }
-            
-            guard let data = data else {
-                self.executeCompletionHandlerInMainThread(with: .failure(.noData), completion: completion)
-                return
-            }
-            
-            do {
-                let decodedResponse = try self.jsonDecoder.decode(T.self, from: data)
-                self.executeCompletionHandlerInMainThread(with: .success(decodedResponse), completion: completion)
-            } catch {
-                self.executeCompletionHandlerInMainThread(with: .failure(.decodeError), completion: completion)
+        return finalURL
+    }
+    
+    // generic function called to fetch data from URL and pass back Result handler closure
+    private func fetchResources<T: Decodable>(url: URL, completion: @escaping (Result<T, MovieError>) -> ()) {
+        urlSession.dataTask(with: url) { result in
+            switch result {
+                case .success(let (response, data)):
+                    guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
+                        completion(.failure(.invalidResponse))
+                        return
+                    }
+                    do {
+                        let values = try self.jsonDecoder.decode(T.self, from: data)
+                        completion(.success(values))
+                    } catch {
+                        completion(.failure(.decodeError))
+                    }
+                case .failure(let error):
+                    print("error: \(error.localizedDescription)")
+                    completion(.failure(.apiError))
             }
         }.resume()
     }
-    
-    //MARK: Helper method execute result on main thread
-    /// Execute Completion Handler on my thread
-    /// - Parameters:
-    ///   - result: pass in result to put on main thread
-    ///   - completion: Result closure
-    /// - Returns: closure
-    private func executeCompletionHandlerInMainThread<D: Decodable>(with result: Result<D, MovieError>, completion: @escaping (Result<D, MovieError>) -> ()) {
-        DispatchQueue.main.async {
-            completion(result)
+}
+
+// MARK: - URLSession Extension Methods
+extension URLSession {
+    func dataTask(with url: URL, result: @escaping (Result<(URLResponse, Data), Error>) -> ()) -> URLSessionDataTask {
+        return dataTask(with: url) { (data, response, error) in
+            if let error = error {
+                result(.failure(error))
+                return
+            }
+            guard let response = response, let data = data else {
+                let error = NSError(domain: "error", code: 0, userInfo: nil)
+                result(.failure(error))
+                return
+            }
+            result(.success((response, data)))
         }
     }
 }

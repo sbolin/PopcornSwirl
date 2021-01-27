@@ -63,7 +63,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     var oldNote: String = ""
     var validation = Validation()
-        
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
@@ -113,12 +113,22 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         // get actor and image for movie
         let posterURL = movie.posterURL
         self.group.enter()
-        movieAction.fetchImage(imageURL: posterURL) { (success, image) in
-            if success, let image = image {
-                self.mainImage = image
-            } // success
+        movieAction.fetchImage(at: posterURL) { result in
+            switch result {
+                case .success(let image):
+                    DispatchQueue.main.async {
+                        self.mainImage = image
+                    } // Dispatch
+                case .failure(.networkFailure(_)):
+                    print("Internet connection error")
+                    
+                case .failure(.invalidData):
+                    print("Could not parse image data")
+                case .failure(.invalidResponse):
+                    print("Response from API was invalid")
+            } // Switch
             self.group.leave()
-        } // getMovieImage
+        } // fetchImage
         
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
@@ -168,7 +178,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     
     //MARK: - Google Ads
     func setupGoogleAds() {
-
+        
         bannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
         //ca-app-pub-3940256099942544~1458002511
         bannerView.rootViewController = self
@@ -225,7 +235,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         }
         guard let movie = movieResult else { return }
         CoreDataController.shared.bookmarkTapped(movie, bookmarkStatus: bookmarkButton.isSelected)
-
+        
     }
     
     @IBAction func favoriteTapped(_ sender: UIButton) {
@@ -247,7 +257,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         movieNote.resignFirstResponder()
     }
     
-//MARK: - Process note text
+    //MARK: - Process note text
     func processInput() {
         guard let note = movieNote.text else {
             return
@@ -299,7 +309,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
     @objc func keyboardWillHide(notification: Notification) {
         adjustLayoutForKeyboard(targetHeight: 0)
     }
-        
+    
     func adjustLayoutForKeyboard(targetHeight: CGFloat) {
         scrollView.contentInset.bottom = targetHeight
     }

@@ -31,8 +31,11 @@ class MovieCollectionViewController: UIViewController {
         super.viewWillAppear(animated)
         MovieActions.shared.loadMovieData { [weak self] result in
             guard let self = self else { return }
-            if let collection = result {
-                self.movieCollections = collection
+            switch result {
+                case .success(let collection):
+                    self.movieCollections = collection
+                case .failure(_):
+                    print("Movies could not be loaded")
             }
             self.setupSnapshot()
         }
@@ -115,16 +118,25 @@ extension MovieCollectionViewController {
             cell.yearLabel.text = movie.yearText
             cell.activityIndicator.startAnimating()
             // load image...
-            MovieActions.shared.fetchImage(imageURL: movie.backdropURL) { (success, image) in
-                if success, let image = image {
-                    DispatchQueue.main.async {
-                        cell.imageView.image = image
-                        cell.activityIndicator.stopAnimating()
-                    } // Dispatch
-                } // success
-            } // getMovieImage
-        } // CellRegistration
-    } // configureMovieCell
+            let backdropURL = movie.backdropURL
+            MovieActions.shared.fetchImage(at: backdropURL) { result in
+                switch result {
+                    case .success(let image):
+                        DispatchQueue.main.async {
+                            cell.imageView.image = image
+                            cell.activityIndicator.stopAnimating()
+                        } // Dispatch
+                    case .failure(.networkFailure(_)):
+                        print("Internet connection error")
+                        
+                    case .failure(.invalidData):
+                        print("Could not parse image data")
+                    case .failure(.invalidResponse):
+                        print("Response from API was invalid")
+                } // Switch
+            } // fetchImage
+        } // cell registration
+    } // configureListCell
     
     //MARK: Configure Collectionview Header
     func configureHeader() -> UICollectionView.SupplementaryRegistration<TitleSupplementaryView> {

@@ -52,3 +52,10 @@ enum MovieError: Error, CustomNSError {
         [NSLocalizedDescriptionKey: localizedDescription]
     }
 }
+
+// error when fetching image
+enum ImageLoadingError: Error {
+    case invalidResponse
+    case networkFailure(Error)
+    case invalidData
+}
