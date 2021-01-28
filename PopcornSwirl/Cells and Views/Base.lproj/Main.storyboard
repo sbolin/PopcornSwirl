@@ -234,8 +234,22 @@
                                                             <constraint firstAttribute="trailing" secondItem="ugo-JY-ABz" secondAttribute="trailing" id="vuH-lh-A6b"/>
                                                         </constraints>
                                                     </stackView>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Related" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UpR-Mj-eLj">
+                                                        <rect key="frame" x="8" y="424" width="374" height="13.333333333333314"/>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
+                                                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aPa-Oc-Udx" customClass="GADBannerView">
+                                                        <rect key="frame" x="35" y="445.33333333333331" width="320" height="50"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="50" id="1y2-fo-APr"/>
+                                                            <constraint firstAttribute="width" constant="320" id="4IC-gS-TEb"/>
+                                                        </constraints>
+                                                    </view>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="none" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SUy-OF-dQi">
-                                                        <rect key="frame" x="8" y="424" width="374" height="48"/>
+                                                        <rect key="frame" x="8" y="503.33333333333337" width="374" height="48"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="48" id="CvB-HS-z3D"/>
                                                         </constraints>
@@ -247,7 +261,7 @@ Overview</string>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="top" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="Zl8-AO-9Ll" userLabel="Info Stacks">
-                                                        <rect key="frame" x="8" y="480" width="374" height="56"/>
+                                                        <rect key="frame" x="8" y="559.33333333333337" width="374" height="56"/>
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="860-F6-PNV" userLabel="Actor Stack">
                                                                 <rect key="frame" x="0.0" y="0.0" width="28.333333333333332" height="52.666666666666664"/>
@@ -259,7 +273,7 @@ Overview</string>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wQI-17-Mjj">
-                                                                        <rect key="frame" x="0.0" y="13.333333333333375" width="28.333333333333332" height="39.333333333333343"/>
+                                                                        <rect key="frame" x="0.0" y="13.333333333333261" width="28.333333333333332" height="39.333333333333343"/>
                                                                         <string key="text">Actor
 Actor
 Actor</string>
@@ -279,7 +293,7 @@ Actor</string>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hdE-ys-Ig5">
-                                                                        <rect key="frame" x="0.0" y="13.333333333333375" width="42.666666666666664" height="39.333333333333343"/>
+                                                                        <rect key="frame" x="0.0" y="13.333333333333261" width="42.666666666666664" height="39.333333333333343"/>
                                                                         <string key="text">Director
 Director
 Director</string>
@@ -299,7 +313,7 @@ Director</string>
                                                                         <nil key="highlightedColor"/>
                                                                     </label>
                                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9mp-Wr-A6t">
-                                                                        <rect key="frame" x="0.0" y="13.333333333333375" width="49.666666666666664" height="39.333333333333343"/>
+                                                                        <rect key="frame" x="0.0" y="13.333333333333261" width="49.666666666666664" height="39.333333333333343"/>
                                                                         <string key="text">Company
 Company
 Company</string>
@@ -315,7 +329,7 @@ Company</string>
                                                         </constraints>
                                                     </stackView>
                                                     <stackView opaque="NO" contentMode="scaleToFill" distribution="equalCentering" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="bOZ-vW-ftG" userLabel="Rating Stack">
-                                                        <rect key="frame" x="8" y="544" width="374" height="14"/>
+                                                        <rect key="frame" x="8" y="623.33333333333337" width="374" height="14"/>
                                                         <subviews>
                                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Rating: 7.2" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9EJ-9S-Wqu">
                                                                 <rect key="frame" x="0.0" y="0.0" width="55" height="14"/>
@@ -347,7 +361,7 @@ Company</string>
                                                         </subviews>
                                                     </stackView>
                                                     <textField opaque="NO" contentMode="scaleToFill" selected="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" borderStyle="roundedRect" placeholder="Movie Notes" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="WdW-4o-knV">
-                                                        <rect key="frame" x="8" y="566" width="374" height="72"/>
+                                                        <rect key="frame" x="8" y="645.33333333333337" width="374" height="72"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="72" id="jL1-1M-KSO"/>
                                                         </constraints>
@@ -357,20 +371,6 @@ Company</string>
                                                             <action selector="notesEditingEnded:" destination="1Ib-8f-X9W" eventType="editingDidEnd" id="nKh-JQ-ugr"/>
                                                         </connections>
                                                     </textField>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Related" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UpR-Mj-eLj">
-                                                        <rect key="frame" x="8" y="646" width="374" height="13.333333333333371"/>
-                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption2"/>
-                                                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
-                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aPa-Oc-Udx" customClass="GADBannerView">
-                                                        <rect key="frame" x="35" y="667.33333333333337" width="320" height="50"/>
-                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                                        <constraints>
-                                                            <constraint firstAttribute="height" constant="50" id="1y2-fo-APr"/>
-                                                            <constraint firstAttribute="width" constant="320" id="4IC-gS-TEb"/>
-                                                        </constraints>
-                                                    </view>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstAttribute="trailing" secondItem="UpR-Mj-eLj" secondAttribute="trailing" constant="8" id="6H3-lU-X8V"/>
@@ -383,7 +383,7 @@ Company</string>
                                                     <constraint firstItem="aPa-Oc-Udx" firstAttribute="centerX" secondItem="2Ii-kK-vFf" secondAttribute="centerX" id="IsE-OR-blX"/>
                                                     <constraint firstAttribute="trailing" secondItem="Zl8-AO-9Ll" secondAttribute="trailing" constant="8" id="Peh-QO-WfA"/>
                                                     <constraint firstItem="WdW-4o-knV" firstAttribute="top" secondItem="bOZ-vW-ftG" secondAttribute="bottom" constant="8" id="R4a-ba-sPs"/>
-                                                    <constraint firstItem="UpR-Mj-eLj" firstAttribute="top" secondItem="WdW-4o-knV" secondAttribute="bottom" constant="8" symbolic="YES" id="RuA-i0-xKu"/>
+                                                    <constraint firstItem="UpR-Mj-eLj" firstAttribute="top" secondItem="lTC-CC-Cwg" secondAttribute="bottom" constant="8" symbolic="YES" id="RuA-i0-xKu"/>
                                                     <constraint firstItem="WdW-4o-knV" firstAttribute="leading" secondItem="2Ii-kK-vFf" secondAttribute="leading" constant="8" id="Sd8-fx-emC"/>
                                                     <constraint firstItem="huh-Y4-RQT" firstAttribute="leading" secondItem="2Ii-kK-vFf" secondAttribute="leading" constant="8" id="anz-Cg-5Vb"/>
                                                     <constraint firstAttribute="trailing" secondItem="WdW-4o-knV" secondAttribute="trailing" constant="8" id="dpR-oo-Xb3"/>

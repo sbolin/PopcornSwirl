@@ -25,26 +25,32 @@ class MovieCollectionViewController: UIViewController {
     var movieCollections: [MovieDataStore.MovieCollection]?
     
     static let sectionHeaderElementKind = "section-header-element-kind"
-
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        MovieActions.shared.loadMovieData { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-                case .success(let collection):
-                    self.movieCollections = collection
-                case .failure(_):
-                    print("Movies could not be loaded")
-            }
-            self.setupSnapshot()
-        }
+        getMovies()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCollectionView()
         configureDataSource()
+    }
+    
+    func getMovies() {
+        MovieActions.shared.loadMovieData { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+                case .success(let collection):
+                    self.movieCollections = collection
+                case .failure(_):
+ //                   Alert.showNoDataError(on: self)
+                    Alert.alertToRefreshData(title: "Internet Error", message: "Can't download data, please check your internet connection.", vc: self, andEnable: nil) { self.getMovies() }
+                    print("Movies could not be loaded")
+            }
+            self.setupSnapshot()
+        }
     }
 }
 
@@ -78,7 +84,7 @@ extension MovieCollectionViewController {
             section.orthogonalScrollingBehavior = .groupPagingCentered // originally .continuous
             section.interGroupSpacing = 12
             
-// set up header
+            // set up header
             let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
             let sectionHeader = NSCollectionLayoutBoundarySupplementaryItem(
                 layoutSize: headerSize,
@@ -128,11 +134,13 @@ extension MovieCollectionViewController {
                         } // Dispatch
                     case .failure(.networkFailure(_)):
                         print("Internet connection error")
-                        
+                        Alert.showTimeOutError(on: self)
                     case .failure(.invalidData):
                         print("Could not parse image data")
+                        Alert.showImproperDataError(on: self)
                     case .failure(.invalidResponse):
                         print("Response from API was invalid")
+                        Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration

@@ -136,11 +136,13 @@ extension SearchViewController {
                         } // Dispatch
                     case .failure(.networkFailure(_)):
                         print("Internet connection error")
-                        
+                        Alert.showTimeOutError(on: self)
                     case .failure(.invalidData):
                         print("Could not parse image data")
+                        Alert.showImproperDataError(on: self)
                     case .failure(.invalidResponse):
                         print("Response from API was invalid")
+                        Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration
@@ -176,8 +178,8 @@ extension SearchViewController {
                 case .success(let response):
                     self.movies.append(contentsOf: MoviesDTOMapper.map(response))
                 case .failure(let error):
-                    self.error = error
-                    print("no response, error: \(self.error.debugDescription)")
+                    print("Error fetching movie: \(error.localizedDescription)")
+                    Alert.showNoDataError(on: self)
             }
             self.movies.sort { $0.voteCount > $1.voteCount }
             self.setupSnapshot()

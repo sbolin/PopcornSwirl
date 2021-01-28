@@ -73,8 +73,8 @@ class ListViewController: UIViewController {
                     case .success(let response):
                         self.movies.append(SingleMovieDTOMapper.map(response))
                     case .failure(let error):
-                        self.error = error
                         print("Error fetching movie: \(error.localizedDescription)")
+                        Alert.showNoDataError(on: self)
                 }
                 self.group.leave()
                 self.setupSnapshot()
@@ -118,11 +118,13 @@ extension ListViewController {
                         } // Dispatch
                     case .failure(.networkFailure(_)):
                         print("Internet connection error")
-                        
+                        Alert.showTimeOutError(on: self)
                     case .failure(.invalidData):
                         print("Could not parse image data")
+                        Alert.showImproperDataError(on: self)
                     case .failure(.invalidResponse):
                         print("Response from API was invalid")
+                        Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration

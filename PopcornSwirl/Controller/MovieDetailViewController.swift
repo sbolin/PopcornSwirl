@@ -105,8 +105,8 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                     self.movieResult.bought = self.movieEntity.bought
                     self.movieResult.note = self.movieEntity.note
                 case .failure(let error):
-                    self.error = error
                     print("Error fetching movie: \(error.localizedDescription)")
+                    Alert.showNoDataError(on: self)
             }
             self.group.leave()
         }
@@ -121,11 +121,13 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                     } // Dispatch
                 case .failure(.networkFailure(_)):
                     print("Internet connection error")
-                    
+                    Alert.showTimeOutError(on: self)
                 case .failure(.invalidData):
                     print("Could not parse image data")
+                    Alert.showImproperDataError(on: self)
                 case .failure(.invalidResponse):
                     print("Response from API was invalid")
+                    Alert.showImproperDataError(on: self)
             } // Switch
             self.group.leave()
         } // fetchImage
