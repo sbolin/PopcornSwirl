@@ -44,7 +44,6 @@ class ListViewDataController {
                         self.movies.append(SingleMovieDTOMapper.map(response))
                     case .failure(let error):
                         print("Error fetching movie: \(error.localizedDescription)")
-                        Alert.showNoDataError(on: self)
                 }
                 self.group.leave()
                 self.setupSnapshot()
