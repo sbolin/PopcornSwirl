@@ -13,14 +13,13 @@ private enum Section {
     case main
 }
 
-/// Bookmarks View, showing movies that the user has bookmarked for later viewing
 class ListViewController: UIViewController {
     
     // MARK: - Properties
     private var collectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
-    
+
     let coreDataController = CoreDataController()
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
@@ -36,7 +35,7 @@ class ListViewController: UIViewController {
         self.request = request
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
         //        super.init(coder: aDecoder)
@@ -116,15 +115,18 @@ extension ListViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    case .failure(.networkFailure(_)):
-                        print("Internet connection error")
-                        Alert.showTimeOutError(on: self)
-                    case .failure(.invalidData):
-                        print("Could not parse image data")
-                        Alert.showImproperDataError(on: self)
-                    case .failure(.invalidResponse):
-                        print("Response from API was invalid")
-                        Alert.showImproperDataError(on: self)
+                    case .failure(_):
+                        print("General error thrown")
+                        Alert.showGenericError(on: self.navigationController!)  
+//                    case .failure(.networkFailure(_)):
+//                        print("Internet connection error")
+//                        Alert.showTimeOutError(on: self)
+//                    case .failure(.invalidData):
+//                        print("Could not parse image data")
+//                        Alert.showImproperDataError(on: self)
+//                    case .failure(.invalidResponse):
+//                        print("Response from API was invalid")
+//                        Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration

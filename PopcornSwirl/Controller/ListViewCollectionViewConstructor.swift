@@ -18,7 +18,6 @@ class ListViewCollectionViewConstructor: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCollectionView()
-        
     }
     
     private func configureCollectionView() {

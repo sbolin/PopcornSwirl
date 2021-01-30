@@ -45,8 +45,7 @@ class MovieCollectionViewController: UIViewController {
                 case .success(let collection):
                     self.movieCollections = collection
                 case .failure(_):
- //                   Alert.showNoDataError(on: self)
-                    Alert.alertToRefreshData(title: "Internet Error", message: "Can't download data, please check your internet connection.", vc: self, andEnable: nil) { self.getMovies() }
+                    Alert.alertToRefreshData(title: "Internet Error", message: "Can't download data, please check your internet connection.", vc: self.navigationController!, andEnable: nil) { self.getMovies() }
                     print("Movies could not be loaded")
             }
             self.setupSnapshot()
@@ -132,15 +131,18 @@ extension MovieCollectionViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    case .failure(.networkFailure(_)):
-                        print("Internet connection error")
-                        Alert.showTimeOutError(on: self)
-                    case .failure(.invalidData):
-                        print("Could not parse image data")
-                        Alert.showImproperDataError(on: self)
-                    case .failure(.invalidResponse):
-                        print("Response from API was invalid")
-                        Alert.showImproperDataError(on: self)
+                    case .failure(_):
+                        print("General error thrown")
+                        Alert.showGenericError(on: self.navigationController!)
+//                    case .failure(.networkFailure(_)):
+//                        print("Internet connection error")
+//                        Alert.showTimeOutError(on: self.navigationController!)
+//                    case .failure(.invalidData):
+//                        print("Could not parse data")
+//                        Alert.showImproperDataError(on: self.navigationController!)
+//                    case .failure(.invalidResponse):
+//                        print("Response from API was invalid")
+//                        Alert.showImproperDataError(on: self.navigationController!)
                 } // Switch
             } // fetchImage
         } // cell registration

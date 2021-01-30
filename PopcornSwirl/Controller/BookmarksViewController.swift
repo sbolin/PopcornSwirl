@@ -41,7 +41,7 @@ class BookmarksViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Bookmarked"
+//        view.largeContentTitle = "Bookmarks"
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
                 self.configureCollectionView()
@@ -105,15 +105,18 @@ extension BookmarksViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    case .failure(.networkFailure(_)):
-                        print("Internet connection error")
-                        Alert.showTimeOutError(on: self)
-                    case .failure(.invalidData):
-                        print("Could not parse image data")
-                        Alert.showImproperDataError(on: self)
-                    case .failure(.invalidResponse):
-                        print("Response from API was invalid")
-                        Alert.showImproperDataError(on: self)
+                    case .failure(_):
+                        print("General error thrown")
+                        Alert.showGenericError(on: self.navigationController!)                        
+//                case .failure(.networkFailure(_)):
+//                    print("Internet connection error")
+//                    Alert.showTimeOutError(on: self)
+//                case .failure(.invalidData):
+//                    print("Could not parse image data")
+//                    Alert.showImproperDataError(on: self)
+//                case .failure(.invalidResponse):
+//                    print("Response from API was invalid")
+//                    Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration

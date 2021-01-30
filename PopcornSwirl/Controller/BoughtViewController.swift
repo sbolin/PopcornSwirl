@@ -105,15 +105,18 @@ extension BoughtViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    case .failure(.networkFailure(_)):
-                        print("Internet connection error")
-                        Alert.showTimeOutError(on: self)
-                    case .failure(.invalidData):
-                        print("Could not parse image data")
-                        Alert.showImproperDataError(on: self)
-                    case .failure(.invalidResponse):
-                        print("Response from API was invalid")
-                        Alert.showImproperDataError(on: self)
+                    case .failure(_):
+                        print("General error thrown")
+                        Alert.showGenericError(on: self.navigationController!)  
+//                    case .failure(.networkFailure(_)):
+//                        print("Internet connection error")
+//                        Alert.showTimeOutError(on: self)
+//                    case .failure(.invalidData):
+//                        print("Could not parse image data")
+//                        Alert.showImproperDataError(on: self)
+//                    case .failure(.invalidResponse):
+//                        print("Response from API was invalid")
+//                        Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration

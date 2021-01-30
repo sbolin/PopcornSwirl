@@ -119,15 +119,19 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                     DispatchQueue.main.async {
                         self.mainImage = image
                     } // Dispatch
-                case .failure(.networkFailure(_)):
-                    print("Internet connection error")
-                    Alert.showTimeOutError(on: self)
-                case .failure(.invalidData):
-                    print("Could not parse image data")
-                    Alert.showImproperDataError(on: self)
-                case .failure(.invalidResponse):
-                    print("Response from API was invalid")
-                    Alert.showImproperDataError(on: self)
+                case .failure(_):
+                    print("General error thrown")
+                    Alert.showGenericError(on: self.navigationController!)
+                    
+//                case .failure(.networkFailure(_)):
+//                    print("Internet connection error")
+//                    Alert.showTimeOutError(on: self)
+//                case .failure(.invalidData):
+//                    print("Could not parse image data")
+//                    Alert.showImproperDataError(on: self)
+//                case .failure(.invalidResponse):
+//                    print("Response from API was invalid")
+//                    Alert.showImproperDataError(on: self)
             } // Switch
             self.group.leave()
         } // fetchImage

@@ -134,15 +134,18 @@ extension SearchViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    case .failure(.networkFailure(_)):
-                        print("Internet connection error")
-                        Alert.showTimeOutError(on: self)
-                    case .failure(.invalidData):
-                        print("Could not parse image data")
-                        Alert.showImproperDataError(on: self)
-                    case .failure(.invalidResponse):
-                        print("Response from API was invalid")
-                        Alert.showImproperDataError(on: self)
+                    case .failure(_):
+                        print("General error thrown")
+                        Alert.showGenericError(on: self.navigationController!)  
+//                    case .failure(.networkFailure(_)):
+//                        print("Internet connection error")
+//                        Alert.showTimeOutError(on: self)
+//                    case .failure(.invalidData):
+//                        print("Could not parse image data")
+//                        Alert.showImproperDataError(on: self)
+//                    case .failure(.invalidResponse):
+//                        print("Response from API was invalid")
+//                        Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration
@@ -150,7 +153,6 @@ extension SearchViewController {
     
     //MARK: - Configure DataSource
     private func configureDataSource() {
-        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
         dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: movieCollectionView) { (collectionView, indexPath, movie) -> ListViewCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
@@ -159,10 +161,12 @@ extension SearchViewController {
     
     //MARK: Setup Snapshot data
     private func setupSnapshot() {
-        snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(movies)
-        dataSource.apply(snapshot, animatingDifferences: true)
+ //       DispatchQueue.main.async {
+            self.snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
+            self.snapshot.appendSections([.main])
+            self.snapshot.appendItems(self.movies)
+            self.dataSource.apply(self.snapshot, animatingDifferences: true)
+//        }
     }
     
     
@@ -187,11 +191,12 @@ extension SearchViewController {
     }
     
     private func zeroDataSource() {
-        var currentSnapshot = dataSource.snapshot()
-        currentSnapshot.deleteItems(movies)
-        dataSource.apply(currentSnapshot)
-        error = nil
-        
+ //       DispatchQueue.main.async {
+            var currentSnapshot = self.dataSource.snapshot()
+            currentSnapshot.deleteItems(self.movies)
+            self.dataSource.apply(currentSnapshot)
+            self.error = nil
+//        }
     }
 }
 

@@ -8,21 +8,23 @@
 import UIKit
 import CoreData
 
-private enum Section {
-    case main
-}
+
 
 class ListViewDataController {
     
-    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
-    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
+    enum Section {
+        case main
+    }
     
-    private let coreDataController = CoreDataController()
-    private let movieAction = MovieActions.shared
-    private var movies = [MovieDataStore.MovieItem]()
-    private var request: NSFetchRequest<MovieEntity>
-    private var fetchedMovies = [MovieEntity]()
-    private var error: MovieError?
+    var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
+    var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
+    
+    let coreDataController = CoreDataController()
+    let movieAction = MovieActions.shared
+    var movies = [MovieDataStore.MovieItem]()
+    var request: NSFetchRequest<MovieEntity>
+    var fetchedMovies = [MovieEntity]()
+    var error: MovieError?
     
     // MARK: - DispatchGroup
     let group = DispatchGroup()

@@ -63,9 +63,9 @@ class MovieActions {
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
                 if loadedData {
-                    completion(.success(localCollection))
+                    completion(.success(localCollection)) //
                 } else {
-                    completion(.failure(.apiError))
+                    completion(.failure(.apiError)) //
                 }
             }
         }
@@ -83,7 +83,7 @@ class MovieActions {
             completion(.failure(.invalidEndpoint))
             return
         }
-        fetchResources(url: movieURL, completion: completion)
+        fetchResources(url: movieURL, completion: completion) // loadURLAndDecode
     }
     
     // MARK: Fetch Movies by genre
@@ -118,7 +118,7 @@ class MovieActions {
             params = [:]
         }
         let finalURL = makeURL(url: url, params: params)
-        fetchResources(url: finalURL, completion: completion)
+        fetchResources(url: finalURL, completion: completion) // loadURLAndDecode
     }
     
     // MARK: Fetch Movie by id
@@ -135,7 +135,7 @@ class MovieActions {
         }
         let params = ["append_to_response" : "videos,credits"]
         let finalURL = makeURL(url: url, params: params)
-        fetchResources(url: finalURL, completion: completion)
+        fetchResources(url: finalURL, completion: completion)  // loadURLAndDecode
     }
     
     // MARK:  Search for movie using keyword
@@ -151,7 +151,7 @@ class MovieActions {
         }
         let params = ["original_language": "en", "language" : "en-US", "include_adult" : "false", "region" : "US", "query" : query]
         let finalURL = makeURL(url: url, params: params)
-        fetchResources(url: finalURL, completion: completion)
+        fetchResources(url: finalURL, completion: completion)  // loadURLAndDecode
     }
     
     // MARK: Fetch/cache movie Image
@@ -172,21 +172,24 @@ class MovieActions {
                             completion(.failure(.invalidResponse))
                             return
                         }
-                        DispatchQueue.global(qos: .userInitiated).async {
+//                        DispatchQueue.global(qos: .userInitiated).async {
                             guard let image = UIImage(data: data) else {
                                 completion(.failure(.invalidData))
                                 return
                             }
+                        DispatchQueue.main.async {
                             self.imageCache.setObject(image, forKey: imageKey)
                             completion(.success(image))
-                        }
+                        } // DispatchQueue
+//                        }
                     case .failure(let error):
                         print("error: \(error.localizedDescription)")
                         completion(.failure(.networkFailure(error)))
-                }
-            }.resume()
-        }
-    }
+                } // switch
+            } // dataTask
+            .resume()
+        } // else
+    } // fetchImage
     
     // MARK: - Helper Methods
     // helper method to construct URL given base url and parameters
@@ -209,21 +212,38 @@ class MovieActions {
             switch result {
                 case .success(let (response, data)):
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-                        completion(.failure(.invalidResponse))
+                        self.executeCompletionHandlerInMainThread(with: .failure(.invalidResponse), completion: completion)
+//                        completion(.failure(.invalidResponse))
                         return
                     }
                     do {
                         let values = try self.jsonDecoder.decode(T.self, from: data)
-                        completion(.success(values))
+                        self.executeCompletionHandlerInMainThread(with: .success(values), completion: completion)
+//                        completion(.success(values))
                     } catch {
-                        completion(.failure(.decodeError))
+                        self.executeCompletionHandlerInMainThread(with: .failure(.decodeError), completion: completion)
+//                        completion(.failure(.decodeError))
                     }
                 case .failure(let error):
                     print("error: \(error.localizedDescription)")
-                    completion(.failure(.apiError))
+                    self.executeCompletionHandlerInMainThread(with: .failure(.apiError), completion: completion)
+//                    completion(.failure(.apiError))
             }
         }.resume()
     }
+    
+    //MARK: Helper method execute result on main thread
+    /// Execute Completion Handler on the main thread
+    /// - Parameters:
+    ///   - result: pass in result to put on main thread
+    ///   - completion: Result closure
+    /// - Returns: closure
+    private func executeCompletionHandlerInMainThread<D: Decodable>(with result: Result<D, MovieError>, completion: @escaping (Result<D, MovieError>) -> ()) {
+        DispatchQueue.main.async {
+            completion(result)
+        }
+    }
+    
 }
 
 // MARK: - URLSession Extension Methods

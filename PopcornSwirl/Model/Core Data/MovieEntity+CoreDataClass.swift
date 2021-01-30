@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-@objc(MovieEntity)
+//@objc(MovieEntity)
 public class MovieEntity: NSManagedObject {
 
 }

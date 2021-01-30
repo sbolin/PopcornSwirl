@@ -38,43 +38,38 @@ class CoreDataController {
     
     
     func favoriteTapped(_ movie: MovieDataStore.MovieItem, favoriteStatus: Bool) {
-        let context = managedContext
-        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        context.perform {
+        guard let movieEntity = findMovieByID(using: movie.id, in: managedContext) else { return }
+        managedContext.perform {
             movieEntity.favorite = favoriteStatus
-            self.saveContext(object: movieEntity, context: context)
+            self.saveContext(object: movieEntity, context: self.managedContext)
         } // perform
     }
     func watchedTapped(_ movie: MovieDataStore.MovieItem, watchedStatus: Bool) {
-        let context = managedContext
-        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        context.perform {
+        guard let movieEntity = findMovieByID(using: movie.id, in: managedContext) else { return }
+        managedContext.perform {
             movieEntity.watched = watchedStatus
-            self.saveContext(object: movieEntity, context: context)
+            self.saveContext(object: movieEntity, context: self.managedContext)
         }
     }
     func bookmarkTapped(_ movie: MovieDataStore.MovieItem, bookmarkStatus: Bool) {
-        let context = managedContext
-        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        context.perform {
+        guard let movieEntity = findMovieByID(using: movie.id, in: managedContext) else { return }
+        managedContext.perform {
             movieEntity.bookmarked = bookmarkStatus
-            self.saveContext(object: movieEntity, context: context)
+            self.saveContext(object: movieEntity, context: self.managedContext)
         }
     }
     func buyTapped(_ movie: MovieDataStore.MovieItem, buyStatus: Bool) {
-        let context = managedContext
-        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        context.perform {
+        guard let movieEntity = findMovieByID(using: movie.id, in: managedContext) else { return }
+        managedContext.perform {
             movieEntity.bought = buyStatus
-            self.saveContext(object: movieEntity, context: context)
+            self.saveContext(object: movieEntity, context: self.managedContext)
         }
     }
     func updateNote(_ movie: MovieDataStore.MovieItem, noteText: String) {
-        let context = managedContext
-        guard let movieEntity = findMovieByID(using: movie.id, in: context) else { return }
-        context.perform {
+        guard let movieEntity = findMovieByID(using: movie.id, in: managedContext) else { return }
+        managedContext.perform {
             movieEntity.note = noteText
-            self.saveContext(object: movieEntity, context: context)
+            self.saveContext(object: movieEntity, context: self.managedContext)
         }
     }
     
