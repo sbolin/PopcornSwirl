@@ -18,7 +18,6 @@ class BookmarksViewController: UIViewController {
     // MARK: - Properties
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>!
-//    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
@@ -29,21 +28,12 @@ class BookmarksViewController: UIViewController {
     let group = DispatchGroup()
     let queue = DispatchQueue.global()
     
-    // MARK: - View Lifecycle Methods
-//    override func viewWillAppear(_ animated: Bool) {
-//        super.viewWillAppear(animated)
-//        if movies.isEmpty {
-//            loadBookmarkedMovies()
-//        }
-//    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
         configureCollectionView()
         configureDataSource()
-//                self.setupSnapshot()
         loadBookmarkedMovies()
             }
         }
@@ -90,39 +80,29 @@ extension BookmarksViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    //                    case .failure(_):
-                    //                        print("General error thrown")
-                    //                        Alert.showGenericError(on: self.navigationController!)
+//                    case .failure(_):
+//                        print("General error thrown")
+//                        Alert.showGenericError(on: self.navigationController!)
                     case .failure(.networkFailure(_)):
                         print("Internet connection error")
-                    //                    Alert.showTimeOutError(on: self)
+//                    Alert.showTimeOutError(on: self)
                     case .failure(.invalidData):
                         print("Could not parse image data")
-                    //                    Alert.showImproperDataError(on: self)
+//                    Alert.showImproperDataError(on: self)
                     case .failure(.invalidResponse):
                         print("Response from API was invalid")
-                    //                    Alert.showImproperDataError(on: self)
+//                    Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration
     } // configureListCell
-    
-    /*
-     //MARK: Setup Snapshot data
-     private func setupSnapshot() {
-     snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
-     snapshot.appendSections([.main])
-     snapshot.appendItems(movies)
-     dataSource.apply(snapshot, animatingDifferences: true)
-     }
-     */
 }
 
+//MARK: - Fetch bookmarked movies from core data then download from tmdb API
 extension BookmarksViewController {
-    //MARK: - Fetch bookmarked movies from core data then download from tmdb API
     func loadBookmarkedMovies() {
         let fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
-        print("BookmarksViewController.loadBookmarkedMovies.fetchedMovies \(fetchedMovies.count)")
+        print("BookmarksViewController.loadBookmarkedMovies.fetch \(fetchedMovies.count)")
         for movie in fetchedMovies {
             self.group.enter()
             let id = movie.movieId
@@ -136,7 +116,6 @@ extension BookmarksViewController {
                         Alert.showNoDataError(on: self)
                 }
                 self.group.leave()
-//                self.setupSnapshot()
                 var snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
                 snapshot.appendSections([.main])
                 snapshot.appendItems(self.movies)
@@ -146,8 +125,6 @@ extension BookmarksViewController {
         }
     }
 }
-
-
 
 //MARK: - CollectionView Delegate Methods
 extension BookmarksViewController: UICollectionViewDelegate {
@@ -162,3 +139,15 @@ extension BookmarksViewController: UICollectionViewDelegate {
         tabBarController?.show(detailViewController, sender: self)
     }
 }
+
+
+
+/*
+ //MARK: Setup Snapshot data
+ private func setupSnapshot() {
+ snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
+ snapshot.appendSections([.main])
+ snapshot.appendItems(movies)
+ dataSource.apply(snapshot, animatingDifferences: true)
+ }
+ */

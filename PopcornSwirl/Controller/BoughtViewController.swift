@@ -15,57 +15,26 @@ private enum Section {
 /// Bought View, showing movies that the user has marked as having bought (sort of a user library)
 class BoughtViewController: UIViewController {
     
-// MARK: - Properties
-    private var collectionView: UICollectionView! = nil
-    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
-    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
+    // MARK: - Properties
+    private var collectionView: UICollectionView!
+    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>!
     
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-    let request = CoreDataController.shared.boughtMovies
-    var fetchedMovies = [MovieEntity]()
+    let request = CoreDataController.shared.bookmarkedMovies
     var error: MovieError?
     
-// MARK: - DispatchGroup
+    // MARK: - DispatchGroup
     let group = DispatchGroup()
     let queue = DispatchQueue.global()
     
-// MARK: - View Lifecycle Methods
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        if movies.isEmpty {
-            loadBoughtMovies()
-        }
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Bought"
         group.notify(queue: queue) { [self] in
             DispatchQueue.main.async { [self] in
-                self.configureCollectionView()
-                self.configureDataSource()
-            }
-        }
-    }
-    
-    //MARK: - Fetch bought movies from core data then download from tmdb API
-    func loadBoughtMovies() {
-        fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
-        for movie in fetchedMovies {
-            self.group.enter()
-            let id = movie.movieId
-            movieAction.fetchMovie(id: Int(id)) { [weak self] result in
-                guard let self = self else { return }
-                switch result {
-                    case .success(let response):
-                        self.movies.append(SingleMovieDTOMapper.map(response))
-                    case .failure(let error):
-                        print("Error fetching movie: \(error.localizedDescription)")
-                        Alert.showNoDataError(on: self)
-                }
-                self.group.leave()
-                self.setupSnapshot()
+                configureCollectionView()
+                configureDataSource()
+                loadBoughtMovies()
             }
         }
     }
@@ -75,15 +44,22 @@ class BoughtViewController: UIViewController {
 //MARK: Configure Collection View
 extension BoughtViewController {
     private func configureCollectionView() {
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
+        view.backgroundColor = .systemBackground
+        let config = UICollectionLayoutListConfiguration(appearance: .grouped)
+        let listLayout = UICollectionViewCompositionalLayout.list(using: config)
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: listLayout)
         collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
         view.addSubview(collectionView)
     }
     
-    private func createLayout() -> UICollectionViewLayout {
-        let config = UICollectionLayoutListConfiguration(appearance: .grouped)
-        return UICollectionViewCompositionalLayout.list(using: config)
+    //MARK: - Configure DataSource
+    private func configureDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
+            (collectionView, indexPath, movie) -> ListViewCell? in
+            // Return the cell.
+            return collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
+        }
     }
     
     //MARK: Configure and Register ListViewCell
@@ -104,43 +80,52 @@ extension BoughtViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    case .failure(_):
-                        print("General error thrown")
-//                        Alert.showGenericError(on: self.navigationController!)  
-//                    case .failure(.networkFailure(_)):
-//                        print("Internet connection error")
-//                        Alert.showTimeOutError(on: self)
-//                    case .failure(.invalidData):
-//                        print("Could not parse image data")
-//                        Alert.showImproperDataError(on: self)
-//                    case .failure(.invalidResponse):
-//                        print("Response from API was invalid")
-//                        Alert.showImproperDataError(on: self)
+                    //                    case .failure(_):
+                    //                        print("General error thrown")
+                    //                        Alert.showGenericError(on: self.navigationController!)
+                    case .failure(.networkFailure(_)):
+                        print("Internet connection error")
+                    //                    Alert.showTimeOutError(on: self)
+                    case .failure(.invalidData):
+                        print("Could not parse image data")
+                    //                    Alert.showImproperDataError(on: self)
+                    case .failure(.invalidResponse):
+                        print("Response from API was invalid")
+                    //                    Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration
     } // configureListCell
-    
-    //MARK: - Configure DataSource
-    private func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
-            (collectionView, indexPath, movie) -> ListViewCell? in
-            // Return the cell.
-            let cell = collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
-            return cell
+}
+
+//MARK: - Fetch bought movies from core data then download from tmdb API
+extension BoughtViewController {
+    func loadBoughtMovies() {
+        let fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
+        print("BoughtViewController.loadBoughtMovies.fetch \(fetchedMovies.count)")
+        for movie in fetchedMovies {
+            self.group.enter()
+            let id = movie.movieId
+            movieAction.fetchMovie(id: Int(id)) { [weak self] result in
+                guard let self = self else { return }
+                switch result {
+                    case .success(let response):
+                        self.movies.append(SingleMovieDTOMapper.map(response))
+                    case .failure(let error):
+                        print("Error fetching movie: \(error.localizedDescription)")
+                        Alert.showNoDataError(on: self)
+                }
+                self.group.leave()
+                var snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
+                snapshot.appendSections([.main])
+                snapshot.appendItems(self.movies)
+                self.dataSource.apply(snapshot, animatingDifferences: true)
+                
+            }
         }
-    }
-    
-    //MARK: Setup Snapshot data
-    private func setupSnapshot() {
-        snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(movies)
-        dataSource.apply(snapshot, animatingDifferences: true)
     }
 }
 
-///
 //MARK: - CollectionView Delegate Methods
 extension BoughtViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {        
