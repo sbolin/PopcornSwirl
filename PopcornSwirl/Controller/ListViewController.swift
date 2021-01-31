@@ -20,11 +20,9 @@ class ListViewController: UIViewController {
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
 
-    let coreDataController = CoreDataController()
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
     var request: NSFetchRequest<MovieEntity>
-    var fetchedMovies = [MovieEntity]()
     var error: MovieError?
     
     // MARK: - DispatchGroup
@@ -62,7 +60,7 @@ class ListViewController: UIViewController {
     
     //MARK: - Fetch bookmarked movies from core data then download from tmdb API
     func loadSelectedMovies() {
-        fetchedMovies = try! coreDataController.managedContext.fetch(request)
+        let fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
         for movie in fetchedMovies {
             self.group.enter()
             let id = movie.movieId
@@ -134,7 +132,6 @@ extension ListViewController {
     
     //MARK: - Configure DataSource
     private func configureDataSource() {
-        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
         dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
             (collectionView, indexPath, movie) -> ListViewCell? in
             // Return the cell.
@@ -160,7 +157,7 @@ extension ListViewController: UICollectionViewDelegate {
             return
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        detailViewController.passedMovie = movie
+        detailViewController.passedMovieID = movie.id
         tabBarController?.show(detailViewController, sender: self)
     }
 }

@@ -124,6 +124,7 @@ extension MovieCollectionViewController {
             cell.activityIndicator.startAnimating()
             // load image...
             let backdropURL = movie.backdropURL
+            print("configureMovieCell: \(movie.backdropURL)")
             MovieActions.shared.fetchImage(at: backdropURL) { result in
                 switch result {
                     case .success(let image):
@@ -131,17 +132,17 @@ extension MovieCollectionViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    case .failure(_):
-                        print("General error thrown")
-                        Alert.showGenericError(on: self.navigationController!)
-//                    case .failure(.networkFailure(_)):
-//                        print("Internet connection error")
+//                    case .failure(_):
+//                        print("configureMovieCell: Error Fetching Image Thrown")
+//                        Alert.showGenericError(on: self.navigationController!)
+                    case .failure(.networkFailure(_)):
+                        print("Internet connection error")
 //                        Alert.showTimeOutError(on: self.navigationController!)
-//                    case .failure(.invalidData):
-//                        print("Could not parse data")
+                    case .failure(.invalidData):
+                        print("Could not parse data")
 //                        Alert.showImproperDataError(on: self.navigationController!)
-//                    case .failure(.invalidResponse):
-//                        print("Response from API was invalid")
+                    case .failure(.invalidResponse):
+                        print("Response from API was invalid")
 //                        Alert.showImproperDataError(on: self.navigationController!)
                 } // Switch
             } // fetchImage
@@ -187,8 +188,8 @@ extension MovieCollectionViewController: UICollectionViewDelegate {
         }
         guard let movie = self.dataSource.itemIdentifier(for: indexPath) else { return }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
+        detailViewController.passedMovieID = movie.id
         detailViewController.passedMovie = movie
-        detailViewController.modalPresentationStyle = .automatic
         tabBarController?.show(detailViewController, sender: self)
     }
 }

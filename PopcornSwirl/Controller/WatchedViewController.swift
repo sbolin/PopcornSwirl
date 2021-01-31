@@ -20,11 +20,9 @@ class WatchedViewController: UIViewController {
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
-    let coreDataController = CoreDataController()
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-    let request = MovieEntity.watchedMovies
-    var fetchedMovies = [MovieEntity]()
+    let request = CoreDataController.shared.watchedMovies
     var error: MovieError?
     
 // MARK: - DispatchGroup
@@ -52,7 +50,7 @@ class WatchedViewController: UIViewController {
     
     //MARK: - Fetch watched movies from core data then download from tmdb API
     func loadWatchedMovies() {
-        fetchedMovies = try! coreDataController.managedContext.fetch(request)
+        let fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
         for movie in fetchedMovies {
             self.group.enter()
             let id = movie.movieId
@@ -107,7 +105,7 @@ extension WatchedViewController {
                         } // Dispatch
                     case .failure(_):
                         print("General error thrown")
-                        Alert.showGenericError(on: self.navigationController!)                        
+//                        Alert.showGenericError(on: self.navigationController!)                        
 //                case .failure(.networkFailure(_)):
 //                    print("Internet connection error")
 //                    Alert.showTimeOutError(on: self)
@@ -124,7 +122,6 @@ extension WatchedViewController {
     
     //MARK: - Configure DataSource
     private func configureDataSource() {
-        // FIXME: Section, MovieDataController.MovieItem -> Section, Movie
         dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: collectionView) {
             (collectionView, indexPath, movie) -> ListViewCell? in
             // Return the cell.
@@ -152,6 +149,7 @@ extension WatchedViewController: UICollectionViewDelegate {
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.passedMovie = movie
+        detailViewController.passedMovieID = movie.id
         tabBarController?.show(detailViewController, sender: self)
     }
 }

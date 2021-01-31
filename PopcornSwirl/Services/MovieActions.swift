@@ -33,6 +33,8 @@ class MovieActions {
     typealias LoadMovieHandler = (Result<[MovieDataStore.MovieCollection], MovieError>) -> ()
     typealias FetchMovieHandler = (Result<MovieResponse, MovieError>) -> ()
     typealias FetchSingleMovieHandler = (Result<SingleMovieResponse, MovieError>) -> ()
+    typealias SearchMovieHandler = (Result<SearchMovieResponse, MovieError>) -> ()
+
     
     //MARK: Initial movie loader
     // load movie data from tmdb API to Core Data
@@ -70,7 +72,6 @@ class MovieActions {
             }
         }
     }
-    
     
     // MARK: Fetch moves at endpoint
     /// Fetch movies at a given endpoint
@@ -144,7 +145,7 @@ class MovieActions {
     ///   - query: search keyword (String)
     ///   - completion: Result closure
     /// - Returns: Movies containing keyword
-    func searchMovie(query: String, completion: @escaping FetchMovieHandler) {
+    func searchMovie(query: String, completion: @escaping SearchMovieHandler) {
         guard let url = URL(string: "\(baseURL)/search/movie") else {
             completion(.failure(.invalidEndpoint))
             return
@@ -172,16 +173,14 @@ class MovieActions {
                             completion(.failure(.invalidResponse))
                             return
                         }
-//                        DispatchQueue.global(qos: .userInitiated).async {
-                            guard let image = UIImage(data: data) else {
-                                completion(.failure(.invalidData))
-                                return
-                            }
+                        guard let image = UIImage(data: data) else {
+                            completion(.failure(.invalidData))
+                            return
+                        }
                         DispatchQueue.main.async {
                             self.imageCache.setObject(image, forKey: imageKey)
                             completion(.success(image))
                         } // DispatchQueue
-//                        }
                     case .failure(let error):
                         print("error: \(error.localizedDescription)")
                         completion(.failure(.networkFailure(error)))
@@ -212,22 +211,22 @@ class MovieActions {
             switch result {
                 case .success(let (response, data)):
                     guard let statusCode = (response as? HTTPURLResponse)?.statusCode, 200..<299 ~= statusCode else {
-                        self.executeCompletionHandlerInMainThread(with: .failure(.invalidResponse), completion: completion)
-//                        completion(.failure(.invalidResponse))
+                        //                        self.executeCompletionHandlerInMainThread(with: .failure(.invalidResponse), completion: completion)
+                        completion(.failure(.invalidResponse))
                         return
                     }
                     do {
                         let values = try self.jsonDecoder.decode(T.self, from: data)
-                        self.executeCompletionHandlerInMainThread(with: .success(values), completion: completion)
-//                        completion(.success(values))
+                        //                        self.executeCompletionHandlerInMainThread(with: .success(values), completion: completion)
+                        completion(.success(values))
                     } catch {
-                        self.executeCompletionHandlerInMainThread(with: .failure(.decodeError), completion: completion)
-//                        completion(.failure(.decodeError))
+                        //                        self.executeCompletionHandlerInMainThread(with: .failure(.decodeError), completion: completion)
+                        completion(.failure(.decodeError))
                     }
                 case .failure(let error):
                     print("error: \(error.localizedDescription)")
-                    self.executeCompletionHandlerInMainThread(with: .failure(.apiError), completion: completion)
-//                    completion(.failure(.apiError))
+                    //                    self.executeCompletionHandlerInMainThread(with: .failure(.apiError), completion: completion)
+                    completion(.failure(.apiError))
             }
         }.resume()
     }
@@ -243,7 +242,6 @@ class MovieActions {
             completion(result)
         }
     }
-    
 }
 
 // MARK: - URLSession Extension Methods

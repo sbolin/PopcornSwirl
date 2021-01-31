@@ -138,5 +138,30 @@ class MovieDataStore {
             return Utils.durationFormatter.string(from: TimeInterval(runtime) * 60) ?? "n/a"
         }
     }
-}
+    
+    /// Struct holding individual movie data. [MovieSearchItem] makes up a MovieCollection
+    struct MovieSearchItem: Hashable, Identifiable {
+        
+        static func == (lhs: MovieSearchItem, rhs: MovieSearchItem) -> Bool {
+            lhs.id == rhs.id //uuid
+        }
+        
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(id) // uuid
+        }
+        
+        // Domain model used in App
+        var id: Int
+        var title: String
+        var overview: String
+        var backdropPath: String?
+        var releaseDate: Date
+        var voteCount: Int
 
+
+        
+        var backdropURL: URL {
+            return URL(string: "https://image.tmdb.org/t/p/w780\(backdropPath ?? "")")!
+        }
+    }
+}

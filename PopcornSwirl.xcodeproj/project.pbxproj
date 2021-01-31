@@ -16,6 +16,8 @@
 		154F116C2595CAEF006E3392 /* MoviesDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154F116B2595CAEF006E3392 /* MoviesDTOMapper.swift */; };
 		155A08D0259D0867006054F6 /* SingleMovieDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155A08CF259D0867006054F6 /* SingleMovieDTOMapper.swift */; };
 		155A08D3259D6D66006054F6 /* SingleMovieResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155A08D2259D6D66006054F6 /* SingleMovieResponse.swift */; };
+		155FB10B25C5D51B00EFB6E4 /* SearchMovieResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155FB10A25C5D51B00EFB6E4 /* SearchMovieResponse.swift */; };
+		155FB11025C6D4A300EFB6E4 /* SearchDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155FB10F25C6D4A300EFB6E4 /* SearchDTOMapper.swift */; };
 		157FD14425A86BDE000D5739 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157FD14325A86BDE000D5739 /* SearchViewController.swift */; };
 		157FD14825A87CC6000D5739 /* BoughtViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157FD14725A87CC6000D5739 /* BoughtViewController.swift */; };
 		1585D78E254367C8006A9433 /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1585D78D254367C8006A9433 /* CoreDataController.swift */; };
@@ -54,6 +56,8 @@
 		154F116B2595CAEF006E3392 /* MoviesDTOMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesDTOMapper.swift; sourceTree = "<group>"; };
 		155A08CF259D0867006054F6 /* SingleMovieDTOMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleMovieDTOMapper.swift; sourceTree = "<group>"; };
 		155A08D2259D6D66006054F6 /* SingleMovieResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleMovieResponse.swift; sourceTree = "<group>"; };
+		155FB10A25C5D51B00EFB6E4 /* SearchMovieResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMovieResponse.swift; sourceTree = "<group>"; };
+		155FB10F25C6D4A300EFB6E4 /* SearchDTOMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDTOMapper.swift; sourceTree = "<group>"; };
 		157FD14325A86BDE000D5739 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		157FD14725A87CC6000D5739 /* BoughtViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoughtViewController.swift; sourceTree = "<group>"; };
 		1585D78D254367C8006A9433 /* CoreDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataController.swift; sourceTree = "<group>"; };
@@ -103,9 +107,11 @@
 			children = (
 				15A4B60D2549D8AC00534EFE /* MovieDataStore.swift */,
 				15E7EA11254098A700D459FA /* MovieResponse.swift */,
+				155FB10A25C5D51B00EFB6E4 /* SearchMovieResponse.swift */,
 				155A08D2259D6D66006054F6 /* SingleMovieResponse.swift */,
 				154F116B2595CAEF006E3392 /* MoviesDTOMapper.swift */,
 				155A08CF259D0867006054F6 /* SingleMovieDTOMapper.swift */,
+				155FB10F25C6D4A300EFB6E4 /* SearchDTOMapper.swift */,
 				15CF92AB25434C9A00CCBBF9 /* Core Data */,
 			);
 			path = Model;
@@ -328,7 +334,9 @@
 				151B9F96258B945C001DE93C /* Utils.swift in Sources */,
 				15A2FB6925BBE4540089D5B1 /* ListViewDataController.swift in Sources */,
 				15E7EA12254098A700D459FA /* MovieResponse.swift in Sources */,
+				155FB10B25C5D51B00EFB6E4 /* SearchMovieResponse.swift in Sources */,
 				157FD14425A86BDE000D5739 /* SearchViewController.swift in Sources */,
+				155FB11025C6D4A300EFB6E4 /* SearchDTOMapper.swift in Sources */,
 				150DD150255ED9D90068A1B8 /* ListViewCell.swift in Sources */,
 				15E287C725A02EF10075639F /* Validation.swift in Sources */,
 				155A08D3259D6D66006054F6 /* SingleMovieResponse.swift in Sources */,

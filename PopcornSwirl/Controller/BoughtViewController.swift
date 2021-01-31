@@ -20,10 +20,9 @@ class BoughtViewController: UIViewController {
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
-    let coreDataController = CoreDataController()
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-    let request = MovieEntity.boughtMovies
+    let request = CoreDataController.shared.boughtMovies
     var fetchedMovies = [MovieEntity]()
     var error: MovieError?
     
@@ -52,7 +51,7 @@ class BoughtViewController: UIViewController {
     
     //MARK: - Fetch bought movies from core data then download from tmdb API
     func loadBoughtMovies() {
-        fetchedMovies = try! coreDataController.managedContext.fetch(request)
+        fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
         for movie in fetchedMovies {
             self.group.enter()
             let id = movie.movieId
@@ -107,7 +106,7 @@ extension BoughtViewController {
                         } // Dispatch
                     case .failure(_):
                         print("General error thrown")
-                        Alert.showGenericError(on: self.navigationController!)  
+//                        Alert.showGenericError(on: self.navigationController!)  
 //                    case .failure(.networkFailure(_)):
 //                        print("Internet connection error")
 //                        Alert.showTimeOutError(on: self)
@@ -151,6 +150,7 @@ extension BoughtViewController: UICollectionViewDelegate {
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.passedMovie = movie
+        detailViewController.passedMovieID = movie.id
         tabBarController?.show(detailViewController, sender: self)
     }
 }

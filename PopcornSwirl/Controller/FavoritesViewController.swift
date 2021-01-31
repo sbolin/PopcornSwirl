@@ -20,11 +20,9 @@ class FavoritesViewController: UIViewController {
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
-    let coreDataController = CoreDataController()
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
-    let request = MovieEntity.favoriteMovies
-    var fetchedMovies = [MovieEntity]()
+    let request = CoreDataController.shared.favoriteMovies
     var error: MovieError?
     
     // MARK: - DispatchGroup
@@ -52,7 +50,7 @@ class FavoritesViewController: UIViewController {
     
     //MARK: - Fetch favorite movies from core data then download from tmdb API
     func loadFavoriteMovies() {
-        fetchedMovies = try! coreDataController.managedContext.fetch(request)
+        let fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
         for movie in fetchedMovies {
             self.group.enter()
             let id = movie.movieId
@@ -107,7 +105,7 @@ extension FavoritesViewController {
                         } // Dispatch
                     case .failure(_):
                         print("General error thrown")
-                        Alert.showGenericError(on: self.navigationController!)  
+//                        Alert.showGenericError(on: self.navigationController!)  
 //                    case .failure(.networkFailure(_)):
 //                        print("Internet connection error")
 //                        Alert.showTimeOutError(on: self)
@@ -151,6 +149,7 @@ extension FavoritesViewController: UICollectionViewDelegate {
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.passedMovie = movie
+        detailViewController.passedMovieID = movie.id
         tabBarController?.show(detailViewController, sender: self)
     }
 }

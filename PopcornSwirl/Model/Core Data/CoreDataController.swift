@@ -12,7 +12,7 @@ class CoreDataController {
     //MARK: - Create CoreData Stack
     
     static let shared = CoreDataController()
-    init() {}
+    private init() {}
     
     lazy var modelName = "MovieModel"
     lazy var model: NSManagedObjectModel = {
@@ -34,6 +34,42 @@ class CoreDataController {
         let context = self.persistentContainer.viewContext
         context.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         return context
+    }()
+    
+    lazy var bookmarkedMovies: NSFetchRequest<MovieEntity> = {
+        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
+        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
+        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.bookmarked), true)
+        request.sortDescriptors = sort
+        request.predicate = predicate
+        return request
+    }()
+    
+    lazy var watchedMovies: NSFetchRequest<MovieEntity> = {
+        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
+        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
+        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.watched), true)
+        request.sortDescriptors = sort
+        request.predicate = predicate
+        return request
+    }()
+    
+    lazy var favoriteMovies: NSFetchRequest<MovieEntity> = {
+        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
+        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
+        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.favorite), true)
+        request.sortDescriptors = sort
+        request.predicate = predicate
+        return request
+    }()
+    
+    lazy var boughtMovies: NSFetchRequest<MovieEntity> = {
+        let request: NSFetchRequest<MovieEntity> = MovieEntity.movieFetchRequest()
+        let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
+        let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.bought), true)
+        request.sortDescriptors = sort
+        request.predicate = predicate
+        return request
     }()
     
     
@@ -74,7 +110,7 @@ class CoreDataController {
     }
     
     //MARK: - Creeate and Save Movie
-    func newMovie(name: String, id: Int) -> MovieEntity {
+    func createMovie(name: String, id: Int) -> MovieEntity {
         let movie = MovieEntity(context: managedContext)
         movie.title = name
         movie.movieId = Int32(id)
@@ -84,6 +120,7 @@ class CoreDataController {
         movie.note = ""
         movie.watched = false
         saveContext(object: movie, context: managedContext)
+        print("CoreDataController.createMovie \(name), \(id) success")
         return movie
     }
     
@@ -92,6 +129,7 @@ class CoreDataController {
         managedContext.delete(movie)
         do {
             try managedContext.save()
+            print("CoreDataController.deleteMovie \(movie.title)")
         } catch {
             managedContext.rollback()
             print("Failed to save context: \(error)")
@@ -119,6 +157,7 @@ class CoreDataController {
             let movies = try context.fetch(request)
             for movie in movies {
                 if movie.movieId == id {
+                    print("CoreDataController.findMovieByID success: \(id)")
                     return movie
                 } // if
             } // for in

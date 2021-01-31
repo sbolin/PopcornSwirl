@@ -17,12 +17,12 @@ class SearchViewController: UIViewController {
     
     // MARK: - Properties
     private var movieCollectionView: UICollectionView! = nil
-    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
-    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
+    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieSearchItem>! = nil
+    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieSearchItem>! = nil
     
     let searchBar = UISearchBar(frame: .zero)
     let movieAction = MovieActions.shared
-    var movies = [MovieDataStore.MovieItem]()
+    var movies = [MovieDataStore.MovieSearchItem]()
     var error: MovieError?
     
     // MARK: - View Lifecycle Methods
@@ -33,18 +33,20 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Search"
-        self.configureCollectionView()
-        self.configureDataSource()
+        // title = "Search"
+        configureCollectionView()
+        configureDataSource()
+        zeroDataSource()
         
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         searchBar.text = ""
-        var currentSnapshot = dataSource.snapshot()
-        currentSnapshot.deleteItems(movies)
-        dataSource.apply(currentSnapshot, animatingDifferences: false)
-        self.error = nil
+        zeroDataSource()
+//        var currentSnapshot = dataSource.snapshot()
+//        currentSnapshot.deleteItems(movies)
+//        dataSource.apply(currentSnapshot, animatingDifferences: false)
+//        self.error = nil
     }
     
     func setupSearchBar() {
@@ -117,8 +119,8 @@ extension SearchViewController {
     }
     
     //MARK: Configure and Register ListViewCell
-    private func configureListCell() -> UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> {
-        return UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
+    private func configureListCell() -> UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieSearchItem> {
+        return UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieSearchItem> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
@@ -134,17 +136,17 @@ extension SearchViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    case .failure(_):
-                        print("General error thrown")
-                        Alert.showGenericError(on: self.navigationController!)  
-//                    case .failure(.networkFailure(_)):
-//                        print("Internet connection error")
+//                    case .failure(_):
+//                        print("General error thrown")
+ //                       Alert.showGenericError(on: self.navigationController!)
+                    case .failure(.networkFailure(_)):
+                        print("Internet connection error")
 //                        Alert.showTimeOutError(on: self)
-//                    case .failure(.invalidData):
-//                        print("Could not parse image data")
+                    case .failure(.invalidData):
+                        print("Could not parse image data")
 //                        Alert.showImproperDataError(on: self)
-//                    case .failure(.invalidResponse):
-//                        print("Response from API was invalid")
+                    case .failure(.invalidResponse):
+                        print("Response from API was invalid")
 //                        Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
@@ -153,7 +155,7 @@ extension SearchViewController {
     
     //MARK: - Configure DataSource
     private func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: movieCollectionView) { (collectionView, indexPath, movie) -> ListViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieSearchItem>(collectionView: movieCollectionView) { (collectionView, indexPath, movie) -> ListViewCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
         }
@@ -162,28 +164,27 @@ extension SearchViewController {
     //MARK: Setup Snapshot data
     private func setupSnapshot() {
  //       DispatchQueue.main.async {
-            self.snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
-            self.snapshot.appendSections([.main])
-            self.snapshot.appendItems(self.movies)
-            self.dataSource.apply(self.snapshot, animatingDifferences: true)
+            snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieSearchItem>()
+            snapshot.appendSections([.main])
+            snapshot.appendItems(movies)
+            dataSource.apply(snapshot, animatingDifferences: true)
 //        }
     }
     
     
     //MARK: - Helper Methods
     private func search(for searchText: String) {
-        guard !searchText.isEmpty else {
-            return
-        }
+        guard !searchText.isEmpty else { return }
         zeroDataSource()
         movieAction.searchMovie(query: searchText) { [weak self] result in
             guard let self = self else { return }
             switch result {
                 case .success(let response):
-                    self.movies.append(contentsOf: MoviesDTOMapper.map(response))
+//                    self.movies.append(contentsOf: MoviesDTOMapper.map(response))
+                    self.movies.append(contentsOf: SearchDTOMapper.mapSearch(response))
                 case .failure(let error):
                     print("Error fetching movie: \(error.localizedDescription)")
-                    Alert.showNoDataError(on: self)
+//                    Alert.showNoDataError(on: self)
             }
             self.movies.sort { $0.voteCount > $1.voteCount }
             self.setupSnapshot()
@@ -192,10 +193,10 @@ extension SearchViewController {
     
     private func zeroDataSource() {
  //       DispatchQueue.main.async {
-            var currentSnapshot = self.dataSource.snapshot()
-            currentSnapshot.deleteItems(self.movies)
-            self.dataSource.apply(currentSnapshot)
-            self.error = nil
+            var currentSnapshot = dataSource.snapshot()
+            currentSnapshot.deleteItems(movies)
+            dataSource.apply(currentSnapshot)
+            error = nil
 //        }
     }
 }
@@ -234,7 +235,7 @@ extension SearchViewController: UICollectionViewDelegate {
             return
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        detailViewController.passedMovie = movie
+        detailViewController.passedMovieID = movie.id
         tabBarController?.show(detailViewController, sender: self)
     }
 }

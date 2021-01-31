@@ -19,11 +19,10 @@ class ListViewDataController {
     var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
-    let coreDataController = CoreDataController()
+    let coreDataController = CoreDataController.shared
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
     var request: NSFetchRequest<MovieEntity>
-    var fetchedMovies = [MovieEntity]()
     var error: MovieError?
     
     // MARK: - DispatchGroup
@@ -35,7 +34,7 @@ class ListViewDataController {
     }
 
     func loadSelectedMovies() {
-        fetchedMovies = try! coreDataController.managedContext.fetch(request)
+        let fetchedMovies = try! coreDataController.managedContext.fetch(request)
         for movie in fetchedMovies {
             self.group.enter()
             let id = movie.movieId
