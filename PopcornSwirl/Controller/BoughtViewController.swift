@@ -99,7 +99,6 @@ extension BoughtViewController {
     func loadBoughtMovies() {
         movies = []
         let fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
-        print("BoughtViewController.loadBoughtMovies.fetch \(fetchedMovies.count)")
         for movie in fetchedMovies {
             let id = movie.movieId
             movieAction.fetchMovie(id: Int(id)) { [weak self] result in

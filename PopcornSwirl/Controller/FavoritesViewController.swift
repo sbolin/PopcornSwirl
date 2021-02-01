@@ -83,7 +83,7 @@ extension FavoritesViewController {
                         print("Internet connection error")
 //                        Alert.showTimeOutError(on: self)
                     case .failure(.invalidData):
-//                        print("Could not parse image data")
+                        print("Could not parse image data")
                         Alert.showImproperDataError(on: self)
                     case .failure(.invalidResponse):
                         print("Response from API was invalid")
@@ -99,7 +99,6 @@ extension FavoritesViewController {
     func loadFavoriteMovies() {
         movies = []
         let fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
-        print("FavoriteViewController.loadFavoriteMovies.fetch \(fetchedMovies.count)")
         for movie in fetchedMovies {
             let id = movie.movieId
             movieAction.fetchMovie(id: Int(id)) { [weak self] result in

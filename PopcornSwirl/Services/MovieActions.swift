@@ -145,7 +145,7 @@ class MovieActions {
     ///   - query: search keyword (String)
     ///   - completion: Result closure
     /// - Returns: Movies containing keyword
-    func searchMovie(query: String, completion: @escaping SearchMovieHandler) {
+    func searchMovie(query: String, completion: @escaping FetchMovieHandler) { // SearchMovieHandler
         guard let url = URL(string: "\(baseURL)/search/movie") else {
             completion(.failure(.invalidEndpoint))
             return

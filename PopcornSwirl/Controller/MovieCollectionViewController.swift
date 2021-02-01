@@ -124,7 +124,6 @@ extension MovieCollectionViewController {
             cell.activityIndicator.startAnimating()
             // load image...
             let backdropURL = movie.backdropURL
-            print("configureMovieCell: \(movie.backdropURL)")
             MovieActions.shared.fetchImage(at: backdropURL) { result in
                 switch result {
                     case .success(let image):

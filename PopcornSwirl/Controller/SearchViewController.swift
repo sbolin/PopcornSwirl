@@ -17,12 +17,12 @@ class SearchViewController: UIViewController {
     
     // MARK: - Properties
     private var movieCollectionView: UICollectionView! = nil
-    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieSearchItem>! = nil
-    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieSearchItem>! = nil
+    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil // MovieSearchItem -> MovieItem
+    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
     let searchBar = UISearchBar(frame: .zero)
     let movieAction = MovieActions.shared
-    var movies = [MovieDataStore.MovieSearchItem]()
+    var movies = [MovieDataStore.MovieItem]()
     var error: MovieError?
     
     // MARK: - View Lifecycle Methods
@@ -109,15 +109,15 @@ extension SearchViewController {
     
     //MARK: - Configure DataSource
     private func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieSearchItem>(collectionView: movieCollectionView) { (collectionView, indexPath, movie) -> ListViewCell? in
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>(collectionView: movieCollectionView) { (collectionView, indexPath, movie) -> ListViewCell? in
             // Return the cell.
             return collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
         }
     }
     
     //MARK: Configure and Register ListViewCell
-    private func configureListCell() -> UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieSearchItem> {
-        return UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieSearchItem> { (cell, indexPath, movie) in
+    private func configureListCell() -> UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> {
+        return UICollectionView.CellRegistration<ListViewCell, MovieDataStore.MovieItem> { (cell, indexPath, movie) in
             // Populate the cell with our item description.
             cell.titleLabel.text = movie.title
             cell.descriptionLabel.text = movie.overview
@@ -160,10 +160,10 @@ extension SearchViewController {
             guard let self = self else { return }
             switch result {
                 case .success(let response):
-                    self.movies.append(contentsOf: SearchDTOMapper.mapSearch(response))
+                    self.movies.append(contentsOf: MoviesDTOMapper.map(response))  // SearchDTOMapper.mapSearch(response)
                 case .failure(let error):
                     print("Error fetching movie: \(error.localizedDescription)")
-                    Alert.showNoDataError(on: self)
+//                    Alert.showNoDataError(on: self)
             }
             self.movies.sort { $0.voteCount > $1.voteCount }
             self.applySnapshot()
@@ -172,7 +172,7 @@ extension SearchViewController {
     
     //MARK: Setup Snapshot data
     private func applySnapshot() {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieSearchItem>()
+        var snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
         snapshot.appendSections([.main])
         snapshot.appendItems(movies)
         dataSource.apply(snapshot, animatingDifferences: true)
