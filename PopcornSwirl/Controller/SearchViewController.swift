@@ -33,20 +33,13 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // title = "Search"
         configureCollectionView()
         configureDataSource()
-        zeroDataSource()
-        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         searchBar.text = ""
         zeroDataSource()
-//        var currentSnapshot = dataSource.snapshot()
-//        currentSnapshot.deleteItems(movies)
-//        dataSource.apply(currentSnapshot, animatingDifferences: false)
-//        self.error = nil
     }
     
     func setupSearchBar() {
@@ -86,8 +79,9 @@ extension SearchViewController {
         
         // from Apple: Modern Collection Views
         view.backgroundColor = .systemBackground
-        let layout = createLayout()
-        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
+        let config = UICollectionLayoutListConfiguration(appearance: .grouped)
+        let listLayout = UICollectionViewCompositionalLayout.list(using: config)
+        let collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: listLayout)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemBackground
@@ -113,9 +107,12 @@ extension SearchViewController {
         searchBar.delegate = self
     }
     
-    private func createLayout() -> UICollectionViewLayout {
-        let config = UICollectionLayoutListConfiguration(appearance: .grouped)
-        return UICollectionViewCompositionalLayout.list(using: config)
+    //MARK: - Configure DataSource
+    private func configureDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieSearchItem>(collectionView: movieCollectionView) { (collectionView, indexPath, movie) -> ListViewCell? in
+            // Return the cell.
+            return collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
+        }
     }
     
     //MARK: Configure and Register ListViewCell
@@ -138,7 +135,7 @@ extension SearchViewController {
                         } // Dispatch
 //                    case .failure(_):
 //                        print("General error thrown")
- //                       Alert.showGenericError(on: self.navigationController!)
+//                       Alert.showGenericError(on: self.navigationController!)
                     case .failure(.networkFailure(_)):
                         print("Internet connection error")
 //                        Alert.showTimeOutError(on: self)
@@ -152,57 +149,45 @@ extension SearchViewController {
             } // fetchImage
         } // cell registration
     } // configureListCell
-    
-    //MARK: - Configure DataSource
-    private func configureDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieSearchItem>(collectionView: movieCollectionView) { (collectionView, indexPath, movie) -> ListViewCell? in
-            // Return the cell.
-            return collectionView.dequeueConfiguredReusableCell(using: self.configureListCell(), for: indexPath, item: movie)
-        }
-    }
-    
-    //MARK: Setup Snapshot data
-    private func setupSnapshot() {
- //       DispatchQueue.main.async {
-            snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieSearchItem>()
-            snapshot.appendSections([.main])
-            snapshot.appendItems(movies)
-            dataSource.apply(snapshot, animatingDifferences: true)
-//        }
-    }
-    
+}
     
     //MARK: - Helper Methods
+extension SearchViewController {
     private func search(for searchText: String) {
+        movies = []
         guard !searchText.isEmpty else { return }
-        zeroDataSource()
         movieAction.searchMovie(query: searchText) { [weak self] result in
             guard let self = self else { return }
             switch result {
                 case .success(let response):
-//                    self.movies.append(contentsOf: MoviesDTOMapper.map(response))
                     self.movies.append(contentsOf: SearchDTOMapper.mapSearch(response))
                 case .failure(let error):
                     print("Error fetching movie: \(error.localizedDescription)")
-//                    Alert.showNoDataError(on: self)
+                    Alert.showNoDataError(on: self)
             }
             self.movies.sort { $0.voteCount > $1.voteCount }
-            self.setupSnapshot()
+            self.applySnapshot()
         }
     }
     
+    //MARK: Setup Snapshot data
+    private func applySnapshot() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieSearchItem>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(movies)
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+    
     private func zeroDataSource() {
- //       DispatchQueue.main.async {
-            var currentSnapshot = dataSource.snapshot()
-            currentSnapshot.deleteItems(movies)
-            dataSource.apply(currentSnapshot)
-            error = nil
-//        }
+        movies = []
+        var currentSnapshot = dataSource.snapshot()
+        currentSnapshot.deleteItems(movies)
+        dataSource.apply(currentSnapshot)
+        error = nil
     }
 }
 
 extension SearchViewController: UISearchBarDelegate {
-    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         guard let searchText = searchBar.text else { return }
         if searchText == "" {
@@ -236,6 +221,7 @@ extension SearchViewController: UICollectionViewDelegate {
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
         detailViewController.passedMovieID = movie.id
+//        detailViewController.passedMovie = movie
         tabBarController?.show(detailViewController, sender: self)
     }
 }

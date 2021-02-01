@@ -24,19 +24,15 @@ class BoughtViewController: UIViewController {
     let request = CoreDataController.shared.bookmarkedMovies
     var error: MovieError?
     
-    // MARK: - DispatchGroup
-    let group = DispatchGroup()
-    let queue = DispatchQueue.global()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadBoughtMovies()
+    } // viewWillAppear
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        group.notify(queue: queue) { [self] in
-            DispatchQueue.main.async { [self] in
-                configureCollectionView()
-                configureDataSource()
-                loadBoughtMovies()
-            }
-        }
+        configureCollectionView()
+        configureDataSource()
     }
 }
 
@@ -80,18 +76,18 @@ extension BoughtViewController {
                             cell.imageView.image = image
                             cell.activityIndicator.stopAnimating()
                         } // Dispatch
-                    //                    case .failure(_):
-                    //                        print("General error thrown")
-                    //                        Alert.showGenericError(on: self.navigationController!)
+//                    case .failure(_):
+//                        print("General error thrown")
+//                        Alert.showGenericError(on: self.navigationController!)
                     case .failure(.networkFailure(_)):
                         print("Internet connection error")
-                    //                    Alert.showTimeOutError(on: self)
+//                    Alert.showTimeOutError(on: self)
                     case .failure(.invalidData):
                         print("Could not parse image data")
-                    //                    Alert.showImproperDataError(on: self)
+//                    Alert.showImproperDataError(on: self)
                     case .failure(.invalidResponse):
                         print("Response from API was invalid")
-                    //                    Alert.showImproperDataError(on: self)
+//                    Alert.showImproperDataError(on: self)
                 } // Switch
             } // fetchImage
         } // cell registration
@@ -101,10 +97,10 @@ extension BoughtViewController {
 //MARK: - Fetch bought movies from core data then download from tmdb API
 extension BoughtViewController {
     func loadBoughtMovies() {
+        movies = []
         let fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
         print("BoughtViewController.loadBoughtMovies.fetch \(fetchedMovies.count)")
         for movie in fetchedMovies {
-            self.group.enter()
             let id = movie.movieId
             movieAction.fetchMovie(id: Int(id)) { [weak self] result in
                 guard let self = self else { return }
@@ -115,14 +111,16 @@ extension BoughtViewController {
                         print("Error fetching movie: \(error.localizedDescription)")
                         Alert.showNoDataError(on: self)
                 }
-                self.group.leave()
-                var snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
-                snapshot.appendSections([.main])
-                snapshot.appendItems(self.movies)
-                self.dataSource.apply(snapshot, animatingDifferences: true)
-                
+                self.applySnapshot()
             }
         }
+    }
+    
+    func applySnapshot() {
+        var newSnapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
+        newSnapshot.appendSections([.main])
+        newSnapshot.appendItems(self.movies)
+        self.dataSource.apply(newSnapshot, animatingDifferences: true)
     }
 }
 

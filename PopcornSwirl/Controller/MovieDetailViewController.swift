@@ -68,9 +68,6 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         activity.hidesWhenStopped = true
-        
-        print("MovieDetailViewController.viewDidLoad: \(String(describing: passedMovie)) / \(String(describing: passedMovieID))")
-        
         guard let passedMovie = passedMovie else { return }
         guard let passedMovieID = passedMovieID else { return }
         registerForKeyboardNotifications()
@@ -90,7 +87,6 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
             switch result {
                 case .success(let response):
                     self.movieResult = SingleMovieDTOMapper.map(response)
-                    print("MovieDetailViewController, map result to movieResult: \(self.movieResult.title)")
                     if CoreDataController.shared.entityExists(using: movie.id, in: CoreDataController.shared.managedContext) {
                         // Movie exists in Core Data
                         guard let movieEntity = CoreDataController.shared.findMovieByID(using: movie.id, in: CoreDataController.shared.managedContext) else { return }
@@ -99,7 +95,6 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                         self.movieResult.watched = movieEntity.watched
                         self.movieResult.bought = movieEntity.bought
                         self.movieResult.note = movieEntity.note
-                        print("MovieDetailViewController, check if existing movieResult updated: \(self.movieResult.bookmarked)")
                     } else {
                         // movie doesn't exist, create new movieEntity
                         let movieEntity = CoreDataController.shared.createMovie(name: movie.title, id: movie.id)
@@ -109,7 +104,6 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
                         self.movieResult.watched = movieEntity.watched
                         self.movieResult.bought = movieEntity.bought
                         self.movieResult.note = movieEntity.note
-                        print("MovieDetailViewController, Set new movieResult to: \(self.movieResult.title)")
                     }
                     
                 case .failure(let error):

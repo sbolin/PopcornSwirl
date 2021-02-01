@@ -17,27 +17,23 @@ class BookmarksViewController: UIViewController {
     
     // MARK: - Properties
     private var collectionView: UICollectionView!
-    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>!
+    private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil
     
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
     let request = CoreDataController.shared.bookmarkedMovies
     var error: MovieError?
     
-    // MARK: - DispatchGroup
-    let group = DispatchGroup()
-    let queue = DispatchQueue.global()
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadBookmarkedMovies()
+    } // viewWillAppear
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        group.notify(queue: queue) { [self] in
-            DispatchQueue.main.async { [self] in
         configureCollectionView()
         configureDataSource()
-        loadBookmarkedMovies()
-            }
-        }
-    }
+    } // viewDidLoad
 }
    
 //MARK: - Extensions
@@ -100,11 +96,10 @@ extension BookmarksViewController {
 
 //MARK: - Fetch bookmarked movies from core data then download from tmdb API
 extension BookmarksViewController {
-    func loadBookmarkedMovies() {
+    private func loadBookmarkedMovies() {
+        movies = []
         let fetchedMovies = try! CoreDataController.shared.managedContext.fetch(request)
-        print("BookmarksViewController.loadBookmarkedMovies.fetch \(fetchedMovies.count)")
         for movie in fetchedMovies {
-            self.group.enter()
             let id = movie.movieId
             movieAction.fetchMovie(id: Int(id)) { [weak self] result in
                 guard let self = self else { return }
@@ -115,14 +110,16 @@ extension BookmarksViewController {
                         print("Error fetching movie: \(error.localizedDescription)")
                         Alert.showNoDataError(on: self)
                 }
-                self.group.leave()
-                var snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
-                snapshot.appendSections([.main])
-                snapshot.appendItems(self.movies)
-                self.dataSource.apply(snapshot, animatingDifferences: true)
-                
+                self.applySnapshot()
             }
         }
+    }
+    
+    private func applySnapshot() {
+        var newSnapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
+        newSnapshot.appendSections([.main])
+        newSnapshot.appendItems(self.movies)
+        self.dataSource.apply(newSnapshot, animatingDifferences: true)
     }
 }
 

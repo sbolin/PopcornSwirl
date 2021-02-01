@@ -43,7 +43,6 @@ class MovieDataStore {
                     case .Mystery: return "Mystery"
                     case .Thriller: return "Thriller"
                     case .Upcoming: return "Upcoming"
-                        
                 }
             }
         }
