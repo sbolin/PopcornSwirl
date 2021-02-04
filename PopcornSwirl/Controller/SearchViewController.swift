@@ -91,14 +91,10 @@ extension SearchViewController {
         
         let views = ["cv": collectionView, "searchBar": searchBar]
         var constraints = [NSLayoutConstraint]()
-        constraints.append(contentsOf: NSLayoutConstraint.constraints(
-                            withVisualFormat: "H:|[cv]|", options: [], metrics: nil, views: views))
-        constraints.append(contentsOf: NSLayoutConstraint.constraints(
-                            withVisualFormat: "H:|[searchBar]|", options: [], metrics: nil, views: views))
-        constraints.append(contentsOf: NSLayoutConstraint.constraints(
-                            withVisualFormat: "V:[searchBar]-0-[cv]|", options: [], metrics: nil, views: views))
-        constraints.append(searchBar.topAnchor.constraint(
-                            equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 1.0))
+        constraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "H:|[cv]|", options: [], metrics: nil, views: views))
+        constraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "H:|[searchBar]|", options: [], metrics: nil, views: views))
+        constraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "V:[searchBar]-0-[cv]|", options: [], metrics: nil, views: views))
+        constraints.append(searchBar.topAnchor.constraint(equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 1.0))
         NSLayoutConstraint.activate(constraints)
         movieCollectionView = collectionView
         // end from Apple
