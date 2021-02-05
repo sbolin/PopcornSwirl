@@ -26,6 +26,10 @@ class SearchViewController: UIViewController {
     var error: MovieError?
     let searchBar = UISearchBar(frame: .zero)
     
+    //MARK: - DispatchQueue
+    let group = DispatchGroup()
+    let queue = DispatchQueue.global()
+    
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -40,6 +44,7 @@ class SearchViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         searchBar.text = ""
+        searchBar.resignFirstResponder()
         zeroDataSource()
     }
     
@@ -132,8 +137,8 @@ extension SearchViewController {
     //MARK: - Helper Methods
 extension SearchViewController {
     private func search(for searchText: String) {
-        movies = []
         guard !searchText.isEmpty else { return }
+        movies = []
         movieAction.searchMovie(query: searchText) { [weak self] result in
             guard let self = self else { return }
             switch result {
@@ -157,11 +162,11 @@ extension SearchViewController {
     }
     
     private func zeroDataSource() {
-        movies = []
-        var currentSnapshot = dataSource.snapshot()
-        currentSnapshot.deleteItems(movies)
-        dataSource.apply(currentSnapshot, animatingDifferences: true)
-        error = nil
+            movies = []
+            var currentSnapshot = dataSource.snapshot()
+            currentSnapshot.deleteItems(movies)
+            dataSource.apply(currentSnapshot, animatingDifferences: true)
+            error = nil
     }
 }
 
@@ -169,7 +174,6 @@ extension SearchViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         guard let searchText = searchBar.text else { return }
         if searchText == "" {
-            zeroDataSource()
             return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             self.search(for: searchText)
@@ -177,6 +181,11 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else { return }
+        if searchText == "" {
+            zeroDataSource()
+        }
+        search(for: searchText)
         searchBar.resignFirstResponder()
     }
     
@@ -185,7 +194,9 @@ extension SearchViewController: UISearchBarDelegate {
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        zeroDataSource()
+//        zeroDataSource()
+        movies = []
+        applySnapshot()
         searchBar.resignFirstResponder()
     }
 }
@@ -198,19 +209,26 @@ extension SearchViewController: UICollectionViewDelegate {
             return
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        movieAction.fetchMovie(id: movie.id) { result in
+        group.enter()
+        movieAction.fetchMovie(id: movie.id) { [weak self] result in
+            guard let self = self else { return }
             switch result {
-                
                 case .success(let response):
                     self.movieResult = SingleMovieDTOMapper.map(response)
                     self.movieToPass = self.movieResult
+                    print("movie.id = \(movie.id), movieToPass.id = \(self.movieToPass.id)")
                 case .failure(let error):
                     print("Error fetching movie: \(error.localizedDescription)")
                     Alert.showNoDataError(on: self)
             }
+            self.group.leave()
         }
-        detailViewController.passedMovie = movieToPass
-        detailViewController.passedMovieID = movieToPass.id
-        tabBarController?.show(detailViewController, sender: self)
+        group.notify(queue: queue) {
+            detailViewController.passedMovie = self.movieToPass
+            detailViewController.passedMovieID = self.movieToPass.id
+            DispatchQueue.main.async {
+                self.tabBarController?.show(detailViewController, sender: self)
+            }
+        }
     }
 }
