@@ -18,12 +18,13 @@ class SearchViewController: UIViewController {
     // MARK: - Properties
     private var movieCollectionView: UICollectionView! = nil
     private var dataSource: UICollectionViewDiffableDataSource<Section, MovieDataStore.MovieItem>! = nil // MovieSearchItem -> MovieItem
-    private var snapshot: NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>! = nil
     
-    let searchBar = UISearchBar(frame: .zero)
     let movieAction = MovieActions.shared
     var movies = [MovieDataStore.MovieItem]()
+    var movieToPass: MovieDataStore.MovieItem!
+    var movieResult: MovieDataStore.MovieItem!
     var error: MovieError?
+    let searchBar = UISearchBar(frame: .zero)
     
     // MARK: - View Lifecycle Methods
     override func viewWillAppear(_ animated: Bool) {
@@ -55,29 +56,6 @@ class SearchViewController: UIViewController {
 //MARK: Configure Collection View
 extension SearchViewController {
     private func configureCollectionView() {
-        // keep below for reference - still not sure why it didn't work properly
-        /*
-         view.backgroundColor = .systemBackground
-         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createLayout())
-         collectionView.translatesAutoresizingMaskIntoConstraints = false
-         searchBar.translatesAutoresizingMaskIntoConstraints = false
-         collectionView.backgroundColor = .systemBackground
-         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-         view.addSubview(collectionView)
-         view.addSubview(searchBar)
-         
-         NSLayoutConstraint.activate([
-         searchBar.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
-         searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-         searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0),
-         
-         collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 20),
-         collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0),
-         collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 0)
-         ])
-         */
-        
-        // from Apple: Modern Collection Views
         view.backgroundColor = .systemBackground
         let config = UICollectionLayoutListConfiguration(appearance: .grouped)
         let listLayout = UICollectionViewCompositionalLayout.list(using: config)
@@ -88,17 +66,21 @@ extension SearchViewController {
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         view.addSubview(collectionView)
         view.addSubview(searchBar)
+    
+        NSLayoutConstraint.activate([
+            searchBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            searchBar.heightAnchor.constraint(equalToConstant: 44),
+            
+            collectionView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
         
-        let views = ["cv": collectionView, "searchBar": searchBar]
-        var constraints = [NSLayoutConstraint]()
-        constraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "H:|[cv]|", options: [], metrics: nil, views: views))
-        constraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "H:|[searchBar]|", options: [], metrics: nil, views: views))
-        constraints.append(contentsOf: NSLayoutConstraint.constraints(withVisualFormat: "V:[searchBar]-0-[cv]|", options: [], metrics: nil, views: views))
-        constraints.append(searchBar.topAnchor.constraint(equalToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 1.0))
-        NSLayoutConstraint.activate(constraints)
         movieCollectionView = collectionView
-        // end from Apple
-        
+//        collectionView.delegate = self
         movieCollectionView.delegate = self
         searchBar.delegate = self
     }
@@ -178,7 +160,7 @@ extension SearchViewController {
         movies = []
         var currentSnapshot = dataSource.snapshot()
         currentSnapshot.deleteItems(movies)
-        dataSource.apply(currentSnapshot)
+        dataSource.apply(currentSnapshot, animatingDifferences: true)
         error = nil
     }
 }
@@ -216,8 +198,19 @@ extension SearchViewController: UICollectionViewDelegate {
             return
         }
         let detailViewController = self.storyboard!.instantiateViewController(identifier: "movieDetail") as! MovieDetailViewController
-        detailViewController.passedMovieID = movie.id
-//        detailViewController.passedMovie = movie
+        movieAction.fetchMovie(id: movie.id) { result in
+            switch result {
+                
+                case .success(let response):
+                    self.movieResult = SingleMovieDTOMapper.map(response)
+                    self.movieToPass = self.movieResult
+                case .failure(let error):
+                    print("Error fetching movie: \(error.localizedDescription)")
+                    Alert.showNoDataError(on: self)
+            }
+        }
+        detailViewController.passedMovie = movieToPass
+        detailViewController.passedMovieID = movieToPass.id
         tabBarController?.show(detailViewController, sender: self)
     }
 }

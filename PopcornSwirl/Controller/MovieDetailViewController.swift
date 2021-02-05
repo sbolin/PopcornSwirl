@@ -82,7 +82,7 @@ class MovieDetailViewController: UIViewController, UITextFieldDelegate {
         self.group.enter()
         activity.startAnimating()
         
-        movieAction.fetchMovie(id: movie.id) { [weak self] result in
+        movieAction.fetchMovie(id: movie.id) { [weak self] result in // movie.id -> movieID
             guard let self = self else { return }
             switch result {
                 case .success(let response):
