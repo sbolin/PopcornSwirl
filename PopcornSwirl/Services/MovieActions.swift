@@ -46,15 +46,16 @@ class MovieActions {
         
         // option fetch by genre
         for genre in MovieDataStore.MovieCollection.Genres.allCases {
+            print("loadMovieData, genre: \(genre)")
             self.group.enter()
             fetchMoviesByGenre(from: genre.rawValue) { [weak self] result in
                 guard let self = self else { return }
                 switch result {
                     case .success(let response):
-                        loadedData = true
                         self.movieList = MoviesDTOMapper.map(response)
                         let collectionItem = MovieDataStore.MovieCollection(genreID: genre.rawValue, movies: self.movieList)
                         self.localCollection.append(collectionItem)
+                        loadedData = true
                     case .failure(let error):
                         print("Error loading \(genre): \(error.localizedDescription)")
                         loadedData = false

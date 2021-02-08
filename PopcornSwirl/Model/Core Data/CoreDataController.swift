@@ -120,7 +120,6 @@ class CoreDataController {
         movie.note = ""
         movie.watched = false
         saveContext(object: movie, context: managedContext)
-        print("CoreDataController.createMovie \(name), \(id) success")
         return movie
     }
     
@@ -157,7 +156,6 @@ class CoreDataController {
             let movies = try context.fetch(request)
             for movie in movies {
                 if movie.movieId == id {
-                    print("CoreDataController.findMovieByID success: \(id)")
                     return movie
                 } // if
             } // for in

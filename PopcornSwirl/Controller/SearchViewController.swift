@@ -158,15 +158,19 @@ extension SearchViewController {
         var snapshot = NSDiffableDataSourceSnapshot<Section, MovieDataStore.MovieItem>()
         snapshot.appendSections([.main])
         snapshot.appendItems(movies)
-        dataSource.apply(snapshot, animatingDifferences: true)
+        DispatchQueue.main.async {
+            self.dataSource.apply(snapshot, animatingDifferences: true)
+        }
     }
     
     private func zeroDataSource() {
             movies = []
             var currentSnapshot = dataSource.snapshot()
             currentSnapshot.deleteItems(movies)
-            dataSource.apply(currentSnapshot, animatingDifferences: true)
-            error = nil
+        DispatchQueue.main.async {
+            self.dataSource.apply(currentSnapshot, animatingDifferences: true)
+        }
+        error = nil
     }
 }
 
@@ -175,9 +179,9 @@ extension SearchViewController: UISearchBarDelegate {
         guard let searchText = searchBar.text else { return }
         if searchText == "" {
             return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             self.search(for: searchText)
-        }
+//        }
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -216,7 +220,6 @@ extension SearchViewController: UICollectionViewDelegate {
                 case .success(let response):
                     self.movieResult = SingleMovieDTOMapper.map(response)
                     self.movieToPass = self.movieResult
-                    print("movie.id = \(movie.id), movieToPass.id = \(self.movieToPass.id)")
                 case .failure(let error):
                     print("Error fetching movie: \(error.localizedDescription)")
                     Alert.showNoDataError(on: self)

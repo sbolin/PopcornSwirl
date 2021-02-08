@@ -46,7 +46,6 @@ class MovieCollectionViewController: UIViewController {
                     self.movieCollections = collection
                 case .failure(_):
                     Alert.alertToRefreshData(title: "Internet Error", message: "Can't download data, please check your internet connection.", vc: self.navigationController!, andEnable: nil) { self.getMovies() }
-                    print("Movies could not be loaded")
             }
             self.setupSnapshot()
         }
