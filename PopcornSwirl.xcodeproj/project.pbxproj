@@ -20,6 +20,7 @@
 		155FB11025C6D4A300EFB6E4 /* SearchDTOMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155FB10F25C6D4A300EFB6E4 /* SearchDTOMapper.swift */; };
 		157FD14425A86BDE000D5739 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157FD14325A86BDE000D5739 /* SearchViewController.swift */; };
 		157FD14825A87CC6000D5739 /* BoughtViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157FD14725A87CC6000D5739 /* BoughtViewController.swift */; };
+		157FD420262D3A9D00A01C7B /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 157FD41F262D3A9D00A01C7B /* Secrets.swift */; };
 		1585D78E254367C8006A9433 /* CoreDataController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1585D78D254367C8006A9433 /* CoreDataController.swift */; };
 		15A2FB7925BEB77E0089D5B1 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A2FB7825BEB77E0089D5B1 /* Alert.swift */; };
 		15A4B5FF25493B0000534EFE /* ToDo.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 15A4B5FE25493B0000534EFE /* ToDo.rtf */; };
@@ -57,6 +58,7 @@
 		155FB10F25C6D4A300EFB6E4 /* SearchDTOMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchDTOMapper.swift; sourceTree = "<group>"; };
 		157FD14325A86BDE000D5739 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		157FD14725A87CC6000D5739 /* BoughtViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoughtViewController.swift; sourceTree = "<group>"; };
+		157FD41F262D3A9D00A01C7B /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Secrets.swift; sourceTree = "<group>"; };
 		1585D78D254367C8006A9433 /* CoreDataController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataController.swift; sourceTree = "<group>"; };
 		15A2FB7825BEB77E0089D5B1 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		15A4B5FE25493B0000534EFE /* ToDo.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = ToDo.rtf; sourceTree = "<group>"; };
@@ -146,6 +148,7 @@
 				151B9F95258B945C001DE93C /* Utils.swift */,
 				15E287C625A02EF10075639F /* Validation.swift */,
 				15A2FB7825BEB77E0089D5B1 /* Alert.swift */,
+				157FD41F262D3A9D00A01C7B /* Secrets.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -310,6 +313,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				15C29880255668210064B074 /* BookmarksViewController.swift in Sources */,
+				157FD420262D3A9D00A01C7B /* Secrets.swift in Sources */,
 				15C29883255668430064B074 /* WatchedViewController.swift in Sources */,
 				15A2FB7925BEB77E0089D5B1 /* Alert.swift in Sources */,
 				15CF92A82543409C00CCBBF9 /* MovieModel.xcdatamodeld in Sources */,

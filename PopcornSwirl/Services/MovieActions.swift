@@ -13,7 +13,6 @@ class MovieActions {
     static let shared = MovieActions()
     private init() {}
     
-    private let apiKey = "a042fdafc76ac6243a7d5c85b930f1f6"
     private let baseURL = URL(string: "https://api.themoviedb.org/3")!
     private let urlSession = URLSession.shared
     private let jsonDecoder = Utils.jsonDecoder
@@ -46,7 +45,6 @@ class MovieActions {
         
         // option fetch by genre
         for genre in MovieDataStore.MovieCollection.Genres.allCases {
-            print("loadMovieData, genre: \(genre)")
             self.group.enter()
             fetchMoviesByGenre(from: genre.rawValue) { [weak self] result in
                 guard let self = self else { return }
@@ -195,7 +193,7 @@ class MovieActions {
     // helper method to construct URL given base url and parameters
     private func makeURL(url: URL, params: [String: String]? = nil) -> URL {
         var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
-        var queryItems = [URLQueryItem(name: "api_key", value: apiKey)]
+        var queryItems = [URLQueryItem(name: "api_key", value: Secrets.apiKey)]
         if let params = params {
             queryItems.append(contentsOf: params.map { URLQueryItem(name: $0.key, value: $0.value) })
         }

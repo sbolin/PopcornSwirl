@@ -28,48 +28,6 @@ extension MovieEntity {
 
 }
 
-extension MovieEntity {
-// moved to CoreDataController
-    /*
-     static var bookmarkedMovies: NSFetchRequest<MovieEntity> {
-     let request: NSFetchRequest<MovieEntity> = movieFetchRequest()
-     let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
-     let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.bookmarked), true)
-     request.sortDescriptors = sort
-     request.predicate = predicate
-     return request
-     }
-     
-     static var watchedMovies: NSFetchRequest<MovieEntity> {
-     let request: NSFetchRequest<MovieEntity> = movieFetchRequest()
-     let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
-     let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.watched), true)
-     request.sortDescriptors = sort
-     request.predicate = predicate
-     return request
-     }
-     
-     static var favoriteMovies: NSFetchRequest<MovieEntity> {
-     let request: NSFetchRequest<MovieEntity> = movieFetchRequest()
-     let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
-     let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.favorite), true)
-     request.sortDescriptors = sort
-     request.predicate = predicate
-     return request
-     }
-     
-     static var boughtMovies: NSFetchRequest<MovieEntity> {
-     let request: NSFetchRequest<MovieEntity> = movieFetchRequest()
-     let sort = [NSSortDescriptor(keyPath: \MovieEntity.title, ascending: true)]
-     let predicate = NSPredicate(format: "%K == %d", #keyPath(MovieEntity.bought), true)
-     request.sortDescriptors = sort
-     request.predicate = predicate
-     return request
-     }
-     */
-}
-
-
 extension MovieEntity : Identifiable {
 
 }
